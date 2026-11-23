@@ -121,7 +121,7 @@ body{background:linear-gradient(180deg,var(--bg1),var(--bg2));background-attachm
 .scan-rings .tick{position:absolute;left:50%;top:0;width:42px;height:3px;border-radius:2px;background:var(--grad);transform:translateX(-50%)}
 .part-label{position:absolute;z-index:7;pointer-events:none;transform:translate(-50%,-150%);background:rgba(255,255,255,.95);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 13px 6px 28px;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:var(--shadow-sm);opacity:0;transition:opacity .2s}
 .part-label::before{content:"";position:absolute;left:10px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 3px rgba(0,184,212,.25)}
-.part-label::after{content:"";position:absolute;left:50%;bottom:-13px;width:1px;height:13px;background:linear-gradient(180deg,rgba(0,184,212,.6),rgba(0,184,212,.08))}
+.part-label::after{content:"";position:absolute;left:50%;bottom:-7px;width:7px;height:7px;border-radius:50%;background:var(--cyan);transform:translateX(-50%);box-shadow:0 0 0 3px rgba(0,184,212,.25)}
 .part-label.show{opacity:1}
 #dotLayer{position:absolute;inset:0;pointer-events:none;z-index:6}
 .status-dot{position:absolute;pointer-events:auto;z-index:6;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(23,32,43,.35);transform:translate(-50%,-50%);padding:0;min-height:0;cursor:pointer}
@@ -357,7 +357,7 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
       <span class="ctl-label" data-i18n="layers">圖層</span>
       <button class="layer-btn" type="button" data-layer="skin" aria-pressed="true" data-i18n="lSkin">皮膚</button>
       <button class="layer-btn" type="button" data-layer="skeleton" aria-pressed="true" data-i18n="lSkeleton">骨骼</button>
-      <button class="layer-btn" type="button" data-layer="muscles" aria-pressed="true" data-i18n="lMuscles">肌肉</button>
+      <button class="layer-btn" type="button" data-layer="muscles" aria-pressed="false" data-i18n="lMuscles">肌肉</button>
       <button class="layer-btn" type="button" data-layer="organs" aria-pressed="true" data-i18n="lOrgans">器官</button>
       <button class="layer-btn" type="button" data-layer="vessels" aria-pressed="true" data-i18n="lVessels">血管</button>
       <button class="layer-btn" type="button" data-layer="nerves" aria-pressed="false" data-i18n="lNerves">神經</button>
@@ -393,7 +393,7 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
   <details>
     <summary><h2 data-i18n="m2t">健康狀態點睇</h2><span data-i18n="m2s">顏色只做提示，永遠連埋文字</span><span class="chev">▾</span></summary>
     <div class="body">
-      <p data-i18n="m2a">開「健康狀態」模式，器官旁邊會出現狀態點，資訊卡亦有標籤：綠點＝良好、黃點＝注意、紅點＝嚴重，每個都連埋文字，唔靠顏色估。</p>
+      <p data-i18n="m2a">開「健康狀態」模式，器官旁邊會出現狀態點，資訊卡亦有標籤：綠點＝良好、橙黃點＝注意、紅點＝嚴重，每個都連埋文字，唔靠顏色估。</p>
       <p data-i18n="m2b">訪客冇真數據嗰陣，畫面顯示嘅一律係示範狀態，介面會標明「示範數據 · Demo data」，唔係診斷。</p>
     </div>
   </details>
@@ -539,7 +539,7 @@ function colorFor(name, group){
   if(group === 'skeleton') return new THREE.Color(0xE3D7B8);
   if(group === 'nerves') return new THREE.Color(0xE3A008);
   if(group === 'vessels'){ if(/vein|vena/.test(name)) return new THREE.Color(0x2E6BE6); return new THREE.Color(0xC23B22); }
-  if(group === 'organs'){ c = new THREE.Color(ORGAN_COLORS[name] || 0xB5654D); }
+  if(group === 'organs'){ c = new THREE.Color(ORGAN_COLORS[name] || 0xB5654D); c.offsetHSL(0, 0.07, 0); }
   else { c = new THREE.Color(0xA83232); }
   var j = ((hashStr(name) % 13) - 6) / 100;
   c.offsetHSL(0, 0, j * 0.5);
@@ -570,7 +570,9 @@ var currentSex = 'male', modelReady = false, pendingFocus = null;
 var focused = null, fly = null, halo = null;
 var HOME = { pos: new THREE.Vector3(0.6, 1.8, 5.4), tgt: new THREE.Vector3(0, 1.7, 0) };
 var bodyBox = null;
-var layerState = { skin:true, skeleton:true, muscles:true, organs:true, vessels:true, nerves:false };
+/* Default view = the signature shot: glass skin, NO muscle layer (it is opaque and
+   would bury the organs), coloured organs fully visible the moment the page opens. */
+var layerState = { skin:true, skeleton:true, muscles:false, organs:true, vessels:true, nerves:false };
 var currentInfo = { zh:'全身', en:'Full body', desc:'', key:null };
 
 function showError(msg){ loadingEl.classList.add('hide'); errorText.textContent = msg; errorEl.classList.add('show'); }
@@ -734,7 +736,15 @@ function loadModel(sex){
       if(o.isMesh){
         var grp = groupOf(o);
         var mat = new THREE.MeshStandardMaterial({ color: colorFor(o.name, grp), roughness: 0.5, metalness: 0.0, envMapIntensity: 0.55 });
-        if(grp === 'skin'){ mat.transparent = true; mat.opacity = 0.18; mat.depthWrite = false; mat.roughness = 0.15; mat.metalness = 0.05; o.renderOrder = 3; }
+        if(grp === 'organs'){
+          /* Organs render SOLID: double-sided so thin-walled organs (lungs above all)
+             read as full shapes, never feathery shells; low env reflection keeps the
+             signature colours saturated instead of washed out. */
+          mat.side = THREE.DoubleSide; mat.envMapIntensity = 0.22; mat.roughness = 0.62;
+          o.renderOrder = 2;
+        }
+        if(o.name === 'lung_l' || o.name === 'lung_r'){ mat.roughness = 0.7; }
+        if(grp === 'skin'){ mat.transparent = true; mat.opacity = 0.15; mat.depthWrite = false; mat.roughness = 0.15; mat.metalness = 0.05; o.renderOrder = 3; }
         o.material = mat;
         o.userData.group = grp;
         o.userData.base = { opacity: mat.opacity, transparent: mat.transparent, depthWrite: mat.depthWrite, color: mat.color.getHex() };
@@ -760,20 +770,29 @@ function loadModel(sex){
     showError(lang() === 'en' ? 'The model failed to load — possibly a network drop or no WebGL support. Check your connection and reload.' : '模型載入失敗：可能係網絡中斷或者瀏覽器唔支援 WebGL。請檢查連線之後重新載入。');
   });
 }
-/* Ghost others, keep the focused organ in its own signature colour + fluorescent cyan halo (never a wash) */
-function setGhost(targetMesh){
+/* X-ray isolation: EVERY non-target structure fades to near-invisible (0.03) so nothing
+   can bury the focused organ; the target stays fully opaque in its signature colour
+   with a fluorescent cyan halo (never a colour wash over the organ itself). */
+var ankleDot = null;
+function clearAnkleDot(){
+  if(ankleDot){ if(ankleDot.parent) ankleDot.parent.remove(ankleDot); ankleDot.geometry.dispose(); ankleDot.material.dispose(); ankleDot = null; }
+}
+function setGhost(targetMesh, skipHalo){
   allMeshes.forEach(function(m){
     var mat = m.material, base = m.userData.base;
     if(m === targetMesh){
       mat.color.setHex(base.color); mat.transparent = false; mat.opacity = 1; mat.depthWrite = true;
       mat.emissive = new THREE.Color(0x00E5FF); mat.emissiveIntensity = 0.28;
+      m.renderOrder = 4;
     } else {
-      var gc = new THREE.Color(base.color); gc.lerp(new THREE.Color(0xD7E1EE), 0.82);
-      mat.color.copy(gc); mat.transparent = true; mat.opacity = 0.09; mat.depthWrite = false;
+      var gc = new THREE.Color(base.color); gc.lerp(new THREE.Color(0xD7E1EE), 0.9);
+      mat.color.copy(gc); mat.transparent = true; mat.opacity = 0.03; mat.depthWrite = false;
       mat.emissive = new THREE.Color(0x000000); mat.emissiveIntensity = 0;
+      m.renderOrder = 1;
     }
   });
   removeHalo();
+  if(skipHalo) return; /* ankle: a small dot marker is used instead of a whole-geometry halo */
   try {
     halo = new THREE.Mesh(targetMesh.geometry, new THREE.MeshBasicMaterial({
       color: 0x00E5FF, transparent: true, opacity: 0.20, side: THREE.BackSide,
@@ -782,7 +801,10 @@ function setGhost(targetMesh){
     targetMesh.add(halo);
   } catch(e){ halo = null; }
 }
-function removeHalo(){ if(halo){ if(halo.parent) halo.parent.remove(halo); halo.geometry = null; halo.material.dispose(); halo = null; } }
+function removeHalo(){
+  clearAnkleDot();
+  if(halo){ if(halo.parent) halo.parent.remove(halo); halo.geometry = null; halo.material.dispose(); halo = null; }
+}
 function clearFocus(silent){
   removeHalo();
   if(focused){
@@ -793,6 +815,7 @@ function clearFocus(silent){
       mat.emissive = new THREE.Color(0x000000); mat.emissiveIntensity = 0;
     });
     focused = null;
+    allMeshes.forEach(function(m){ m.renderOrder = m.userData.group === 'skin' ? 3 : (m.userData.group === 'organs' ? 2 : 0); });
   }
   labelEl.classList.remove('show');
   if(!silent){ infoCard.classList.remove('show'); currentInfo = { zh:'全身', en:'Full body', desc:'', key:null }; scheduleShareRender(); }
@@ -824,6 +847,9 @@ function showInfo(mesh, opts){
   labelEl.classList.add('show');
   currentInfo = { zh: zhName, en: enName, desc: desc, key: mesh.name, status: st };
 }
+/* Posterior organs sit at the BACK of the abdomen — viewed from the front they stay
+   behind the intestines even ghosted. Fly the camera to a back three-quarter view. */
+var POSTERIOR = { kidney_l:1, kidney_r:1, adrenal_l:1, adrenal_r:1, ureter_l:1, ureter_r:1, spleen:1, pancreas:1 };
 function focusMesh(mesh, opts){
   opts = opts || {};
   if(!mesh) return;
@@ -837,26 +863,42 @@ function focusMesh(mesh, opts){
   var dir = camera.position.clone().sub(controls.target);
   if(dir.lengthSq() < 0.001) dir.set(0.3, 0.15, 1);
   dir.normalize();
+  if(POSTERIOR[mesh.name]){
+    var sideSign = center.x !== 0 ? Math.sign(center.x) : (/_l$/.test(mesh.name) ? 1 : -1);
+    dir = new THREE.Vector3(sideSign * 0.55, 0.2, -1).normalize();
+  }
   /* Distance floor: keep the whole organ + surrounding context in frame, never a blurry close-up slab */
   var dist = Math.max(size.length() * 2.4, opts.ankle ? 1.05 : 0.95);
   dist = Math.min(dist, 3.4);
   var camPos = anchor.clone().add(dir.multiplyScalar(dist)).add(new THREE.Vector3(0, size.y * 0.22 + 0.04, 0));
   clearFocus(true);
-  setGhost(mesh);
-  focused = { mesh: mesh, anchor: anchor, ankle: !!opts.ankle };
+  setGhost(mesh, !!opts.ankle);
+  if(opts.ankle){
+    /* Small dot + label marks the joint — never a stretched halo line across the foot */
+    try {
+      ankleDot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 20, 14),
+        new THREE.MeshBasicMaterial({ color: 0x00E5FF, transparent: true, opacity: 0.95, depthWrite: false }));
+      ankleDot.position.copy(anchor);
+      ankleDot.renderOrder = 6;
+      scene.add(ankleDot);
+    } catch(e){ ankleDot = null; }
+  }
+  focused = { mesh: mesh, anchor: anchor, ankle: !!opts.ankle, opts: opts };
   showInfo(mesh, opts);
   flyTo(anchor, camPos, reduced ? 60 : 1350);
   scheduleShareRender(1600);
 }
+function ankleInfoOpts(){
+  return { ankle: true, label: '左腳踝', labelEn: 'Left ankle',
+    labelSuffix: lang() === 'en' ? ' (joint area, indicative)' : '（關節位置示意）',
+    desc: lang() === 'en'
+      ? 'The ankle joint is formed by the tibia, fibula and talus, linking the lower leg to the foot and carrying the body\u2019s weight. This model has no separate ankle part, so the position is indicated by a dot at the ankle area of the left foot bones.'
+      : '腳踝係由脛骨、腓骨同距骨組成嘅關節，連接小腿同足部，承托全身重量。呢個模型未有獨立腳踝部件，位置以左足骨骼近踝範圍嘅一點標示。' };
+}
 function focusByKey(key){
   if(!modelReady){ pendingFocus = key; return; }
-  if(key === 'ankle_l'){
-    focusMesh(meshesByName['foot_l'], { ankle: true, label: '左腳踝', labelEn: 'Left ankle',
-      labelSuffix: lang() === 'en' ? ' (joint area, indicative)' : '（關節位置示意）',
-      desc: lang() === 'en'
-        ? 'The ankle joint is formed by the tibia, fibula and talus, linking the lower leg to the foot and carrying the body\u2019s weight. This model has no separate ankle part, so the position is indicated by the ankle area of the left foot bones.'
-        : '腳踝係由脛骨、腓骨同距骨組成嘅關節，連接小腿同足部，承托全身重量。呢個模型未有獨立腳踝部件，位置以左足骨骼近踝範圍標示。' });
-  } else { focusMesh(meshesByName[key], {}); }
+  if(key === 'ankle_l'){ focusMesh(meshesByName['foot_l'], ankleInfoOpts()); }
+  else { focusMesh(meshesByName[key], {}); }
 }
 /* ===== status dots (HTML overlay, projected each frame while status mode is on) ===== */
 var dotObjs = [];
@@ -1051,7 +1093,13 @@ window.AevosViewer = {
     if(focused && focused.mesh.userData.group === name && !layerState[name]) clearFocus();
     syncLayerButtons(); scheduleShareRender(); wake();
   },
-  refreshLang: function(){ if(focused) showInfo(focused.mesh, {}); if(statusMode) buildDots(); scheduleShareRender(); },
+  refreshLang: function(){
+    /* Rebuild the info card fully in the new language — ankle keeps its custom
+       label + description (rebuilt per language), everything else re-derives. */
+    if(focused) showInfo(focused.mesh, focused.ankle ? ankleInfoOpts() : (focused.opts || {}));
+    if(statusMode) buildDots();
+    scheduleShareRender();
+  },
   isReady: function(){ return modelReady; }
 };
 document.getElementById('retryLoad').addEventListener('click', function(){ loadModel(currentSex); });
@@ -1108,7 +1156,7 @@ chatTitle:'問一句，個 3D 人體即刻轉俾你睇。', chatSub:'3D 探索�
 viewerTitle:'3D 人體 · 全身', statusBtn:'健康狀態', captureBtn:'影相', male:'男性', female:'女性', demoBanner:'示範數據 · Demo data — 唔係你嘅真實健康紀錄', stGood:'良好', stCaution:'注意', stSevere:'嚴重', homeBtn:'回全身', retry:'重新載入', hintChip:'拖拽旋轉 · 㩒結構睇名', layers:'圖層', lSkin:'皮膚', lSkeleton:'骨骼', lMuscles:'肌肉', lOrgans:'器官', lVessels:'血管', lNerves:'神經', resetView:'重設視角', clearFocus:'清除聚焦', viewerNote:'參考人體，唔係你嘅掃描；只作教育同視覺化，唔作診斷。',
 longTitle:'AI 點樣令人更長壽', longLede:'唔係等病出現先醫——AI 將健康管理由「一年驗一次」變成「日日跟住」。', s1t:'日日睇住', s1d:'AI 長期跟住你嘅健康數據，唔係一年先驗一次身，變化一出現就見到。', s2t:'早一步發現', s2d:'風險喺未變成病之前就俾佢捉到，細問題唔使拖到變大問題。', s3t:'早一步調理', s3d:'按你個人數據調節飲食、作息同調理方案，唔係人人同一套。', s4t:'研發加速', s4d:'AI 幫手研發更啱你嘅產品同方案，數據越多，做得越準。', longPunch:'長壽，係管出嚟嘅。',
 m1t:'點運作', m1s:'報告點樣變成睇得見嘅結論', m1a:'1 · 上載報告', m1ad:'系統抽取文字同數值，未核實一律入「待核對」。', m1b:'2 · 醫護核對', m1bd:'逐項對返原文，核實咗先入庫。', m1c:'3 · 喺人體上面睇', m1cd:'結論連返出處，喺 3D 人體標出位置。',
-m2t:'健康狀態點睇', m2s:'顏色只做提示，永遠連埋文字', m2a:'開「健康狀態」模式，器官旁邊會出現狀態點，資訊卡亦有標籤：綠點＝良好、黃點＝注意、紅點＝嚴重，每個都連埋文字，唔靠顏色估。', m2b:'訪客冇真數據嗰陣，畫面顯示嘅一律係示範狀態，介面會標明「示範數據 · Demo data」，唔係診斷。',
+m2t:'健康狀態點睇', m2s:'顏色只做提示，永遠連埋文字', m2a:'開「健康狀態」模式，器官旁邊會出現狀態點，資訊卡亦有標籤：綠點＝良好、橙黃點＝注意、紅點＝嚴重，每個都連埋文字，唔靠顏色估。', m2b:'訪客冇真數據嗰陣，畫面顯示嘅一律係示範狀態，介面會標明「示範數據 · Demo data」，唔係診斷。',
 m3t:'五大系統', m3s:'醫療行先，其餘逐步接通', m3a:'醫療', m3ad:'AI 解剖副駕，問邊個器官即刻定位。', stLive:'本頁可用 · 報告上載接駁中', m3b:'生物銀行', m3bd:'樣本登記同追蹤。', m3c:'智慧製造', m3cd:'生產同品質追溯。', m3d:'金融分賬', m3dd:'合作方自動分賬對賬。', m3e:'AI 數據資產', m3ed:'經核對數據嘅授權同追溯。', stWip:'接駁中', stWip2:'接駁中', stWip3:'接駁中', stWip4:'接駁中',
 m4t:'三條紅線', m4s:'醫療數據，冇得靠估', m4a:'1 · AI 永不杜撰醫療數據 — 冇原文根據嘅數字，唔生成、唔入庫、唔攞去答人。', m4b:'2 · 上載要經人工核對先入庫 — AI 抽錯、讀錯，喺核對嗰步截住。', m4c:'3 · 每次使用留底可舉證 — 邊個睇過、用過咩結論，全部有紀錄。', m4d:'AI 係建議者，唔係決策者。',
 m5t:'模型同接駁', m5s:'而家行緊咩、之後點接真 AI', m5a:'預設「自動」模式：問題會先送去 Pollinations 免費模型端點（唔使金鑰、瀏覽器直連），模型只回結構化指示，前端驗證過先指揮 3D 飛去相應器官；狀態標籤會顯示端點實際回報嘅模型名。', m5b:'免費端點繁忙、限流或者超時嗰陣，會自動回退本地規則引擎並標明「離線規則答覆」，唔會扮等；你亦可以喺對話窗自己揀「只用本地規則」。', m5c:'3D 模型用開源真解剖數據，開頁時由公開來源載入；皮膚係半透明質感，器官用簽名解剖色，揀中嗰個以螢光青光暈標示。',
@@ -1145,6 +1193,15 @@ function applyLang(){
   document.getElementById('langZh').setAttribute('aria-pressed', LANG === 'zh' ? 'true' : 'false');
   document.getElementById('langEn').setAttribute('aria-pressed', LANG === 'en' ? 'true' : 'false');
   if(window.AevosViewer && window.AevosViewer.refreshLang) window.AevosViewer.refreshLang();
+  /* Engine status line + voice notes follow the interface language too */
+  if(typeof setEngineTag === 'function' && typeof lastEngineState !== 'undefined') setEngineTag(lastEngineState, lastEngineModel);
+  try {
+    if(typeof recog !== 'undefined' && recog) recog.lang = LANG === 'en' ? 'en-US' : 'yue-Hant-HK';
+    if(typeof SR !== 'undefined' && !SR && typeof voiceNote !== 'undefined'){
+      voiceNote.textContent = LANG === 'en' ? 'Voice input is not supported in this browser — typing works as usual.' : '呢個瀏覽器未支援語音輸入，可以照打字問。';
+      micBtn.title = LANG === 'en' ? 'Voice input is not supported in this browser' : '呢個瀏覽器未支援語音輸入';
+    }
+  } catch(e){}
 }
 document.getElementById('langZh').addEventListener('click', function(){ LANG = 'zh'; applyLang(); });
 document.getElementById('langEn').addEventListener('click', function(){ LANG = 'en'; applyLang(); });
@@ -1218,7 +1275,9 @@ function systemPrompt(){
     + FOCUS_KEYS.join(', ') + '。';
 }
 
+var lastEngineState = 'auto', lastEngineModel = '';
 function setEngineTag(state, modelName){
+  lastEngineState = state; lastEngineModel = modelName || '';
   var dot = engineTagEl.querySelector('i');
   var txt;
   if(LANG === 'en'){
