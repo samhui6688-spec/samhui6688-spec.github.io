@@ -98,6 +98,8 @@ body{background:linear-gradient(180deg,var(--bg1),var(--bg2));background-attachm
 .tts-btn svg{width:15px;height:15px}
 .tts-btn[aria-pressed="true"]{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
 .voice-note{margin:0;font-size:11.5px;color:var(--ink45);line-height:1.5}
+.privacy-note{margin:0;font-size:11.5px;color:var(--ink45);line-height:1.55;border-top:1px solid var(--line);padding-top:8px}
+.privacy-full{font-size:12px;color:var(--ink45);line-height:1.7;margin:0 0 6px}
 
 /* viewer */
 .viewer-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line)}
@@ -302,6 +304,7 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
         </button>
         <p class="voice-note" id="voiceNote"></p>
       </div>
+      <p class="privacy-note" data-i18n="privacyNote">你嘅問題會送去第三方 AI 服務（免費端點）處理嚟生成答覆，請勿輸入個人醫療紀錄或可識別身份嘅資料；答覆屬教育資訊，唔係診斷。</p>
     </div>
   </section>
 
@@ -428,6 +431,7 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
 
 <footer>
   <p class="foot-note" data-i18n="footNote">本頁 3D 模型為參考人體，只作教育同視覺化用途，唔作診斷。</p>
+  <p class="privacy-full" data-i18n="privacyFull">私隱說明：你喺對話框輸入嘅問題，會送去第三方 AI 服務（Pollinations 免費端點）處理嚟生成答覆。請勿輸入個人醫療紀錄、姓名、聯絡方法或其他可識別身份嘅資料；本頁唔會儲存你嘅對話。所有答覆同健康狀態顯示均屬教育資訊同示範內容，唔係診斷，亦唔代替醫護人員嘅意見。</p>
   <p class="attribution">Anatomy: BodyParts3D © The Database Center for Life Science (CC BY 4.0); female organs: Human Reference Atlas 3D Reference Organs, HuBMAP (CC BY 4.0); female body: MakeHuman (CC0). Modified by open-anatomy-3d (<a href="https://github.com/MervinR07/open-anatomy-3d" target="_blank" rel="noopener">github.com/MervinR07/open-anatomy-3d</a>), CC BY 4.0. <span data-i18n="attrNote">模型於開頁時經 jsDelivr CDN 由 open-anatomy-3d@0.1.0 載入。</span></p>
   <p class="prelim" data-i18n="prelim">初步設計 · 會持續整理，品質會不斷提高</p>
 </footer>
@@ -526,9 +530,9 @@ var GROUP_ZH = { skin:'皮膚', skeleton:'骨骼', muscles:'肌肉', organs:'器
 var GROUP_EN = { skin:'Skin', skeleton:'Skeleton', muscles:'Muscles', organs:'Organs', vessels:'Vessels', nerves:'Nerves' };
 /* Signature organ colours — saturated, mutually distinct anatomical palette */
 var ORGAN_COLORS = {
-  liver:0xB06A1E, heart:0xD92323, lung_l:0xDE6A00, lung_r:0xDE6A00, brain:0x7B4FD0,
-  cerebellum:0x9A78D8, brainstem:0x9A78D8, kidney_l:0x0E9488, kidney_r:0x0E9488,
-  stomach:0xD9A404, spleen:0x8E4585, pancreas:0xE0B84F, colon:0xC9B696,
+  liver:0x8F4A0E, heart:0xB3001B, lung_l:0xE85D04, lung_r:0xE85D04, brain:0x6D28D9,
+  cerebellum:0x7C3AED, brainstem:0x7C3AED, kidney_l:0x0A7C6E, kidney_r:0x0A7C6E,
+  stomach:0xEAB308, spleen:0x8E4585, pancreas:0xE0B84F, colon:0xC9B696,
   small_intestine:0xD8C6A8, bladder:0xDDB84A, gallbladder:0x4E7D32, appendix:0xC08552,
   esophagus:0xC98A6B, trachea:0x8FA6B3, bronchi:0xB98D94, tongue:0xC24B4B,
   eye_l:0xE8E4DA, eye_r:0xE8E4DA, thymus:0xC98383, pituitary:0xE0B84F,
@@ -765,10 +769,19 @@ function loadModel(sex){
              standing firm on the pale stage instead of washing out. */
           mat.side = THREE.DoubleSide; mat.envMapIntensity = 0.22; mat.roughness = 0.62;
           mat.emissive = mat.color.clone(); mat.emissiveIntensity = 0.3;
+          mat.transparent = false; mat.opacity = 1; mat.depthWrite = true;
           o.renderOrder = 2;
+          if(o.name === 'colon' || o.name === 'small_intestine'){
+            /* Gut = translucent background layer (opacity 0.35, pale) so the pair of
+               teal kidneys BEHIND the intestines (anatomical fact) shows through and
+               stays recognisable in the default view instead of being buried. */
+            mat.transparent = true; mat.opacity = 0.35; mat.depthWrite = false;
+            mat.emissiveIntensity = 0.08; o.renderOrder = 1;
+          }
         }
-        if(o.name === 'lung_l' || o.name === 'lung_r'){ mat.roughness = 0.8; mat.envMapIntensity = 0.08; }
-        if(o.name === 'heart'){ mat.roughness = 0.42; }
+        if(o.name === 'lung_l' || o.name === 'lung_r'){ mat.roughness = 0.85; mat.envMapIntensity = 0.05; mat.emissiveIntensity = 0.38; }
+        if(o.name === 'heart'){ mat.roughness = 0.38; mat.emissiveIntensity = 0.36; }
+        if(o.name === 'liver' || o.name === 'stomach' || o.name === 'brain' || o.name === 'kidney_l' || o.name === 'kidney_r'){ mat.emissiveIntensity = 0.36; }
         if(grp === 'skin'){ mat.transparent = true; mat.opacity = 0.24; mat.depthWrite = false; mat.roughness = 0.15; mat.metalness = 0.05; o.renderOrder = 3; }
         o.material = mat;
         o.userData.group = grp;
@@ -862,7 +875,19 @@ function clearFocus(silent){
   }
   setViewerTitle(null);
   labelEl.classList.remove('show');
-  if(!silent){ infoCard.classList.remove('show'); currentInfo = { zh:'全身', en:'Full body', desc:'', key:null }; scheduleShareRender(); }
+  if(!silent){
+    /* 回全身／清除聚焦: the info card goes back to the DEFAULT full-body overview
+       state — content reset to 全身 (never left showing the previous organ) and
+       hidden, exactly as on first load. */
+    infoSys.textContent = '';
+    infoName.textContent = lang() === 'en' ? 'Full body' : '全身';
+    infoEn.textContent = 'Full body'; infoEn.style.display = '';
+    infoDesc.textContent = lang() === 'en' ? 'The full body, head to toe — ask about any organ and the model turns to it.' : '成個人由頭到腳完整入鏡——問邊個器官，鏡頭即刻轉過去。';
+    infoStatus.className = 'status-tag'; infoStatusText.textContent = '';
+    infoCard.classList.remove('show');
+    currentInfo = { zh:'全身', en:'Full body', desc:'', key:null };
+    scheduleShareRender();
+  }
   wake();
 }
 function statusTagFor(key){
@@ -1220,6 +1245,7 @@ m3t:'五大系統', m3s:'醫療行先，其餘逐步接通', m3a:'醫療', m3ad:
 m4t:'三條紅線', m4s:'醫療數據，冇得靠估', m4a:'1 · AI 永不杜撰醫療數據 — 冇原文根據嘅數字，唔生成、唔入庫、唔攞去答人。', m4b:'2 · 上載要經人工核對先入庫 — AI 抽錯、讀錯，喺核對嗰步截住。', m4c:'3 · 每次使用留底可舉證 — 邊個睇過、用過咩結論，全部有紀錄。', m4d:'AI 係建議者，唔係決策者。',
 m5t:'模型同接駁', m5s:'而家行緊咩、之後點接真 AI', m5a:'預設「自動」模式：問題會先送去 Pollinations 免費模型端點（唔使金鑰、瀏覽器直連），模型只回結構化指示，前端驗證過先指揮 3D 飛去相應器官；狀態標籤會顯示端點實際回報嘅模型名。', m5b:'免費端點繁忙、限流或者超時嗰陣，會自動回退本地規則引擎並標明「離線規則答覆」，唔會扮等；你亦可以喺對話窗自己揀「只用本地規則」。', m5c:'3D 模型用開源真解剖數據，開頁時由公開來源載入；皮膚係半透明質感，器官用簽名解剖色，揀中嗰個以螢光青光暈標示。',
 footNote:'本頁 3D 模型為參考人體，只作教育同視覺化用途，唔作診斷。', attrNote:'模型於開頁時經 jsDelivr CDN 由 open-anatomy-3d@0.1.0 載入。', prelim:'初步設計 · 會持續整理，品質會不斷提高',
+privacyNote:'你嘅問題會送去第三方 AI 服務（免費端點）處理嚟生成答覆，請勿輸入個人醫療紀錄或可識別身份嘅資料；答覆屬教育資訊，唔係診斷。', privacyFull:'私隱說明：你喺對話框輸入嘅問題，會送去第三方 AI 服務（Pollinations 免費端點）處理嚟生成答覆。請勿輸入個人醫療紀錄、姓名、聯絡方法或其他可識別身份嘅資料；本頁唔會儲存你嘅對話。所有答覆同健康狀態顯示均屬教育資訊同示範內容，唔係診斷，亦唔代替醫護人員嘅意見。',
 greeting:'你好，試下問我：「腎石喺邊？」——我會即刻將右邊個人體轉去腎臟，放大俾你睇。', placeholder:'問一個器官，例如：心臟喺邊？' },
 en:{ tagline:'AI × Big Health × Biotech', heroPos:'AEVOS — AI × BIG HEALTH × BIOTECH', heroMain:'Tomorrow\u2019s AI knows no limits. It manages your health for the long run — so you live into the future.', heroSub:'The future is beyond imagination. Live long enough to see it.',
 chatTitle:'Ask, and the 3D body turns to it.', chatSub:'The 3D explorer is one experience on the platform. Type, speak, or tap an example below.', engineAuto:'Auto (real model first)', engineLocal:'Local rules only', sheetHint:'Pull up for chat', micLabel:'Voice', ttsLabel:'Auto-read: Off', ttsOn:'Auto-read: On',
@@ -1231,6 +1257,7 @@ m3t:'Five systems', m3s:'Medical first, the rest connect step by step', m3a:'Med
 m4t:'Three red lines', m4s:'Medical data is never guessed', m4a:'1 · AI never invents medical data — numbers without a source are not generated, stored or used in answers.', m4b:'2 · Uploads are human-checked before they enter the record — extraction errors are caught at the check.', m4c:'3 · Every use is logged and provable — who saw what, and which conclusion was used.', m4d:'AI advises. It does not decide.',
 m5t:'Model & connection', m5s:'What runs now, and how the real AI connects later', m5a:'In Auto mode, questions go first to the Pollinations free model endpoint (no key, straight from the browser). The model returns only structured instructions; the front end verifies them before flying the 3D camera to an organ, and the status tag shows the model name the endpoint actually reports.', m5b:'If the free endpoint is busy, rate-limited or times out, answers fall back to the local rules engine and say so (“offline rules answer”) — never fake waiting. You can also pick “Local rules only” yourself.', m5c:'The 3D model uses open real anatomy data, loaded from a public source when the page opens. Skin is translucent, organs carry signature anatomical colours, and the selected one is marked with a fluorescent cyan halo.',
 footNote:'The 3D model on this page is a reference body, for education and visualisation only — not a diagnosis.', attrNote:'Models load at page open via the jsDelivr CDN from open-anatomy-3d@0.1.0.', prelim:'Preliminary design — continuously refined, quality keeps rising.',
+privacyNote:'Your questions are sent to a third-party AI service (free endpoint) to generate replies. Please do not enter personal medical records or identifiable information; replies are educational information, not a diagnosis.', privacyFull:'Privacy: questions you type in the chat are sent to a third-party AI service (the Pollinations free endpoint) to generate replies. Please do not enter personal medical records, names, contact details or any other identifiable information; this page does not store your conversations. All replies and health-status displays are educational information and demo content — not a diagnosis, and not a substitute for professional medical advice.',
 greeting:'Hi — try asking me “Where is a kidney stone?” and I will turn the body to the kidney and zoom in.', placeholder:'Ask about an organ, e.g. Where is the heart?' }
 };
 var LANG = (navigator.language || 'zh').toLowerCase().indexOf('en') === 0 ? 'en' : 'zh';
@@ -1701,6 +1728,13 @@ async function runTurn(text){
     loc.appendChild(el('i'));
     var lt = el('span'); lt.textContent = (LANG === 'en' ? 'Located: ' : '已定位：') + plan.zh + (LANG === 'en' ? ' — camera flying there' : ' — 鏡頭飛緊過去');
     loc.appendChild(lt); turn.appendChild(loc);
+    /* Once the flight lands (≈1.35s, matching focusMesh flyTo), the status line must
+       stop saying "flying" and report arrival instead. */
+    (function(span, zhName){
+      setTimeout(function(){
+        if(span.isConnected) span.textContent = (LANG === 'en' ? 'Located: ' : '已定位：') + zhName + (LANG === 'en' ? ' — in position' : ' — 已定位完成');
+      }, reduced ? 120 : 1500);
+    })(lt, plan.zh);
   }
   execPlan(plan);
   var ans = el('div', 'answer'); turn.appendChild(ans); scrollDown();
