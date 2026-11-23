@@ -27,6 +27,7 @@
   --card:#fffdf6;
   --line:#e3dcc4;
   --intro-bg:#030b06;
+  --mono:"SF Mono","Cascadia Mono","JetBrains Mono",Consolas,"Courier New",monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -46,7 +47,7 @@ a{color:inherit}
 #intro{
   position:fixed;inset:0;z-index:60;background:var(--intro-bg);
   overflow:hidden;cursor:pointer;
-  transition:opacity .45s ease .55s;
+  transition:opacity .45s ease .3s;
 }
 #intro .bgimg{
   position:absolute;inset:0;width:100%;height:100%;
@@ -87,7 +88,7 @@ a{color:inherit}
 }
 #intro.diving{pointer-events:none}
 #intro.diving .diveWrap{
-  animation:diveIn 1.05s cubic-bezier(.6,.02,.83,.36) forwards;
+  animation:diveIn .8s cubic-bezier(.6,.02,.83,.36) forwards;
 }
 #intro .diveWrap{position:absolute;inset:0;will-change:transform}
 @keyframes diveIn{
@@ -96,9 +97,9 @@ a{color:inherit}
   70%{transform:scale(2.7) rotate(5deg)}
   100%{transform:scale(3.6) rotate(7deg)}
 }
-#intro.diving .flash{animation:flashGo 1.05s ease-out forwards}
+#intro.diving .flash{animation:flashGo .8s ease-out forwards}
 @keyframes flashGo{0%{opacity:0}55%{opacity:0}80%{opacity:.95}100%{opacity:0}}
-#intro.diving .glow{animation:diveGlow 1.05s ease-in forwards}
+#intro.diving .glow{animation:diveGlow .8s ease-in forwards}
 @keyframes diveGlow{
   0%{opacity:.65;transform:translate(-50%,-50%) scale(1)}
   55%{opacity:1;transform:translate(-50%,-50%) scale(1.55)}
@@ -110,10 +111,10 @@ a{color:inherit}
 #showcase{
   position:fixed;inset:0;z-index:58;background:var(--intro-bg);
   overflow:hidden;opacity:0;visibility:hidden;cursor:pointer;
-  transition:opacity .7s ease,visibility 0s linear .7s;
+  transition:opacity .45s ease,visibility 0s linear .45s;
 }
-#showcase.play{opacity:1;visibility:visible;transition:opacity .7s ease}
-#showcase.bye{opacity:0;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s}
+#showcase.play{opacity:1;visibility:visible;transition:opacity .45s ease}
+#showcase.bye{opacity:0;visibility:hidden;transition:opacity .55s ease,visibility 0s linear .55s}
 #showcase .sc-bg{position:absolute;inset:0;overflow:hidden}
 #showcase .sc-bg img{
   width:100%;height:100%;object-fit:cover;object-position:center;
@@ -133,7 +134,7 @@ a{color:inherit}
   border-radius:16px;overflow:hidden;background:#0a2016;
   box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(127,200,169,.28),0 0 44px rgba(94,234,180,.14);
   opacity:0;pointer-events:none;transform-origin:0 0;will-change:transform,opacity;
-  transition:transform .62s cubic-bezier(.22,.9,.28,1),opacity .38s ease;
+  transition:transform .45s cubic-bezier(.22,.9,.28,1),opacity .3s ease;
 }
 @media (orientation:portrait){.sc-card{width:min(84vw,430px)}}
 .sc-card .sc-float{animation:scFloat 3.6s ease-in-out infinite}
@@ -149,7 +150,7 @@ a{color:inherit}
   background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.38) 48%,transparent 64%);
   transform:translateX(-130%);
 }
-.sc-card.enter .shine{animation:scShine .85s ease .22s 1 forwards}
+.sc-card.enter .shine{animation:scShine .6s ease .15s 1 forwards}
 @keyframes scShine{to{transform:translateX(130%)}}
 #showcase .sc-skip{
   position:absolute;right:18px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:3;
@@ -189,58 +190,89 @@ a{color:inherit}
   content:"";position:absolute;inset:0;opacity:.05;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
 }
+/* C・實驗室精密風：深綠儀器屏幕上嘅幼格線（44px，薄荷極淡，全站一致） */
+.site-bg .grid-overlay{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(127,200,169,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(127,200,169,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  background-position:center top;
+}
 
 /* ---------- 內容 ---------- */
 #site{position:relative;z-index:1;opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
 #site.show{opacity:1;transform:none}
 .topbar{
-  background:rgba(16,44,32,.88);color:#eaf3ec;
+  background:rgba(10,30,21,.92);color:#eaf3ec;
   font-size:14px;letter-spacing:.06em;
-  border-bottom:1px solid rgba(127,200,169,.16);
+  border-bottom:1px solid rgba(127,200,169,.22);
 }
 .topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding-top:9px;padding-bottom:9px;gap:12px;flex-wrap:wrap}
 .topbar .brand{font-weight:700}
 .topbar .brand .star{color:var(--gold-bright)}
-.topbar nav a{color:#cfe3d6;text-decoration:none;margin-left:18px}
+.topbar nav a{color:#cfe3d6;text-decoration:none;margin-left:18px;font-family:var(--mono);font-size:13px;letter-spacing:.08em}
 .topbar nav a:hover{color:#fff}
 @media(max-width:640px){.topbar nav{display:none}}
 
-.hero{padding:72px 0 8px;text-align:center}
-.eyebrow{color:var(--mint);font-weight:700;letter-spacing:.28em;font-size:13px}
+.hero{padding:72px 0 8px;text-align:left}
+.eyebrow{
+  display:inline-block;color:var(--mint);font-family:var(--mono);font-weight:400;
+  letter-spacing:.14em;font-size:12.5px;text-transform:uppercase;
+  border:1px solid rgba(127,200,169,.30);border-radius:3px;padding:5px 12px;
+  background:rgba(10,30,21,.55);
+}
 .hero h1{
   font-size:clamp(30px,5.6vw,52px);font-weight:900;line-height:1.3;
-  color:#f4faf5;margin:14px 0 10px;letter-spacing:.02em;
+  color:#f4faf5;margin:18px 0 10px;letter-spacing:.01em;
 }
 .hero .sub{font-size:clamp(16px,2.4vw,20px);color:var(--ink-soft);font-weight:500}
 .hero .sub b{color:var(--mint)}
 .hero figure{margin:34px auto 0;max-width:960px}
-.hero figure img{width:100%;border-radius:18px;box-shadow:0 22px 50px rgba(0,0,0,.5)}
-.hero figcaption{font-size:13px;color:var(--ink-soft);margin-top:10px}
+.hero figure img{width:100%;border-radius:5px;border:1px solid rgba(127,200,169,.22);box-shadow:0 22px 50px rgba(0,0,0,.5)}
+.hero figcaption{font-size:12.5px;color:var(--ink-soft);margin-top:10px;font-family:var(--mono);letter-spacing:.06em}
 
-section{padding:66px 0 6px}
-.sec-title{font-size:clamp(23px,3.6vw,32px);font-weight:900;color:#f4faf5;text-align:center}
-.sec-title .en{display:block;font-size:12px;letter-spacing:.3em;color:var(--gold);font-weight:700;margin-bottom:6px}
-.sec-lead{max-width:820px;margin:16px auto 0;color:var(--ink-soft);font-size:16.5px}
-.sec-sub{text-align:center;margin-top:10px;color:var(--mint);font-weight:700;font-size:15px;letter-spacing:.05em}
+section{padding:66px 0 6px;position:relative}
+section+section::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:min(1120px,calc(100% - 40px));height:1px;
+  background:linear-gradient(90deg,transparent,rgba(127,200,169,.30) 12%,rgba(127,200,169,.30) 88%,transparent);
+}
+section+section::after{
+  content:"+";position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:13px;line-height:1;color:rgba(127,200,169,.55);
+}
+.sec-title{font-size:clamp(23px,3.6vw,32px);font-weight:900;color:#f4faf5;text-align:left;letter-spacing:.01em}
+.sec-title .en{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;color:var(--mint);
+  font-weight:400;margin-bottom:12px;text-transform:uppercase;
+}
+.sec-title .en::before,.sec-title .en::after{
+  content:"+";font-size:13px;color:rgba(127,200,169,.55);line-height:1;
+}
+.sec-title .en::after{margin-left:auto}
+.sec-lead{max-width:820px;margin:16px 0 0;color:var(--ink-soft);font-size:16.5px}
+.sec-sub{margin-top:10px;color:var(--mint);font-weight:700;font-size:15px;letter-spacing:.05em}
 .sec-lead p+p{margin-top:12px}
 
 .tip{
-  max-width:820px;margin:26px auto 0;background:rgba(201,162,39,.07);
-  border:1px solid rgba(201,162,39,.28);border-left:5px solid var(--gold);
-  border-radius:12px;padding:18px 22px;font-size:15.5px;color:#cfe0d4;text-align:left;
+  max-width:820px;margin:26px 0 0;background:rgba(201,162,39,.05);
+  border:1px solid rgba(201,162,39,.24);border-left:3px solid var(--gold);
+  border-radius:5px;padding:18px 22px;font-size:15.5px;color:#cfe0d4;text-align:left;
 }
 .tip b{color:var(--gold-bright)}
 
 .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px}
 .btn{
   display:inline-flex;align-items:center;gap:8px;text-decoration:none;
-  font-weight:700;font-size:16px;border-radius:999px;padding:13px 28px;
+  font-weight:700;font-size:16px;border-radius:5px;padding:13px 28px;
   transition:transform .15s ease,box-shadow .15s ease;
 }
 .btn:hover{transform:translateY(-2px)}
 .btn-gold{background:linear-gradient(180deg,var(--gold-bright),var(--gold));color:#2c2303;box-shadow:0 8px 20px rgba(201,162,39,.35)}
 .btn-green{background:var(--green);color:#fff;box-shadow:0 8px 20px rgba(33,95,77,.30)}
-.btn-line{border:2px solid rgba(127,200,169,.6);color:#eaf5ee;background:transparent}
+.btn-line{border:1px solid rgba(127,200,169,.5);color:#eaf5ee;background:transparent}
 
 .grid{display:grid;gap:22px;margin-top:36px}
 .grid.c4{grid-template-columns:repeat(4,1fr)}
@@ -248,70 +280,121 @@ section{padding:66px 0 6px}
 @media(max-width:900px){.grid.c4{grid-template-columns:repeat(2,1fr)}.grid.c3{grid-template-columns:1fr}}
 @media(max-width:520px){.grid.c4{grid-template-columns:1fr}}
 .card{
-  background:linear-gradient(180deg,rgba(17,46,32,.78),rgba(9,28,19,.86));
-  border:1px solid rgba(127,200,169,.20);border-radius:16px;
-  padding:28px 24px;box-shadow:0 12px 28px rgba(0,0,0,.30);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:linear-gradient(180deg,rgba(14,38,26,.82),rgba(8,24,16,.88));
+  border:1px solid rgba(127,200,169,.24);border-radius:5px;
+  padding:24px 22px;box-shadow:0 10px 24px rgba(0,0,0,.28);
 }
 .card h3{font-size:19px;font-weight:900;color:#eef6f0;margin-bottom:8px}
 .card p{font-size:15px;color:var(--ink-soft)}
 .card .ic{margin-bottom:12px;color:var(--mint)}
-.card .ic svg{width:30px;height:30px;display:block;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.card .ic svg{width:26px;height:26px;display:block;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 
 .course{display:flex;flex-direction:column;overflow:hidden;padding:0}
-.course .body{padding:26px 24px;display:flex;flex-direction:column;gap:8px;flex:1}
-.course .tag{font-size:12.5px;letter-spacing:.22em;color:var(--gold);font-weight:700}
+.course .body{padding:24px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.course .tag{
+  font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--mint);font-weight:400;
+  border-bottom:1px solid rgba(127,200,169,.22);padding-bottom:9px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.course .tag .idx{color:rgba(185,206,192,.75)}
 .course h3{font-size:22px;margin:0}
 .course .en{font-size:13.5px;color:var(--ink-soft);letter-spacing:.02em}
 .course p{flex:1}
 .course .meta{
-  display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;
-  font-weight:700;color:#dcefe2;font-size:15px;
+  margin-top:14px;border-top:1px solid rgba(127,200,169,.22);
+  font-size:14.5px;
 }
-.course .meta span{background:rgba(127,200,169,.10);border:1px solid rgba(127,200,169,.28);border-radius:999px;padding:4px 14px}
-.course img.shot{width:100%;height:auto;border-top:1px solid rgba(127,200,169,.20)}
-.course img.cover{width:100%;height:auto;border-bottom:1px solid rgba(127,200,169,.20)}
+.course .meta .row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding:7px 0;border-bottom:1px solid rgba(127,200,169,.14);
+}
+.course .meta .row:last-child{border-bottom:none}
+.course .meta .k{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--ink-soft)}
+.course .meta .v{font-family:var(--mono);font-weight:700;color:#e6f4ea;letter-spacing:.04em;text-align:right;white-space:nowrap}
+.course img.shot{width:100%;height:auto;border-top:1px solid rgba(127,200,169,.22)}
+.course img.cover{width:100%;height:auto;border-bottom:1px solid rgba(127,200,169,.22)}
 .course .platform-link{margin-top:14px;align-self:flex-start}
-.fee-note{text-align:center;color:var(--ink-soft);font-size:13.5px;margin-top:18px}
+.fee-note{color:var(--ink-soft);font-size:13px;margin-top:18px;font-family:var(--mono);letter-spacing:.05em}
 
-.team-photo{max-width:860px;margin:30px auto 0}
-.team-photo img{width:100%;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.team-names{
-  max-width:860px;margin:22px auto 0;display:grid;gap:12px;
-  grid-template-columns:repeat(5,1fr);text-align:center;
+/* MODEL VIEWER 面板：真實 PDB 數據，儀器讀數式排版 */
+.viewer{
+  margin-top:42px;border:1px solid rgba(127,200,169,.30);border-radius:5px;
+  background:rgba(6,18,12,.88);overflow:hidden;text-align:left;
 }
+.viewer .v-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 18px;border-bottom:1px solid rgba(127,200,169,.22);
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.18em;color:var(--mint);
+}
+.viewer .v-head .ref{color:rgba(185,206,192,.75);letter-spacing:.1em}
+.viewer .v-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
+.viewer figure{margin:0;border-right:1px solid rgba(127,200,169,.18);background:#000;display:flex;flex-direction:column}
+.viewer figure img{width:100%;flex:1;object-fit:contain;max-height:440px}
+.viewer figcaption{padding:10px 14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--ink-soft);border-top:1px solid rgba(127,200,169,.18);line-height:1.6}
+.viewer .v-data{padding:22px 24px}
+.viewer .v-data h3{font-size:21px;font-weight:900;color:#eef6f0;margin-bottom:2px}
+.viewer .v-sub{font-size:13.5px;color:var(--ink-soft);margin-bottom:14px}
+.viewer .v-rows{border-top:1px solid rgba(127,200,169,.22);font-size:14px}
+.viewer .v-rows .row{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid rgba(127,200,169,.14)}
+.viewer .v-rows .k{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-soft);flex:0 0 auto;padding-top:2px}
+.viewer .v-rows .v{font-family:var(--mono);color:#e6f4ea;text-align:right;letter-spacing:.02em}
+.viewer .v-cite{margin-top:14px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+.viewer .v-link{margin-top:14px}
+@media(max-width:760px){
+  .viewer .v-grid{grid-template-columns:1fr}
+  .viewer figure{border-right:none;border-bottom:1px solid rgba(127,200,169,.18)}
+}
+
+.team-photo{max-width:860px;margin:30px 0 0}
+.team-photo img{width:100%;border-radius:5px;border:1px solid rgba(127,200,169,.22);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.team-names{
+  max-width:860px;margin:0;display:grid;gap:0;
+  grid-template-columns:repeat(5,1fr);text-align:left;
+  border:1px solid rgba(127,200,169,.22);border-top:none;border-radius:0 0 5px 5px;
+  background:rgba(8,24,16,.82);
+}
+.team-names .tn{padding:14px 12px;border-left:1px solid rgba(127,200,169,.14)}
+.team-names .tn:first-child{border-left:none}
 @media(max-width:760px){
   .team-names{grid-template-columns:repeat(2,1fr)}
-  .team-names .tn:last-child{grid-column:1/-1}
+  .team-names .tn{border-left:none;border-top:1px solid rgba(127,200,169,.14)}
+  .team-names .tn:nth-child(-n+2){border-top:none}
+  .team-names .tn:nth-child(even){border-left:1px solid rgba(127,200,169,.14)}
+  .team-names .tn:last-child{grid-column:1/-1;border-left:none}
 }
-.team-names .nm{font-weight:900;color:#eef6f0;font-size:16.5px}
-.team-names .ti{font-size:13px;color:var(--ink-soft);margin-top:2px}
+.team-names .nm{font-weight:900;color:#eef6f0;font-size:16px}
+.team-names .ti{font-size:12.5px;color:var(--ink-soft);margin-top:2px;font-family:var(--mono);letter-spacing:.05em}
 
 .result{overflow:hidden;padding:0;display:flex;flex-direction:column}
 .result img{width:100%;height:210px;object-fit:cover}
-.result .body{padding:22px 24px}
-.result .yr{font-weight:900;color:var(--gold);letter-spacing:.14em;font-size:13px}
+.result .body{padding:20px 22px}
+.result .yr{font-family:var(--mono);font-weight:400;color:var(--mint);letter-spacing:.16em;font-size:12.5px}
 .result h3{margin:4px 0 6px}
 
-.steps{max-width:760px;margin:32px auto 0;counter-reset:step}
+.steps{max-width:760px;margin:32px 0 0;counter-reset:step}
 .step{
   display:flex;gap:18px;align-items:flex-start;
-  background:linear-gradient(180deg,rgba(17,46,32,.78),rgba(9,28,19,.86));
-  border:1px solid rgba(127,200,169,.20);border-radius:14px;padding:18px 22px;margin-bottom:14px;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:linear-gradient(180deg,rgba(14,38,26,.82),rgba(8,24,16,.88));
+  border:1px solid rgba(127,200,169,.24);border-radius:5px;padding:18px 22px;margin-bottom:12px;
 }
 .step .n{
-  flex:0 0 38px;width:38px;height:38px;border-radius:50%;
-  background:var(--green);color:#fff;font-weight:900;font-size:17px;
-  display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;font-family:var(--mono);font-weight:700;font-size:14px;
+  color:var(--mint);border:1px solid rgba(127,200,169,.4);border-radius:3px;
+  padding:3px 9px;letter-spacing:.1em;margin-top:3px;
 }
-.step p{font-size:15.5px;color:var(--ink-soft);padding-top:6px}
+.step p{font-size:15.5px;color:var(--ink-soft);padding-top:4px}
 
 .contact-box{
-  max-width:820px;margin:30px auto 0;background:rgba(13,36,25,.92);color:#eaf3ec;
-  border:1px solid rgba(127,200,169,.28);
-  border-radius:20px;padding:38px 30px;text-align:center;
+  max-width:820px;margin:30px 0 0;background:rgba(9,26,18,.94);color:#eaf3ec;
+  border:1px solid rgba(127,200,169,.30);
+  border-radius:5px;padding:38px 30px;text-align:center;position:relative;
 }
+.contact-box::before,.contact-box::after{
+  content:"+";position:absolute;font-family:var(--mono);font-size:14px;line-height:1;
+  color:rgba(127,200,169,.6);
+}
+.contact-box::before{top:8px;left:10px}
+.contact-box::after{bottom:8px;right:10px}
 .contact-box h3{font-size:24px;font-weight:900;margin-bottom:8px}
 .contact-box p{color:#cfe3d6;font-size:15.5px}
 .contact-box .cta-row{margin-top:24px}
@@ -319,12 +402,13 @@ section{padding:66px 0 6px}
 .btn-mail{background:#fff;color:var(--green-deep)}
 
 footer{
-  margin-top:64px;background:rgba(13,36,25,.88);color:#cfe3d6;
-  border-top:1px solid rgba(127,200,169,.16);
+  margin-top:64px;background:rgba(9,26,18,.92);color:#cfe3d6;
+  border-top:1px solid rgba(127,200,169,.22);
   padding:30px 0 calc(96px + env(safe-area-inset-bottom));font-size:14px;text-align:center;
 }
 footer .fb{color:#fff;font-weight:700}
 footer .star{color:var(--gold-bright)}
+footer .fmeta{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em}
 
 .stickybar{
   position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;
@@ -332,7 +416,7 @@ footer .star{color:var(--gold-bright)}
 }
 .stickybar a{
   flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:15.5px;
-  border-radius:999px;padding:13px 10px;box-shadow:0 10px 24px rgba(10,30,20,.28);
+  border-radius:5px;padding:13px 10px;box-shadow:0 10px 24px rgba(10,30,20,.28);
 }
 .stickybar .wa{background:#25d366;color:#08351a}
 .stickybar .bk{background:linear-gradient(180deg,var(--gold-bright),var(--gold));color:#2c2303}
@@ -421,6 +505,7 @@ body.locked .stickybar{display:none}
     <img src="assets/hero-desktop.webp" alt="" aria-hidden="true">
   </picture>
   <div class="shade"></div>
+  <div class="grid-overlay"></div>
 </div>
 
 <!-- ================= 內容 ================= -->
@@ -436,7 +521,7 @@ body.locked .stickybar{display:none}
 
   <header class="hero">
     <div class="wrap">
-      <div class="eyebrow">AI 創新課程系列 · 專為香港中學而設 · 現正接受預約</div>
+      <div class="eyebrow">SEC.00 // AI INNOVATION PROGRAMMES · 專為香港中學而設 · 現正接受預約</div>
       <h1>結合學生創意與科技，締造未來</h1>
       <p class="sub">iGEM 金獎導師團隊任教，學生親身走進 <b>AI 科研</b></p>
       <figure>
@@ -448,7 +533,7 @@ body.locked .stickybar{display:none}
 
   <section id="about">
     <div class="wrap">
-      <h2 class="sec-title"><span class="en">ABOUT US</span>校長及各位老師，您好</h2>
+      <h2 class="sec-title"><span class="en">SEC.01 // ABOUT US — 關於我們</span>校長及各位老師，您好</h2>
       <div class="sec-lead">
         <p>我們是 Spark Science Education（創智・未來），由 Solar Trinity Science Limited 營運。導師團隊由博士級導師領軍，並由具專業醫務化驗師背景的導師負責實驗教學。過去兩年，我們輔導的學生隊伍先後於 iGEM 全球大賽奪得金獎，合作學校亦勇奪香港 InnoHealth Cup 冠軍。</p>
       </div>
@@ -464,26 +549,26 @@ body.locked .stickybar{display:none}
 
   <section id="courses">
     <div class="wrap">
-      <h2 class="sec-title"><span class="en">PROGRAMMES</span>創智・未來 AI 創新課程系列</h2>
+      <h2 class="sec-title"><span class="en">SEC.02 // PROGRAMMES — 課程系列</span>創智・未來 AI 創新課程系列</h2>
       <div class="grid c3">
         <article class="card course">
           <img class="cover" src="assets/course-1.webp" width="1200" height="800" alt="學生親手接駁單晶片微電腦，並以手提電腦編程" loading="lazy">
           <div class="body">
-            <div class="tag">課程一</div>
+            <div class="tag"><span>課程一</span><span class="idx">COURSE / 01</span></div>
             <h3>讓 AI 走進生活</h3>
             <div class="en">AI + 單晶片微電腦編程課程</div>
             <p>學生親手接線及編程單晶片微電腦，並以 AI 協助構思及調試，完成可實際運作的智能裝置專題。課程包括 AI 圖像生成。</p>
-            <div class="meta"><span>2 日起</span><span>HK$50,000 起</span></div>
+            <div class="meta"><div class="row"><span class="k">課時</span><span class="v">2 日起</span></div><div class="row"><span class="k">學費</span><span class="v">HK$50,000 起</span></div></div>
           </div>
         </article>
         <article class="card course">
           <img class="cover" src="assets/course-2.webp" width="1200" height="675" alt="學生在課室望住大屏幕上的蛋白質 3D 結構學習" loading="lazy">
           <div class="body">
-            <div class="tag">課程二</div>
+            <div class="tag"><span>課程二</span><span class="idx">COURSE / 02</span></div>
             <h3>當生物科技遇上 AI</h3>
             <div class="en">AI + 創新蛋白質設計課程 ft. CodeLifeAI</div>
             <p>學生在 CodeLifeAI 平台上讀懂蛋白質 3D 結構，以 AI 生成候選設計，再以結構預測及評分逐一篩選，體驗真正的生物設計流程。課程包括 AI 圖像生成。</p>
-            <div class="meta"><span>3–4 堂起</span><span>HK$100,000 起</span></div>
+            <div class="meta"><div class="row"><span class="k">課時</span><span class="v">3–4 堂起</span></div><div class="row"><span class="k">學費</span><span class="v">HK$100,000 起</span></div></div>
             <a class="btn btn-green platform-link" href="https://codelife.ai" target="_blank" rel="noopener">進入 CodeLifeAI 平台睇睇</a>
           </div>
           <img class="shot" src="assets/platform-protein.png" alt="CodeLifeAI 平台蛋白質 3D 結構畫面" loading="lazy">
@@ -491,21 +576,46 @@ body.locked .stickybar{display:none}
         <article class="card course">
           <img class="cover" src="assets/course-3.webp" width="1200" height="675" alt="實驗室內導師帶領學生使用微量移液器做實驗" loading="lazy">
           <div class="body">
-            <div class="tag">課程三</div>
+            <div class="tag"><span>課程三</span><span class="idx">COURSE / 03</span></div>
             <h3>培育未來生物發明家</h3>
             <div class="en">創新蛋白質設計 + 專業導師實驗課程</div>
             <p>在課程二的基礎上，學生把自己的設計帶到實驗室，由專業導師帶領親手驗證。課程包括 AI 圖像生成。</p>
-            <div class="meta"><span>8 堂起</span><span>HK$200,000 起</span></div>
+            <div class="meta"><div class="row"><span class="k">課時</span><span class="v">8 堂起</span></div><div class="row"><span class="k">學費</span><span class="v">HK$200,000 起</span></div></div>
           </div>
         </article>
       </div>
       <p class="fee-note">收費以港幣計算，實際費用按學生人數及課程編排而定</p>
+      <div class="viewer">
+        <div class="v-head"><span>// MODEL VIEWER // 蛋白質結構示例</span><span class="ref">REF: PDB 2LZM</span></div>
+        <div class="v-grid">
+          <figure>
+            <img src="assets/protein-2lzm.webp" width="800" height="800" alt="T4 溶菌酶（PDB 2LZM）官方結構圖" loading="lazy">
+            <figcaption>結構圖來源：EMBL-EBI PDBe 官方存置圖（PDB 2LZM）；數據來源：RCSB PDB 2LZM</figcaption>
+          </figure>
+          <div class="v-data">
+            <h3>T4 溶菌酶</h3>
+            <div class="v-sub">T4 Lysozyme・噬菌體 T4</div>
+            <div class="v-rows">
+              <div class="row"><span class="k">PDB 編號</span><span class="v">2LZM</span></div>
+              <div class="row"><span class="k">測定方法</span><span class="v">X 射線衍射</span></div>
+              <div class="row"><span class="k">解像度</span><span class="v">1.7 Å</span></div>
+              <div class="row"><span class="k">鏈 / 氨基酸</span><span class="v">A / 164</span></div>
+              <div class="row"><span class="k">分子量</span><span class="v">約 18.66 kDa</span></div>
+              <div class="row"><span class="k">空間群</span><span class="v">P 32 2 1</span></div>
+              <div class="row"><span class="k">晶胞</span><span class="v">a=b=61.2 Å, c=96.8 Å</span></div>
+              <div class="row"><span class="k">R 值</span><span class="v">0.193</span></div>
+            </div>
+            <p class="v-cite">Structure of Bacteriophage T4 Lysozyme Refined at 1.7 Å Resolution — Weaver, L.H. &amp; Matthews, B.W., J. Mol. Biol. 193:189–199 (1987)。前身編號 1LZM 已由 2LZM 取代。</p>
+            <a class="btn btn-line v-link" href="https://www.rcsb.org/structure/2LZM" target="_blank" rel="noopener">去 RCSB PDB 查證 2LZM</a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section id="team">
     <div class="wrap">
-      <h2 class="sec-title"><span class="en">RESEARCH TEAM</span>科研團隊</h2>
+      <h2 class="sec-title"><span class="en">SEC.03 // RESEARCH TEAM — 科研團隊</span>科研團隊</h2>
       <figure class="team-photo">
         <img src="assets/team-official.webp" alt="Spark Science Education 科研團隊五人合照" loading="lazy">
       </figure>
@@ -526,10 +636,10 @@ body.locked .stickybar{display:none}
 
   <section id="results">
     <div class="wrap">
-      <h2 class="sec-title"><span class="en">COMPETITION RESULTS</span>比賽佳績</h2>
+      <h2 class="sec-title"><span class="en">SEC.04 // COMPETITION RESULTS — 比賽佳績</span>比賽佳績</h2>
       <p class="sec-sub">由創辦人・首席科學官 鄺緯陽博士帶領</p>
       <div class="sec-lead">
-        <p style="text-align:center">iGEM 2024 KAPI 及 2025 PestiGuard 先後奪得全球大賽金獎，PestiGuard 更躋身全球高中組前十；合作學校九龍真光中學勇奪 2025 香港 InnoHealth Cup 冠軍。</p>
+        <p>iGEM 2024 KAPI 及 2025 PestiGuard 先後奪得全球大賽金獎，PestiGuard 更躋身全球高中組前十；合作學校九龍真光中學勇奪 2025 香港 InnoHealth Cup 冠軍。</p>
       </div>
       <div class="grid c3">
         <article class="card result">
@@ -550,7 +660,7 @@ body.locked .stickybar{display:none}
 
   <section id="booking">
     <div class="wrap">
-      <h2 class="sec-title"><span class="en">HOW TO BOOK</span>如何預約</h2>
+      <h2 class="sec-title"><span class="en">SEC.05 // HOW TO BOOK — 預約流程</span>如何預約</h2>
       <div class="steps">
         <div class="step"><div class="n">1</div><p>回覆電郵，或按下方 WhatsApp 按鈕聯絡我們</p></div>
         <div class="step"><div class="n">2</div><p>安排課程簡介會（到校或視像），即場示範 CodeLifeAI 平台</p></div>
@@ -564,7 +674,8 @@ body.locked .stickybar{display:none}
   <section id="contact">
     <div class="wrap">
       <div class="contact-box">
-        <h3>現在為您的學生開展 AI 科研之旅</h3>
+        <div class="eyebrow">SEC.06 // CONTACT — 聯絡我們</div>
+        <h3 style="margin-top:16px">現在為您的學生開展 AI 科研之旅</h3>
         <p>歡迎學校老師及科主任查詢，我們可按學校需要安排課程簡介會或平台示範。如有任何疑問，歡迎隨時聯絡我們查詢。</p>
         <div class="cta-row">
           <a class="btn btn-gold" href="mailto:Sales@codelife.ai?subject=%E9%A0%90%E7%B4%84%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%20-%20Spark%20Science%20Education">預約課程簡介</a>
@@ -578,8 +689,8 @@ body.locked .stickybar{display:none}
   <footer>
     <div class="wrap">
       <div class="fb"><span class="star">✳</span> Spark Science Education · 創智・未來</div>
-      <div>Solar Trinity Science Limited</div>
-      <div>AI 課程｜生物科技｜競賽培訓｜實驗課程</div>
+      <div class="fmeta">SOLAR TRINITY SCIENCE LIMITED</div>
+      <div class="fmeta">AI 課程｜生物科技｜競賽培訓｜實驗課程</div>
       <div style="font-size:12px;opacity:.7;margin-top:8px">背景音樂：「Space X-plorers」by Kevin MacLeod（incompetech.com），CC BY 4.0 授權</div>
     </div>
   </footer>
@@ -781,25 +892,26 @@ body.locked .stickybar{display:none}
       showcase.style.display = 'none';
       showcase.setAttribute('aria-hidden','true');
       showSite();
-    }, fast ? 380 : 820);
+    }, fast ? 380 : 560);
   }
   var scLead = document.getElementById('scLead');
   function startShowcase(){
     showcase.setAttribute('aria-hidden','false');
     showcase.classList.add('play');
-    var STEP = 1750, LEAD = 1000, WALL = 1550;
+    /* 提速版時間軸：飛入 .45s＋中央停留約 .85s，卡與卡流水線接續，總長約 5.5s */
+    var STEP = 850, WALL = 1300, BASE = 200;
     if(scLead){
-      scLater(function(){ scLead.classList.add('on'); }, 150);
-      scLater(function(){ scLead.classList.add('off'); }, 150 + LEAD + 50);
+      scLater(function(){ scLead.classList.add('on'); }, 120);
+      scLater(function(){ scLead.classList.add('off'); }, 1120);
     }
     for(var i=0;i<scCards.length;i++){
       (function(idx){
-        scLater(function(){ scShow(idx); }, 350 + LEAD + idx*STEP);
-        scLater(function(){ scWall(idx); }, 350 + LEAD + idx*STEP + WALL);
+        scLater(function(){ scShow(idx); }, BASE + idx*STEP);
+        scLater(function(){ scWall(idx); }, BASE + idx*STEP + WALL);
       })(i);
     }
-    /* 4 張砌滿成幅牆之後，停喺滿畫面狀態一陣先淡出落地 */
-    scLater(function(){ finishShowcase(false); }, 350 + LEAD + (scCards.length-1)*STEP + WALL + 1500);
+    /* 4 張砌滿成幅牆之後，停約 1 秒就淡出落地 */
+    scLater(function(){ finishShowcase(false); }, BASE + (scCards.length-1)*STEP + WALL + 950);
   }
   showcase.addEventListener('click', function(){ finishShowcase(true); });
 
@@ -818,7 +930,7 @@ body.locked .stickybar{display:none}
       setTimeout(function(){ intro.style.display='none'; }, 500);
       if(reduceMotion){ showSite(); }
       else { startShowcase(); }
-    }, reduceMotion ? 60 : 980);
+    }, reduceMotion ? 60 : 770);
   });
 
   /* 段落入場：柔和淡入＋輕微上移，一次過唔花（只用 transform／opacity） */
