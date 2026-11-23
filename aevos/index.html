@@ -42,6 +42,11 @@ body{background:linear-gradient(180deg,var(--bg1),var(--bg2));background-attachm
 .chat-head p{margin:3px 0 0;font-size:13px;color:var(--ink60)}
 .engine-tag{display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-size:11.5px;font-weight:600;color:var(--ink60);border:1px solid var(--line);background:var(--card2);border-radius:99px;padding:3px 10px}
 .engine-tag i{width:7px;height:7px;border-radius:50%;background:var(--warn);flex:none}
+.engine-switch{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.engine-switch button{border:1px solid var(--line);background:#fff;color:var(--ink60);border-radius:99px;font-size:12px;font-weight:600;padding:4px 12px;min-height:30px}
+.engine-switch button[aria-pressed="true"]{background:var(--blue-dim);border-color:rgba(29,79,215,.45);color:var(--blue)}
+.fallback-note{font-size:12.5px;font-weight:600;color:#92400E;background:#FEF3C7;border:1px solid #FDE68A;border-radius:10px;padding:7px 11px}
+.disclaimer{font-size:11.5px;color:var(--ink45)}
 .chat-scroll{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
 .msg-user{align-self:flex-end;max-width:88%;background:var(--blue-dim);border:1px solid rgba(29,79,215,.22);border-radius:16px 16px 4px 16px;padding:9px 14px;font-size:14.5px;line-height:1.55}
 .turn{display:flex;flex-direction:column;gap:8px}
@@ -145,7 +150,12 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
 .foot-note{font-size:12px;color:var(--ink45);margin:0 0 6px}
 
 @media(max-width:860px){
-  .app{grid-template-columns:1fr;grid-template-rows:52dvh 1fr;height:calc(100dvh - 52px);min-height:0;padding:0 10px 10px;gap:10px}
+  .app{grid-template-columns:1fr;grid-template-rows:44dvh 1fr;height:calc(100dvh - 52px);min-height:0;padding:0 10px 10px;gap:10px}
+  .chat-head{padding:10px 14px 8px}
+  .chat-head h1{font-size:17px}
+  .chat-head p{display:none}
+  .composer{padding:8px 10px 10px;gap:7px}
+  .chip{padding:5px 11px;min-height:32px;font-size:12.5px}
   .viewer-panel{order:-1}
   .chat-scroll{padding:12px}
   .composer-row input{font-size:16px}
@@ -173,7 +183,11 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
     <div class="chat-head">
       <h1>問一句，睇見身體入面。</h1>
       <p>打字或者㩒下面示例，問邊個器官都得。</p>
-      <span class="engine-tag" id="engineTag"><i aria-hidden="true"></i>而家行緊：本地規則引擎 · 未接真模型</span>
+      <span class="engine-tag" id="engineTag"><i aria-hidden="true"></i>自動模式：真模型優先（免費端點）· 未發問</span>
+      <div class="engine-switch" role="group" aria-label="引擎選擇">
+        <button type="button" id="engineAuto" aria-pressed="true">自動（真模型優先）</button>
+        <button type="button" id="engineLocal" aria-pressed="false">只用本地規則</button>
+      </div>
     </div>
     <div class="chat-scroll" id="chatScroll">
       <div class="turn">
@@ -285,8 +299,9 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
   <details>
     <summary><h2>模型同接駁</h2><span>而家行緊咩、之後點接真 AI</span><span class="chev">▾</span></summary>
     <div class="body">
-      <p>而家個對話行緊寫喺頁面入面嘅<b>本地規則引擎</b>：認得器官關鍵字就指揮 3D 飛過去，唔識嘅問題會老實講未識，唔會扮連咗真模型。</p>
-      <p>程式入面預留咗一個接駁位（askModel）：之後指向出面嘅模型服務——包括有免費額度嘅平台——成個介面唔使改，狀態標籤會改顯示真模型名。</p>
+      <p>預設「自動」模式：問題會先送去 <b>Pollinations 免費模型端點</b>（唔使金鑰、瀏覽器直連），模型只回結構化指示，前端驗證過先指揮 3D 飛去相應器官；狀態標籤會顯示端點實際回報嘅模型名。</p>
+      <p>免費端點繁忙、限流或者超時嗰陣，會自動回退<b>本地規則引擎</b>並標明「離線規則答覆」，唔會扮等；你亦可以喺對話窗自己揀「只用本地規則」。</p>
+      <p>將來商用轉付費，只改 askModel 一個接駁位：換成自家後端代理端點，金鑰只放後端，永遠唔會寫入呢頁。</p>
       <p>3D 模型用開源真解剖數據，開頁時由公開來源載入；皮膚係半透明玻璃質感，器官按系統分色。</p>
     </div>
   </details>
@@ -698,13 +713,147 @@ function scrollDown(){ scrollEl.scrollTop = scrollEl.scrollHeight; }
 function el(tag, cls){ var e = document.createElement(tag); if(cls) e.className = cls; return e; }
 
 /* ================================================================
-   MODEL API 接駁點 —— 成個對話唯一嘅模型入口（狀態標籤顯示緊佢）。
-   而家：本地規則引擎，離線即時，只識已接通解剖索引，唔識就老實講。
-   之後：接出面模型服務（包括免費額度平台）只換呢個函數做 fetch，
-   攞返同一 plan 格式就得，介面、語音、檢視器接駁全部唔使改，
-   同時將對話窗頂嘅 engineTag 改做真模型名。
+   MODEL API 接駁點 —— 成個對話唯一嘅模型入口 askModel()。
+   而家（公眾免費版）：瀏覽器直連 Pollinations 免費文字端點
+   （POST https://text.pollinations.ai/openai ，OpenAI 訊息格式，唔使
+   金鑰，CORS 開放；2026-11-23 curl 實測通，回 JSON 正常；用 /openai
+   形式係因為實際模型名喺回應 body 嘅 model 欄位，瀏覽器讀到——
+   x-model-used 標頭冇喺 CORS expose 名單入面，瀏覽器讀唔到）。
+   模型只准回 JSON {"focus": <結構 key 或 null>, "answer": "<答案>"}，
+   前端驗證 focus 係咪合法 key，先指揮檢視器飛鏡頭（GenUI 契約）。
+   端點忙／限流（429/503）／超時／出錯 → 自動回退本地規則引擎，
+   並喺答案如實標明，唔會轉圈扮等。
+   模型實際名稱由端點回應 body 嘅 model 欄位讀取再顯示喺狀態標籤，
+   攞唔到就標「免費模型（名稱未回報）」，絕不寫死一個名扮係。
+   【將來轉付費商用，只改呢一處】：將 MODEL_ENDPOINT 換成自家
+   後端代理端點（例如 https://api.aevos.example/chat），金鑰只放
+   後端、永遠唔好寫入呢頁；代理只要回返同一 JSON 格式（同埋最好
+   帶 x-model-used 標頭），成個介面、語音、檢視器接駁全部唔使改。
    ================================================================ */
-async function askModel(userText){ return localRuleEngine(userText); }
+var MODEL_ENDPOINT = 'https://text.pollinations.ai/openai';
+var MODEL_TIMEOUT_MS = 20000;
+var engineMode = 'auto'; /* 'auto' = 真模型優先 | 'local' = 只用本地規則 */
+var engineTagEl = document.getElementById('engineTag');
+
+var FOCUS_KEYS = ['brain','cerebellum','brainstem','pituitary','heart','lung_l','lung_r','trachea','bronchi','larynx','pharynx','tongue','eye_l','eye_r','skull','mandible','teeth','spine_cervical','spine_thoracic','spine_lumbar','sternum','ribs_l','ribs_r','clavicle_l','clavicle_r','scapula_l','scapula_r','humerus_l','humerus_r','forearm_l','forearm_r','hand_l','hand_r','pelvis','femur_l','femur_r','patella_l','patella_r','lower_leg_l','lower_leg_r','foot_l','foot_r','ankle_l','diaphragm','liver','gallbladder','stomach','spleen','pancreas','colon','small_intestine','esophagus','kidney_l','kidney_r','adrenal_l','adrenal_r','ureter_l','ureter_r','bladder','thymus','aorta','spinal_cord','prostate','uterus','ovary_l','ovary_r'];
+var FOCUS_ZH = { brain:'大腦', cerebellum:'小腦', brainstem:'腦幹', pituitary:'腦下垂體', heart:'心臟', lung_l:'左肺', lung_r:'右肺', trachea:'氣管', bronchi:'支氣管', larynx:'喉', pharynx:'咽', tongue:'舌', eye_l:'左眼', eye_r:'右眼', skull:'頭顱骨', mandible:'下頜骨', teeth:'牙齒', spine_cervical:'頸椎', spine_thoracic:'胸椎', spine_lumbar:'腰椎', sternum:'胸骨', ribs_l:'左肋骨', ribs_r:'右肋骨', clavicle_l:'左鎖骨', clavicle_r:'右鎖骨', scapula_l:'左肩胛骨', scapula_r:'右肩胛骨', humerus_l:'左肱骨', humerus_r:'右肱骨', forearm_l:'左前臂骨', forearm_r:'右前臂骨', hand_l:'左手骨', hand_r:'右手骨', pelvis:'骨盆', femur_l:'左股骨', femur_r:'右股骨', patella_l:'左髕骨', patella_r:'右髕骨', lower_leg_l:'左小腿骨', lower_leg_r:'右小腿骨', foot_l:'左足', foot_r:'右足', ankle_l:'左腳踝', diaphragm:'膈肌', liver:'肝臟', gallbladder:'膽囊', stomach:'胃', spleen:'脾臟', pancreas:'胰臟', colon:'結腸', small_intestine:'小腸', esophagus:'食道', kidney_l:'左腎', kidney_r:'右腎', adrenal_l:'左腎上腺', adrenal_r:'右腎上腺', ureter_l:'左輸尿管', ureter_r:'右輸尿管', bladder:'膀胱', thymus:'胸腺', aorta:'主動脈', spinal_cord:'脊髓', prostate:'前列腺', uterus:'子宮', ovary_l:'左卵巢', ovary_r:'右卵巢' };
+
+var SYSTEM_PROMPT = '你是 Aevos 齡界的解剖教育助手，面對公眾使用者。規則：'
+  + '1) 只回答人體解剖與健康教育問題；其他問題禮貌地說明你只負責這個範疇。'
+  + '2) 絕不作診斷、不判斷使用者是否患病、不建議具體治療、藥物或劑量；涉及症狀時只作一般教育說明，並提醒有需要時諮詢醫護人員。'
+  + '3) 用繁體中文（香港用語）、說人話、簡潔，約 80 至 160 字，不要用 Markdown 表格或標題。'
+  + '4) 只輸出一個 JSON 物件，不要加任何其他文字、解釋或 Markdown 圍欄：{"focus": <結構 key 或 null>, "answer": "<答案文字>"}。'
+  + '當問題涉及某個身體結構的位置、功能，或與該結構直接相關的東西（例如結石、發炎），focus 填該結構的 key；否則填 null。例子：問「腎石喺邊」，腎石不是器官，要填它形成和停留的器官 kidney_l；問「肝有咩作用」填 liver；問「心臟喺邊」填 heart。focus 只准用以下 key：'
+  + FOCUS_KEYS.join(', ') + '。';
+
+function setEngineTag(state, modelName){
+  if(!engineTagEl) return;
+  var dot = engineTagEl.querySelector('i');
+  var txt;
+  if(state === 'remote'){ txt = '而家行緊：真模型 · ' + (modelName || '免費模型（名稱未回報）') + '（Pollinations 免費端點）'; if(dot) dot.style.background = 'var(--good)'; }
+  else if(state === 'fallback'){ txt = '真模型暫時唔通 · 而家用本地規則答覆'; if(dot) dot.style.background = 'var(--warn)'; }
+  else if(state === 'local'){ txt = '而家行緊：本地規則引擎（你揀咗只用本地）'; if(dot) dot.style.background = 'var(--warn)'; }
+  else { txt = '自動模式：真模型優先（免費端點）· 未發問'; if(dot) dot.style.background = 'var(--warn)'; }
+  engineTagEl.childNodes[engineTagEl.childNodes.length - 1].textContent = txt;
+}
+var engineAutoBtn = document.getElementById('engineAuto');
+var engineLocalBtn = document.getElementById('engineLocal');
+if(engineAutoBtn && engineLocalBtn){
+  engineAutoBtn.addEventListener('click', function(){
+    engineMode = 'auto';
+    engineAutoBtn.setAttribute('aria-pressed','true'); engineLocalBtn.setAttribute('aria-pressed','false');
+    setEngineTag('auto');
+  });
+  engineLocalBtn.addEventListener('click', function(){
+    engineMode = 'local';
+    engineLocalBtn.setAttribute('aria-pressed','true'); engineAutoBtn.setAttribute('aria-pressed','false');
+    setEngineTag('local');
+  });
+}
+
+/* 介面指令（開關圖層／轉男女模型／重設視角）係本地即時指令，唔使問模型 */
+function isUiCommand(text){
+  var t = text.trim();
+  var layerZh = null;
+  Object.keys(LAYERS).forEach(function(zh){ if(t.indexOf(zh) !== -1) layerZh = zh; });
+  if(layerZh && /(開|關|熄|隱藏|顯示|收埋|著)/.test(t)) return true;
+  if(t.indexOf('女性') !== -1 || t.indexOf('女仔') !== -1 || t.indexOf('男性') !== -1 || t.indexOf('男仔') !== -1) return true;
+  if(/重設|重置|返去全身|清除聚焦/.test(t)) return true;
+  return false;
+}
+
+async function askRemote(text){
+  var ctrl = ('AbortController' in window) ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, MODEL_TIMEOUT_MS) : null;
+  try {
+    var res = await fetch(MODEL_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: ctrl ? ctrl.signal : undefined,
+      body: JSON.stringify({ model: 'openai', jsonMode: true,
+        messages: [ { role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: text } ] })
+    });
+    if(timer) clearTimeout(timer);
+    if(res.status === 429 || res.status === 503) return { ok: false, busy: true };
+    if(!res.ok) return { ok: false, busy: false };
+    var modelName = '';
+    try { modelName = res.headers.get('x-model-used') || ''; } catch(e){}
+    var raw = (await res.text()).trim();
+    if(!raw) return { ok: false, busy: false };
+    /* OpenAI 信封：實際內容喺 choices[0].message.content，模型名喺 model 欄位（瀏覽器讀到） */
+    try {
+      var env = JSON.parse(raw);
+      if(env && env.choices && env.choices[0] && env.choices[0].message && typeof env.choices[0].message.content === 'string'){
+        raw = env.choices[0].message.content.trim();
+        if(typeof env.model === 'string' && env.model) modelName = env.model;
+        if(!raw) return { ok: false, busy: false };
+      }
+    } catch(e){}
+    var jsonText = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+    var focus = null, answer = null;
+    function takeObj(o){
+      if(o && typeof o.answer === 'string' && o.answer.trim()){
+        answer = o.answer.trim();
+        if(typeof o.focus === 'string' && FOCUS_KEYS.indexOf(o.focus) !== -1) focus = o.focus;
+        return true;
+      }
+      return false;
+    }
+    try { takeObj(JSON.parse(jsonText)); } catch(e){}
+    if(answer === null){
+      var m = jsonText.match(/\{[\s\S]*\}/);
+      if(m){ try { takeObj(JSON.parse(m[0])); } catch(e){} }
+    }
+    if(answer === null) answer = raw; /* JSON 解析失敗：當純文字答案顯示，唔死機 */
+    return { ok: true, focus: focus, answer: answer, modelName: modelName };
+  } catch(err){
+    if(timer) clearTimeout(timer);
+    return { ok: false, busy: !!(err && err.name === 'AbortError') };
+  }
+}
+
+async function askModel(userText){
+  if(engineMode === 'local' || isUiCommand(userText)){
+    var lp = localRuleEngine(userText);
+    lp.engine = 'local';
+    return lp;
+  }
+  var r = await askRemote(userText);
+  if(r.ok){
+    var plan = { engine: 'remote', modelName: r.modelName, answer: r.answer,
+      think: [ '已問真模型' + (r.modelName ? '（' + r.modelName + '）' : '（免費端點）'),
+               r.focus ? '模型揀咗聚焦結構，前端驗證通過先飛鏡頭' : '模型以純文字作答，唔郁檢視器' ],
+      source: '真模型答覆 · ' + (r.modelName || '免費模型（名稱未回報）') };
+    if(r.focus){
+      plan.intent = 'focus'; plan.target = r.focus; plan.zh = FOCUS_ZH[r.focus] || r.focus;
+    } else { plan.intent = 'chat'; }
+    return plan;
+  }
+  var fb = localRuleEngine(userText);
+  fb.engine = 'local'; fb.fallback = true; fb.busy = !!r.busy;
+  fb.think = [ r.busy ? '免費模型繁忙／超時，自動轉本地規則' : '真模型連線失敗，自動轉本地規則' ].concat(fb.think || []);
+  return fb;
+}
 
 var FOCUS_TAIL = ' 右邊人體已經轉過去放大俾你睇，其餘部分變淡，方便對位。';
 var INDEX = [
@@ -772,7 +921,7 @@ function localRuleEngine(text){
     return { intent:'reset', think:['重設視角'], answer:'好，已經返去全身視角，聚焦清除咗。' };
   }
   return { intent:'unknown', think:['喺已接通索引搵唔到對應項目'],
-    answer:'呢個我暫時未識答。而家行緊本地規則引擎，只識答器官位置、切換男女模型同開關圖層。要答其他問題，要等接駁位接咗出面模型先得——接駁位已經預留好。' };
+    answer:'呢個問題本地規則未識答。可以換個講法再問，或者直接問器官位置，例如「肝臟喺邊？」' };
 }
 
 function execPlan(plan){
@@ -883,6 +1032,16 @@ async function runTurn(text){
   await wait(420);
   turn.removeChild(thinking);
 
+  if(plan.engine === 'remote') setEngineTag('remote', plan.modelName);
+  else if(plan.fallback) setEngineTag('fallback');
+  else if(engineMode === 'local') setEngineTag('local');
+
+  if(plan.fallback){
+    var note = el('div', 'fallback-note');
+    note.textContent = plan.busy ? '免費模型繁忙，轉用本地規則' : '真模型連線失敗，轉用本地規則';
+    turn.appendChild(note);
+  }
+
   var det = el('details', 'think');
   var sum = el('summary'); sum.textContent = '諗法（㩒開睇）';
   det.appendChild(sum);
@@ -898,7 +1057,12 @@ async function runTurn(text){
   execPlan(plan);
   var ans = el('div', 'answer'); turn.appendChild(ans); scrollDown();
   await streamText(ans, plan.answer);
-  if(plan.source){ var tag = el('div', 'source-tag'); tag.textContent = plan.source; turn.appendChild(tag); }
+  var disc = el('div', 'disclaimer'); disc.textContent = '教育資訊，非診斷。';
+  turn.appendChild(disc);
+  var tagText = plan.source || '';
+  if(plan.fallback) tagText = '離線規則答覆' + (tagText ? ' · ' + tagText : '');
+  else if(plan.engine === 'local' && engineMode === 'local' && !tagText) tagText = '本地規則答覆';
+  if(tagText){ var tag = el('div', 'source-tag'); tag.textContent = tagText; turn.appendChild(tag); }
   speak(plan.answer);
   busy = false; sendBtn.disabled = false;
   scrollDown();
