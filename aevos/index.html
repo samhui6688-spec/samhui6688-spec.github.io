@@ -308,7 +308,7 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
   <!-- 3D stage -->
   <section class="panel viewer-panel" aria-label="3D body stage">
     <div class="viewer-top">
-      <span class="viewer-title"><span class="live-dot" aria-hidden="true"></span><span data-i18n="viewerTitle">3D 人體 · 全身</span></span>
+      <span class="viewer-title"><span class="live-dot" aria-hidden="true"></span><span data-i18n="viewerTitle" id="viewerTitleText">3D 人體 · 全身</span></span>
       <div class="viewer-actions">
         <button class="tool-btn" type="button" id="statusToggle" aria-pressed="false">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
@@ -356,12 +356,11 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
     <div class="viewer-controls" role="group" aria-label="Layers">
       <span class="ctl-label" data-i18n="layers">圖層</span>
       <button class="layer-btn" type="button" data-layer="skin" aria-pressed="true" data-i18n="lSkin">皮膚</button>
-      <button class="layer-btn" type="button" data-layer="skeleton" aria-pressed="true" data-i18n="lSkeleton">骨骼</button>
+      <button class="layer-btn" type="button" data-layer="skeleton" aria-pressed="false" data-i18n="lSkeleton">骨骼</button>
       <button class="layer-btn" type="button" data-layer="muscles" aria-pressed="false" data-i18n="lMuscles">肌肉</button>
       <button class="layer-btn" type="button" data-layer="organs" aria-pressed="true" data-i18n="lOrgans">器官</button>
       <button class="layer-btn" type="button" data-layer="vessels" aria-pressed="true" data-i18n="lVessels">血管</button>
       <button class="layer-btn" type="button" data-layer="nerves" aria-pressed="false" data-i18n="lNerves">神經</button>
-      <button class="q-btn" type="button" id="skelModeBtn" aria-pressed="true"><span>骨骼：幽靈</span></button>
       <button class="q-btn" type="button" id="resetView" data-i18n="resetView">重設視角</button>
       <button class="q-btn" type="button" id="clearFocus" data-i18n="clearFocus">清除聚焦</button>
     </div>
@@ -529,8 +528,8 @@ var GROUP_EN = { skin:'Skin', skeleton:'Skeleton', muscles:'Muscles', organs:'Or
 var ORGAN_COLORS = {
   liver:0xB06A1E, heart:0xD92323, lung_l:0xDE6A00, lung_r:0xDE6A00, brain:0x7B4FD0,
   cerebellum:0x9A78D8, brainstem:0x9A78D8, kidney_l:0x0E9488, kidney_r:0x0E9488,
-  stomach:0xD9A404, spleen:0x8E4585, pancreas:0xE0B84F, colon:0xA9713A,
-  small_intestine:0xE39A3B, bladder:0xDDB84A, gallbladder:0x4E7D32, appendix:0xC08552,
+  stomach:0xD9A404, spleen:0x8E4585, pancreas:0xE0B84F, colon:0xC9B696,
+  small_intestine:0xD8C6A8, bladder:0xDDB84A, gallbladder:0x4E7D32, appendix:0xC08552,
   esophagus:0xC98A6B, trachea:0x8FA6B3, bronchi:0xB98D94, tongue:0xC24B4B,
   eye_l:0xE8E4DA, eye_r:0xE8E4DA, thymus:0xC98383, pituitary:0xE0B84F,
   adrenal_l:0xD9940D, adrenal_r:0xD9940D, prostate:0xB98A6B, reproductive:0xB98A6B,
@@ -551,8 +550,10 @@ function colorFor(name, group){
   if(group === 'skin') return new THREE.Color(0xAFC4DE);
   if(group === 'skeleton') return new THREE.Color(0xE3D7B8);
   if(group === 'nerves') return new THREE.Color(0xE3A008);
-  if(group === 'vessels'){ if(/vein|vena/.test(name)) return new THREE.Color(0x2E6BE6); return new THREE.Color(0xC23B22); }
-  if(group === 'organs'){ c = new THREE.Color(ORGAN_COLORS[name] || 0xB5654D); c.offsetHSL(0, 0.07, 0); }
+  if(group === 'vessels'){ /* quiet, pale vessels — present but never competing with the organs */
+    if(/vein|vena/.test(name)) return new THREE.Color(0x8FB0E8); return new THREE.Color(0xD89A8A); }
+  if(group === 'organs'){ c = new THREE.Color(ORGAN_COLORS[name] || 0xB5654D);
+    if(name !== 'colon' && name !== 'small_intestine') c.offsetHSL(0, 0.07, 0); /* gut stays pale beige, low saturation */ }
   else { c = new THREE.Color(0xA83232); }
   var j = ((hashStr(name) % 13) - 6) / 100;
   c.offsetHSL(0, 0, j * 0.5);
@@ -583,13 +584,17 @@ var currentSex = 'male', modelReady = false, pendingFocus = null;
 var focused = null, fly = null, halo = null;
 var HOME = { pos: new THREE.Vector3(0.6, 1.8, 5.4), tgt: new THREE.Vector3(0, 1.7, 0) };
 var bodyBox = null;
-/* Default view = the signature shot: glass skin, NO muscle layer (it is opaque and
-   would bury the organs), coloured organs fully visible the moment the page opens. */
-var layerState = { skin:true, skeleton:true, muscles:false, organs:true, vessels:true, nerves:false };
-/* Skeleton defaults to GHOST: a faint matte frame (opacity 0.15, no depth write, no
-   shine) so the coloured organs are the stars of the default view and the brain
-   reads through the skull. The user can switch it back to solid any time. */
-var skeletonGhost = true;
+/* Default view = the signature shot: faint glass skin, NO muscle layer, and the
+   SKELETON LAYER OFF ENTIRELY (visible=false — a binary switch, not an opacity
+   trick: material transparency on this model proved unreliable, with skull/ribs/
+   sternum staying solid white and burying the organs). Coloured organs + quiet
+   vessels are the stars the moment the page opens; the user can switch the
+   skeleton layer on from the layer buttons whenever they want it. */
+var layerState = { skin:true, skeleton:false, muscles:false, organs:true, vessels:true, nerves:false };
+/* While a focus is active, the group the target belongs to may be force-shown
+   (e.g. the ankle lives in the skeleton group); clearFocus restores that group's
+   visibility from layerState, so the default-off skeleton never leaks back. */
+var focusForcedGroup = null;
 var currentInfo = { zh:'全身', en:'Full body', desc:'', key:null };
 
 function showError(msg){ loadingEl.classList.add('hide'); errorText.textContent = msg; errorEl.classList.add('show'); }
@@ -755,22 +760,24 @@ function loadModel(sex){
         var mat = new THREE.MeshStandardMaterial({ color: colorFor(o.name, grp), roughness: 0.5, metalness: 0.0, envMapIntensity: 0.55 });
         if(grp === 'organs'){
           /* Organs render SOLID: double-sided so thin-walled organs (lungs above all)
-             read as full shapes, never feathery shells; low env reflection keeps the
-             signature colours saturated instead of washed out. */
+             read as full shapes, never feathery shells; low env reflection plus a
+             same-colour self-glow (emissive ≈0.3) keeps the signature colours
+             standing firm on the pale stage instead of washing out. */
           mat.side = THREE.DoubleSide; mat.envMapIntensity = 0.22; mat.roughness = 0.62;
+          mat.emissive = mat.color.clone(); mat.emissiveIntensity = 0.3;
           o.renderOrder = 2;
         }
         if(o.name === 'lung_l' || o.name === 'lung_r'){ mat.roughness = 0.8; mat.envMapIntensity = 0.08; }
         if(o.name === 'heart'){ mat.roughness = 0.42; }
-        if(grp === 'skin'){ mat.transparent = true; mat.opacity = 0.15; mat.depthWrite = false; mat.roughness = 0.15; mat.metalness = 0.05; o.renderOrder = 3; }
+        if(grp === 'skin'){ mat.transparent = true; mat.opacity = 0.24; mat.depthWrite = false; mat.roughness = 0.15; mat.metalness = 0.05; o.renderOrder = 3; }
         o.material = mat;
         o.userData.group = grp;
-        o.userData.base = { opacity: mat.opacity, transparent: mat.transparent, depthWrite: mat.depthWrite, color: mat.color.getHex() };
+        o.userData.base = { opacity: mat.opacity, transparent: mat.transparent, depthWrite: mat.depthWrite, color: mat.color.getHex(),
+          emissive: mat.emissive ? mat.emissive.getHex() : 0x000000, emissiveIntensity: mat.emissiveIntensity || 0 };
         meshesByName[o.name] = o; allMeshes.push(o);
       }
     });
     Object.keys(groups).forEach(function(gname){ groups[gname].visible = !!layerState[gname]; });
-    applySkeletonMode();
     scene.add(modelRoot);
     bodyBox = new THREE.Box3().setFromObject(modelRoot);
     computeHome();
@@ -789,9 +796,11 @@ function loadModel(sex){
     showError(lang() === 'en' ? 'The model failed to load — possibly a network drop or no WebGL support. Check your connection and reload.' : '模型載入失敗：可能係網絡中斷或者瀏覽器唔支援 WebGL。請檢查連線之後重新載入。');
   });
 }
-/* X-ray isolation: EVERY non-target structure fades to near-invisible (0.03) so nothing
-   can bury the focused organ; the target stays fully opaque in its signature colour
-   with a fluorescent cyan halo (never a colour wash over the organ itself). */
+/* Focus isolation by VISIBILITY SWITCH — binary, cannot fail the way material
+   opacity did on this model: every non-target mesh is switched OFF (visible=false),
+   including skeleton, vessels and the gut. Only the target organ and the faint
+   glass-skin outline stay on stage, so nothing can cross in front of the target.
+   clearFocus switches everything back on and the layer state rules again. */
 var ankleDot = null;
 function clearAnkleDot(){
   if(ankleDot){ if(ankleDot.parent) ankleDot.parent.remove(ankleDot); ankleDot.geometry.dispose(); ankleDot.material.dispose(); ankleDot = null; }
@@ -800,14 +809,19 @@ function setGhost(targetMesh, skipHalo){
   allMeshes.forEach(function(m){
     var mat = m.material, base = m.userData.base;
     if(m === targetMesh){
+      m.visible = true;
       mat.color.setHex(base.color); mat.transparent = false; mat.opacity = 1; mat.depthWrite = true;
       mat.emissive = new THREE.Color(0x00E5FF); mat.emissiveIntensity = 0.28;
       m.renderOrder = 4;
+    } else if(m.userData.group === 'skin'){
+      /* keep only the faint body outline so the organ still sits "in" a person */
+      m.visible = true;
+      mat.color.setHex(base.color);
+      mat.opacity = base.opacity; mat.transparent = base.transparent; mat.depthWrite = base.depthWrite;
+      mat.emissive = new THREE.Color(base.emissive); mat.emissiveIntensity = base.emissiveIntensity;
+      m.renderOrder = 3;
     } else {
-      var gc = new THREE.Color(base.color); gc.lerp(new THREE.Color(0xD7E1EE), 0.9);
-      mat.color.copy(gc); mat.transparent = true; mat.opacity = 0.03; mat.depthWrite = false;
-      mat.emissive = new THREE.Color(0x000000); mat.emissiveIntensity = 0;
-      m.renderOrder = 1;
+      m.visible = false;
     }
   });
   removeHalo();
@@ -824,18 +838,29 @@ function removeHalo(){
   clearAnkleDot();
   if(halo){ if(halo.parent) halo.parent.remove(halo); halo.geometry = null; halo.material.dispose(); halo = null; }
 }
+function setViewerTitle(nameZh, nameEn){
+  var t = document.getElementById('viewerTitleText');
+  if(!t) return;
+  t.textContent = nameZh
+    ? (lang() === 'en' ? '3D Body · ' + nameEn : '3D 人體 · ' + nameZh)
+    : (lang() === 'en' ? '3D Body · Full body' : '3D 人體 · 全身');
+}
 function clearFocus(silent){
   removeHalo();
   if(focused){
     allMeshes.forEach(function(m){
       var mat = m.material, base = m.userData.base;
+      m.visible = true; /* visibility isolation off — group/layer visibility rules again */
       mat.color.setHex(base.color);
       mat.opacity = base.opacity; mat.transparent = base.transparent; mat.depthWrite = base.depthWrite;
-      mat.emissive = new THREE.Color(0x000000); mat.emissiveIntensity = 0;
+      mat.emissive = new THREE.Color(base.emissive); mat.emissiveIntensity = base.emissiveIntensity;
     });
     focused = null;
-    allMeshes.forEach(function(m){ m.renderOrder = m.userData.group === 'skin' ? 3 : (m.userData.group === 'organs' ? 2 : (m.userData.group === 'skeleton' && skeletonGhost ? 1 : 0)); });
+    if(focusForcedGroup && groups[focusForcedGroup]) groups[focusForcedGroup].visible = !!layerState[focusForcedGroup];
+    focusForcedGroup = null;
+    allMeshes.forEach(function(m){ m.renderOrder = m.userData.group === 'skin' ? 3 : (m.userData.group === 'organs' ? 2 : 0); });
   }
+  setViewerTitle(null);
   labelEl.classList.remove('show');
   if(!silent){ infoCard.classList.remove('show'); currentInfo = { zh:'全身', en:'Full body', desc:'', key:null }; scheduleShareRender(); }
   wake();
@@ -866,6 +891,7 @@ function showInfo(mesh, opts){
     infoStatusText.textContent = (lang() === 'en' ? STATUS_EN[st] : STATUS_ZH[st]) + (lang() === 'en' ? ' · Demo data' : ' · 示範數據');
   } else { infoStatus.className = 'status-tag'; }
   infoCard.classList.add('show');
+  setViewerTitle(zhName, opts.labelEn || enName);
   labelEl.textContent = (lang() === 'en' ? (opts.labelEn || enName) : zhName) + (opts.labelSuffix || '');
   labelEl.classList.add('show');
   currentInfo = { zh: zhName, en: enName, desc: desc, key: mesh.name, status: st };
@@ -877,7 +903,6 @@ function focusMesh(mesh, opts){
   opts = opts || {};
   if(!mesh) return;
   var grp = mesh.userData.group;
-  if(groups[grp] && !groups[grp].visible){ groups[grp].visible = true; layerState[grp] = true; syncLayerButtons(); }
   var box = new THREE.Box3().setFromObject(mesh);
   var center = box.getCenter(new THREE.Vector3());
   var size = box.getSize(new THREE.Vector3());
@@ -895,6 +920,12 @@ function focusMesh(mesh, opts){
   dist = Math.min(dist, 3.4);
   var camPos = anchor.clone().add(dir.multiplyScalar(dist)).add(new THREE.Vector3(0, size.y * 0.22 + 0.04, 0));
   clearFocus(true);
+  /* Force-show the target's group for this focus ONLY (e.g. ankle = skeleton group,
+     which is off by default). Done AFTER clearFocus so the restore logic of any
+     previous focus cannot hide it again. layerState is NOT touched: the next
+     clearFocus restores this group's visibility from layerState, so 回全身
+     returns to the true defaults. */
+  if(groups[grp] && !groups[grp].visible){ groups[grp].visible = true; focusForcedGroup = grp; }
   setGhost(mesh, !!opts.ankle);
   if(opts.ankle){
     /* Small dot + label marks the joint — never a stretched halo line across the foot */
@@ -946,7 +977,7 @@ function buildDots(){
 function positionDots(){
   dotObjs.forEach(function(d){
     var g = groups[d.mesh.userData.group];
-    if(!g || !g.visible){ d.el.style.display = 'none'; return; }
+    if(!g || !g.visible || !d.mesh.visible){ d.el.style.display = 'none'; return; }
     var box = new THREE.Box3().setFromObject(d.mesh);
     var c = box.getCenter(new THREE.Vector3());
     var p = projectToScreen(c);
@@ -968,7 +999,7 @@ function setStatusMode(on){
 document.getElementById('statusToggle').addEventListener('click', function(){ setStatusMode(!statusMode); });
 
 /* ===== Capture: share image is PRE-RENDERED after every settle, so the tap shares instantly (iOS gesture window) ===== */
-var SITE_URL = 'samhui6688-spec.github.io/aevos';
+var SITE_URL = 'aevos-hk.github.io';
 var shareFile = null, shareBlob = null, shareTimer = null;
 function scheduleShareRender(delay){
   if(shareTimer) clearTimeout(shareTimer);
@@ -1102,39 +1133,10 @@ document.querySelectorAll('.layer-btn').forEach(function(b){
     wake();
   });
 });
-/* Skeleton ghost/solid: ghost rewrites every skeleton mesh's BASE state (the state
-   clearFocus restores to), so the frame stays faint after any focus round-trip;
-   solid restores the original opaque bone. The focused mesh, if any, is left to
-   setGhost/clearFocus so a focus in progress is never disturbed. */
-function updateSkelBtn(){
-  var btn = document.getElementById('skelModeBtn');
-  if(!btn) return;
-  btn.setAttribute('aria-pressed', skeletonGhost ? 'true' : 'false');
-  var s = btn.querySelector('span');
-  if(s) s.textContent = lang() === 'en' ? (skeletonGhost ? 'Skeleton: ghost' : 'Skeleton: solid') : (skeletonGhost ? '骨骼：幽靈' : '骨骼：實心');
-}
-function applySkeletonMode(){
-  allMeshes.forEach(function(m){
-    if(m.userData.group !== 'skeleton') return;
-    var mat = m.material, base = m.userData.base;
-    if(skeletonGhost){ base.opacity = 0.15; base.transparent = true; base.depthWrite = false; }
-    else { base.opacity = 1; base.transparent = false; base.depthWrite = true; }
-    if(!focused || focused.mesh !== m){
-      mat.opacity = base.opacity; mat.transparent = base.transparent; mat.depthWrite = base.depthWrite;
-      mat.roughness = skeletonGhost ? 0.95 : 0.5;
-      mat.envMapIntensity = skeletonGhost ? 0.1 : 0.55;
-    }
-    m.renderOrder = skeletonGhost ? 1 : 0;
-  });
-  updateSkelBtn();
-  wake();
-}
-document.getElementById('skelModeBtn').addEventListener('click', function(){
-  skeletonGhost = !skeletonGhost;
-  applySkeletonMode();
-  scheduleShareRender();
-});
-updateSkelBtn();
+/* The old skeleton ghost/solid opacity toggle is GONE: transparency on this
+   model's shared materials proved unreliable (skull/ribs stayed solid white).
+   The skeleton is now governed purely by its layer switch — off by default,
+   on when the user asks for it. Binary visibility, nothing to wash out. */
 document.getElementById('clearFocus').addEventListener('click', function(){ clearFocus(); });
 document.getElementById('resetView').addEventListener('click', function(){ goHome(true); });
 document.getElementById('homeFab').addEventListener('click', function(){ goHome(true); });
@@ -1153,7 +1155,7 @@ window.AevosViewer = {
     /* Rebuild the info card fully in the new language — ankle keeps its custom
        label + description (rebuilt per language), everything else re-derives. */
     if(focused) showInfo(focused.mesh, focused.ankle ? ankleInfoOpts() : (focused.opts || {}));
-    updateSkelBtn();
+    else setViewerTitle(null);
     if(statusMode) buildDots();
     scheduleShareRender();
   },
@@ -1183,7 +1185,7 @@ canvas.addEventListener('pointerup', function(e){
   ptr.y = -((e.clientY - r.top) / r.height) * 2 + 1;
   ray.setFromCamera(ptr, camera);
   var hits = ray.intersectObjects(allMeshes.filter(function(m){
-    var g = groups[m.userData.group]; return g && g.visible;
+    var g = groups[m.userData.group]; return g && g.visible && m.visible;
   }), false);
   if(hits.length) focusMesh(hits[0].object, {});
 });
