@@ -10,9 +10,11 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="assets/hero-desktop.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' fill='%232e7d5b'%3E%E2%9C%B3%3C/text%3E%3C/svg%3E">
+<link rel="preload" as="image" href="assets/bg-desktop.webp" media="(orientation: landscape)">
+<link rel="preload" as="image" href="assets/bg-phone.webp" media="(orientation: portrait)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#17352a;
@@ -47,7 +49,7 @@ a{color:inherit}
 #intro{
   position:fixed;inset:0;z-index:60;background:var(--intro-bg);
   overflow:hidden;cursor:pointer;
-  transition:opacity .45s ease .3s;
+  transition:opacity .5s ease;
 }
 #intro .bgimg{
   position:absolute;inset:0;width:100%;height:100%;
@@ -80,32 +82,15 @@ a{color:inherit}
   color:rgba(255,255,255,.82);font-size:14px;letter-spacing:.35em;text-indent:.35em;
   animation:hintFloat 3.2s ease-in-out infinite;white-space:nowrap;
   text-shadow:0 1px 10px rgba(0,0,0,.6);
+  transition:opacity .25s ease;
 }
 @keyframes hintFloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-7px)}}
-#intro .flash{
-  position:absolute;inset:0;pointer-events:none;opacity:0;
-  background:radial-gradient(circle at 50% 50%,rgba(190,255,225,.95) 0%,rgba(120,240,190,.45) 34%,transparent 70%);
-}
-#intro.diving{pointer-events:none}
-#intro.diving .diveWrap{
-  animation:diveIn .8s cubic-bezier(.6,.02,.83,.36) forwards;
-}
-#intro .diveWrap{position:absolute;inset:0;will-change:transform}
-@keyframes diveIn{
-  0%{transform:scale(1) rotate(0deg)}
-  35%{transform:scale(1.7) rotate(2.5deg)}
-  70%{transform:scale(2.7) rotate(5deg)}
-  100%{transform:scale(3.6) rotate(7deg)}
-}
-#intro.diving .flash{animation:flashGo .8s ease-out forwards}
-@keyframes flashGo{0%{opacity:0}55%{opacity:0}80%{opacity:.95}100%{opacity:0}}
-#intro.diving .glow{animation:diveGlow .8s ease-in forwards}
-@keyframes diveGlow{
-  0%{opacity:.65;transform:translate(-50%,-50%) scale(1)}
-  55%{opacity:1;transform:translate(-50%,-50%) scale(1.55)}
-  100%{opacity:.95;transform:translate(-50%,-50%) scale(2.5)}
-}
-#intro.gone{opacity:0;visibility:hidden}
+/* 㩒入嗰刻：帶品牌名嘅開場圖即刻淡出消失，唔俾個名旋轉住俾人睇；
+   展示艙同時喺底層淡入，兩邊重疊交接，一氣呵成 */
+#intro .diveWrap{position:absolute;inset:0;transition:opacity .3s ease}
+#intro.leaving{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .5s ease,visibility 0s linear .5s}
+#intro.leaving .diveWrap{opacity:0}
+#intro.leaving .hint{opacity:0}
 
 /* ---------- 展示艙（穿梭後成績卡） ---------- */
 #showcase{
@@ -115,14 +100,18 @@ a{color:inherit}
 }
 #showcase.play{opacity:1;visibility:visible;transition:opacity .45s ease}
 #showcase.bye{opacity:0;visibility:hidden;transition:opacity .55s ease,visibility 0s linear .55s}
-#showcase .sc-bg{position:absolute;inset:0;overflow:hidden}
+#showcase .sc-bg{
+  position:absolute;inset:0;overflow:hidden;
+  transform:scale(1.22);transition:transform 1.8s cubic-bezier(.22,.8,.3,1);
+}
+#showcase.play .sc-bg{transform:scale(1)}
 #showcase .sc-bg img{
   width:100%;height:100%;object-fit:cover;object-position:center;
   animation:scSwirl 44s ease-in-out infinite alternate;will-change:transform;
 }
 @keyframes scSwirl{
-  from{transform:scale(1.5) rotate(-3.5deg)}
-  to{transform:scale(1.62) rotate(3.5deg)}
+  from{transform:scale(1.34) rotate(-2.5deg)}
+  to{transform:scale(1.44) rotate(2.5deg)}
 }
 #showcase .sc-shade{
   position:absolute;inset:0;pointer-events:none;
@@ -152,6 +141,14 @@ a{color:inherit}
 }
 .sc-card.enter .shine{animation:scShine .6s ease .15s 1 forwards}
 @keyframes scShine{to{transform:translateX(130%)}}
+.sc-card.exit{transition:transform .38s cubic-bezier(.5,0,.8,.4),opacity .32s ease}
+.sc-card--team{width:min(80vw,580px)}
+@media (orientation:portrait){.sc-card--team{width:min(88vw,470px)}}
+.sc-card figcaption .sc-team-title{display:block}
+.sc-card figcaption .sc-members{
+  display:block;margin-top:5px;font-size:12.5px;font-weight:500;
+  color:#cfe3d6;line-height:1.65;letter-spacing:.02em;
+}
 #showcase .sc-skip{
   position:absolute;right:18px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:3;
   color:rgba(255,255,255,.55);font-size:12.5px;letter-spacing:.28em;text-indent:.28em;
@@ -209,8 +206,16 @@ a{color:inherit}
   border-bottom:1px solid rgba(127,200,169,.22);
 }
 .topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding-top:9px;padding-bottom:9px;gap:12px;flex-wrap:wrap}
-.topbar .brand{font-weight:700}
-.topbar .brand .star{color:var(--gold-bright)}
+/* 頂欄品牌：接合返開場畫面嘅品牌組合——火花標誌＋襯線字名＋細字副題 */
+.topbar .brand{display:flex;align-items:center;gap:11px}
+.topbar .brand-mark{width:30px;height:30px;flex:0 0 auto;fill:var(--gold-bright)}
+.topbar .brand-mark .ray{stroke:var(--gold-bright);stroke-width:2.4;stroke-linecap:round;fill:none}
+.topbar .brand-lockup{display:flex;flex-direction:column;line-height:1.15}
+.topbar .brand-name{
+  font-family:"Cormorant Garamond","Noto Sans TC",serif;
+  font-size:23px;font-weight:600;letter-spacing:.045em;color:#f6fbf7;
+}
+.topbar .brand-sub{font-size:9.5px;letter-spacing:.42em;color:var(--mint);margin-top:2px}
 .topbar nav a{color:#cfe3d6;text-decoration:none;margin-left:18px;font-family:var(--mono);font-size:13px;letter-spacing:.08em}
 .topbar nav a:hover{color:#fff}
 @media(max-width:640px){.topbar nav{display:none}}
@@ -448,22 +453,27 @@ body.locked .stickybar{display:none}
     </picture>
     <div class="glow"></div>
     <canvas id="introCanvas"></canvas>
-    <div class="flash"></div>
   </div>
   <div class="hint">㩒 一 下 進 入</div>
 </div>
 
 <!-- ================= 展示艙（穿梭後成績卡） ================= -->
-<div id="showcase" aria-hidden="true" aria-label="比賽成績展示">
+<div id="showcase" aria-hidden="true" aria-label="科研團隊與比賽佳績展示">
   <div class="sc-bg">
     <picture>
-      <source media="(orientation: portrait)" srcset="assets/hero-phone.webp">
-      <source media="(max-width: 1280px)" srcset="assets/hero-tablet.webp">
-      <img src="assets/hero-desktop.webp" alt="" aria-hidden="true">
+      <source media="(orientation: portrait)" srcset="assets/bg-phone.webp">
+      <img src="assets/bg-desktop.webp" alt="" aria-hidden="true">
     </picture>
     <div class="sc-shade"></div>
   </div>
   <div class="sc-stage">
+    <figure class="sc-card sc-card--team">
+      <div class="sc-float">
+        <img src="assets/team-official.webp" width="1200" height="963" alt="Spark Science Education 科研團隊五人合照">
+        <figcaption><span class="sc-team-title">科研團隊</span><span class="sc-members">林文傑教授・首席科學顧問｜黎卓賢博士・科學主任｜鄺緯陽博士・創辦人・首席科學官｜宋振州博士・研究總監｜黃桂林博士・教育顧問</span></figcaption>
+      </div>
+      <div class="shine"></div>
+    </figure>
     <figure class="sc-card">
       <div class="sc-float">
         <img src="assets/award-innohealth.webp" width="1080" height="605" alt="合作學校九龍真光中學勇奪 InnoHealth Cup 2025 冠軍頒獎禮合照">
@@ -500,9 +510,8 @@ body.locked .stickybar{display:none}
 <!-- ================= 全站綠色郁動底板 ================= -->
 <div class="site-bg" aria-hidden="true">
   <picture>
-    <source media="(orientation: portrait)" srcset="assets/hero-phone.webp">
-    <source media="(max-width: 1280px)" srcset="assets/hero-tablet.webp">
-    <img src="assets/hero-desktop.webp" alt="" aria-hidden="true">
+    <source media="(orientation: portrait)" srcset="assets/bg-phone.webp">
+    <img src="assets/bg-desktop.webp" alt="" aria-hidden="true">
   </picture>
   <div class="shade"></div>
   <div class="grid-overlay"></div>
@@ -512,7 +521,13 @@ body.locked .stickybar{display:none}
 <div id="site" aria-hidden="true">
   <div class="topbar">
     <div class="wrap">
-      <div class="brand"><span class="star">✳</span> Spark Science EDUCATION · 創智・未來</div>
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path class="ray" d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2"/></svg>
+        <span class="brand-lockup">
+          <span class="brand-name">Spark Science</span>
+          <span class="brand-sub">EDUCATION · 創智・未來</span>
+        </span>
+      </div>
       <nav>
         <a href="#courses">課程</a><a href="#team">科研團隊</a><a href="#results">比賽佳績</a><a href="#booking">如何預約</a><a href="#contact">聯絡我們</a>
       </nav>
@@ -537,7 +552,7 @@ body.locked .stickybar{display:none}
       <div class="sec-lead">
         <p>我們是 Spark Science Education（創智・未來），由 Solar Trinity Science Limited 營運。導師團隊由博士級導師領軍，並由具專業醫務化驗師背景的導師負責實驗教學。過去兩年，我們輔導的學生隊伍先後於 iGEM 全球大賽奪得金獎，合作學校亦勇奪香港 InnoHealth Cup 冠軍。</p>
       </div>
-      <div class="tip"><b>溫馨提示：</b>三個課程均包括 AI 圖像生成環節，完成課程的學生可獲由<b>香港城市大學頒發</b>的證書。課程均符合教育局「智啟學教」撥款計劃相關要求，學校可以申請資助購置。</div>
+      <div class="tip"><b>溫馨提示：</b>本課程系列符合教育局「智啟學教」撥款計劃相關要求，學校可申請該撥款資助購置，善用政府專款，毋須額外動用校內預算。課程涵蓋科學、生物、資訊科技及 STEAM 跨學科學習，並一次過為學校解決課程設計、專業導師、實驗教學與 AI 平台配套——由申請到開課，我哋全程配合學校行政需要。完成課程的學生可獲由<b>香港城市大學頒發</b>的證書。</div>
       <div class="grid c4">
         <div class="card"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v5.2L5.6 17a2.4 2.4 0 0 0 2.1 3.6h8.6a2.4 2.4 0 0 0 2.1-3.6L13.5 8.2V3"/><path d="M8 14.5h8"/></svg></div><h3>真實科研體驗</h3><p>由編程實作、平台設計到實驗驗證，學生親身走過完整的科研流程。</p></div>
         <div class="card"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.8 8.6 12 13.2l9.2-4.6L12 4z"/><path d="M6.2 10.8v4.4c0 1.5 2.6 2.8 5.8 2.8s5.8-1.3 5.8-2.8v-4.4"/><path d="M21.2 8.6v5"/></svg></div><h3>專業導師任教</h3><p>課程由專業導師設計及任教，內容緊貼大學科研與國際競賽要求。</p></div>
@@ -711,7 +726,7 @@ body.locked .stickybar{display:none}
   var ctx = canvas.getContext('2d');
   var bgm = document.getElementById('bgm');
   var W=0,H=0,cx=0,cy=0,DPR=1;
-  var entered = false, diving = false, rafId = null, lastT = 0;
+  var entered = false, leaving = false, rafId = null, lastT = 0;
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function resize(){
@@ -846,11 +861,17 @@ body.locked .stickybar{display:none}
     window.scrollTo(0,0);
   }
 
-  /* ---------- 展示艙：成績卡逐張飛入中央、停低、排起，最後淡出落地 ---------- */
+  /* ---------- 展示艙：團隊卡＋成績卡逐張飛入中央、停低、飛走 ---------- */
   var showcase = document.getElementById('showcase');
   var scCards = Array.prototype.slice.call(showcase.querySelectorAll('.sc-card'));
   var scTimers = [];
   var scDone = false;
+
+  /* 㩒入之前預載晒展示艙同內容站背景會用嘅圖，唔俾中途先載入彈出嚟 */
+  ['assets/bg-desktop.webp','assets/bg-phone.webp','assets/team-official.webp',
+   'assets/award-innohealth.webp','assets/award-kapi.webp',
+   'assets/award-pestiguard.webp','assets/award-mentoring.webp']
+   .forEach(function(s){ var im = new Image(); im.src = s; });
 
   function scLater(fn, ms){ scTimers.push(setTimeout(fn, ms)); }
   function scClear(){ for(var i=0;i<scTimers.length;i++) clearTimeout(scTimers[i]); scTimers = []; }
@@ -863,6 +884,7 @@ body.locked .stickybar{display:none}
     var W = showcase.clientWidth, H = showcase.clientHeight;
     var cw = card.offsetWidth, ch = card.offsetHeight;
     var x = (W-cw)/2, y = (H-ch)/2 - H*0.05;
+    card._cx = x; card._cy = y;
     /* 先擺去遠處細細張，下一幀先飛入中央 */
     scPlace(card, x, y + H*0.16, 0.16, 30, 12, 0);
     requestAnimationFrame(function(){ requestAnimationFrame(function(){
@@ -870,19 +892,12 @@ body.locked .stickybar{display:none}
       scPlace(card, x, y, 1, -6, 3, 1);
     });});
   }
-  function scWall(i){
-    /* 最終排法：2×2 成果牆塞滿成個畫面，邊距一致、格內置中對齊 */
-    var card = scCards[i]; if(!card) return;
-    var W = showcase.clientWidth, H = showcase.clientHeight;
-    var cw = card.offsetWidth, ch = card.offsetHeight;
-    var m = Math.max(14, Math.min(W, H)*0.045);
-    var g = Math.max(10, Math.min(22, W*0.02));
-    var cellW = (W - m*2 - g)/2, cellH = (H - m*2 - g)/2;
-    var s = Math.min(cellW/cw, cellH/ch);
-    var col = i % 2, row = (i/2)|0;
-    var x = m + col*(cellW + g) + (cellW - cw*s)/2;
-    var y = m + row*(cellH + g) + (cellH - ch*s)/2;
-    scPlace(card, x, y, s, 0, 0);
+  function scExit(i){
+    /* 睇完即刻飛走消失，唔留喺畫面 */
+    var card = scCards[i]; if(!card || card._cx === undefined) return;
+    var H = showcase.clientHeight;
+    card.classList.add('exit');
+    scPlace(card, card._cx, card._cy - H*0.22, 0.8, 12, 0, 0);
   }
   function finishShowcase(fast){
     if(scDone) return; scDone = true;
@@ -898,39 +913,49 @@ body.locked .stickybar{display:none}
   function startShowcase(){
     showcase.setAttribute('aria-hidden','false');
     showcase.classList.add('play');
-    /* 提速版時間軸：飛入 .45s＋中央停留約 .85s，卡與卡流水線接續，總長約 5.5s */
-    var STEP = 850, WALL = 1300, BASE = 200;
-    if(scLead){
-      scLater(function(){ scLead.classList.add('on'); }, 120);
-      scLater(function(){ scLead.classList.add('off'); }, 1120);
-    }
+    /* 一氣呵成時間軸：團隊卡先漂出 → 引子 → 獲獎卡逐張飛入、停約 0.9s、飛走；
+       每張卡飛走嗰陣下一張同時飛入，重疊交接，全程冇靜止間隔，總長約 6.5s */
+    var t = 100;
+    var starts = [], slots = [];
     for(var i=0;i<scCards.length;i++){
-      (function(idx){
-        scLater(function(){ scShow(idx); }, BASE + idx*STEP);
-        scLater(function(){ scWall(idx); }, BASE + idx*STEP + WALL);
-      })(i);
+      var slot = (i===0) ? 1300 : 1080;   /* 團隊卡資料多，停耐少少 */
+      starts.push(t); slots.push(slot); t += slot;
     }
-    /* 4 張砌滿成幅牆之後，停約 1 秒就淡出落地 */
-    scLater(function(){ finishShowcase(false); }, BASE + (scCards.length-1)*STEP + WALL + 950);
+    for(var j=0;j<scCards.length;j++){
+      (function(idx, start, slot){
+        scLater(function(){ scShow(idx); }, start);
+        scLater(function(){ scExit(idx); }, start + slot);
+      })(j, starts[j], slots[j]);
+    }
+    if(scLead){
+      scLater(function(){ scLead.classList.add('on'); }, 620);
+      scLater(function(){ scLead.classList.add('off'); }, 2600);
+    }
+    /* 最後一張飛走之後即刻淡出落地，同內容站重疊交接 */
+    scLater(function(){ finishShowcase(false); }, t + 260);
   }
   showcase.addEventListener('click', function(){ finishShowcase(true); });
 
   intro.addEventListener('click', function(){
-    if(entered || diving) return;
-    diving = true;
+    if(entered || leaving) return;
+    leaving = true;
     startMusic();
-    intro.classList.add('diving');
-    /* 絲滑關鍵：粒子畫布即刻淡出兼停畫，穿梭全程由 CSS transform（GPU）主導 */
+    /* 㩒入嗰刻：帶品牌名嘅開場圖即刻淡出消失，唔俾個名旋轉住俾人睇；
+       展示艙同時淡入，兩邊重疊交接，一氣呵成冇停頓 */
+    intro.classList.add('leaving');
     canvas.style.opacity = '0';
     setTimeout(stopAnim, 340);
+    if(reduceMotion){
+      entered = true;
+      setTimeout(function(){ intro.style.display='none'; stopAnim(); showSite(); }, 80);
+      return;
+    }
+    startShowcase();
     setTimeout(function(){
       entered = true;
-      intro.classList.add('gone');
+      intro.style.display = 'none';
       stopAnim();
-      setTimeout(function(){ intro.style.display='none'; }, 500);
-      if(reduceMotion){ showSite(); }
-      else { startShowcase(); }
-    }, reduceMotion ? 60 : 770);
+    }, 540);
   });
 
   /* 段落入場：柔和淡入＋輕微上移，一次過唔花（只用 transform／opacity） */
