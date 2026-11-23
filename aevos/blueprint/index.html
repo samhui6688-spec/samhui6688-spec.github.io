@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:," />
+<title>Aevos 未來設計藍圖 · Future Design Blueprint</title>
+<style>
+  :root{
+    --bg1:#EAF0F9; --bg2:#DFE7F2;
+    --ink:#17202B; --ink-2:#43536A; --ink-3:#71809A;
+    --accent:#1D4FD7;
+    --line:#E7ECF2;
+    --card:#FFFFFF;
+    --soft:#F2F6FC;
+    --grad:linear-gradient(135deg,#34D399,#22C7B8 45%,#0EA5E9);
+    --radius:24px;
+    --shadow:0 10px 34px rgba(23,32,43,.07), 0 2px 8px rgba(23,32,43,.04);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text","Inter","PingFang TC","PingFang HK","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    font-variant-numeric:tabular-nums;
+    line-height:1.55;
+  }
+  ::selection{ background:rgba(29,79,215,.16); }
+  .en{ letter-spacing:.005em; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 22px; }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(1.4) blur(14px);
+    -webkit-backdrop-filter:saturate(1.4) blur(14px);
+    background:rgba(238,243,250,.78);
+    border-bottom:1px solid rgba(231,236,242,.9);
+  }
+  .topbar-in{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 0; }
+  .brand{ display:flex; align-items:center; gap:11px; text-decoration:none; color:var(--ink); }
+  .brand .name{ font-weight:700; font-size:19px; letter-spacing:.02em; line-height:1.1; }
+  .brand .name small{ display:block; font-weight:500; font-size:11px; color:var(--ink-3); letter-spacing:.18em; }
+  .nav{ display:flex; gap:4px; flex-wrap:wrap; }
+  .nav a{
+    color:var(--ink-2); text-decoration:none; font-size:13.5px; font-weight:500;
+    padding:8px 12px; border-radius:999px; min-height:36px; display:inline-flex; align-items:center;
+    transition:background .2s var(--ease), color .2s var(--ease);
+  }
+  .nav a:hover{ background:rgba(255,255,255,.85); color:var(--accent); }
+  @media (max-width:760px){ .nav{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:74px 0 56px; text-align:center; }
+  .hero .ring{ margin:0 auto 22px; display:block; }
+  .hero h1{ font-size:clamp(27px,4.6vw,46px); line-height:1.32; font-weight:800; letter-spacing:.01em; margin:0 auto 6px; max-width:860px; }
+  .hero h1 .en{ display:block; font-size:clamp(19px,3vw,30px); font-weight:650; color:var(--ink-2); margin-top:12px; line-height:1.45; }
+  .hero .second{
+    margin:30px auto 0; max-width:640px; font-size:clamp(16px,2.2vw,20px); font-weight:600; color:var(--ink);
+  }
+  .hero .second .en{ display:block; font-weight:500; color:var(--ink-2); font-size:.88em; margin-top:5px; }
+  .posline{
+    display:inline-flex; flex-wrap:wrap; justify-content:center; gap:8px 14px; align-items:center;
+    margin-top:34px; padding:11px 22px; background:var(--card); border:1px solid var(--line);
+    border-radius:999px; box-shadow:var(--shadow); font-weight:650; font-size:15px;
+  }
+  .posline .dot{ width:7px; height:7px; border-radius:50%; background:var(--grad); flex:none; }
+  .posline .en{ color:var(--ink-2); font-weight:550; }
+  .scroll-hint{ margin-top:44px; color:var(--ink-3); font-size:12.5px; letter-spacing:.22em; }
+  .scroll-hint span{ display:block; margin-top:8px; animation:bob 2.4s var(--ease) infinite; font-size:16px; letter-spacing:0; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(5px);} }
+
+  /* ---------- sections ---------- */
+  section{ padding:52px 0 8px; }
+  .sec-head{ max-width:720px; margin:0 auto 30px; text-align:center; }
+  .sec-num{ font-size:12px; font-weight:700; letter-spacing:.3em; color:var(--accent); margin-bottom:10px; }
+  .sec-head h2{ font-size:clamp(24px,3.4vw,34px); font-weight:780; margin:0; line-height:1.3; }
+  .sec-head h2 .en{ display:block; font-size:.62em; font-weight:600; color:var(--ink-2); margin-top:7px; letter-spacing:.01em; }
+  .sec-head p{ color:var(--ink-2); font-size:15.5px; margin:14px 0 0; }
+  .sec-head p .en{ display:block; font-size:.92em; color:var(--ink-3); margin-top:3px; }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+
+  /* ---------- platform diagram ---------- */
+  .platform{ padding:38px 30px 30px; position:relative; overflow:hidden; }
+  .platform-grid{
+    display:grid; grid-template-columns:1fr auto 1fr; grid-template-rows:auto auto auto;
+    gap:18px 26px; align-items:center; max-width:880px; margin:0 auto;
+  }
+  .node{
+    background:var(--soft); border:1px solid var(--line); border-radius:18px; padding:16px 18px;
+    transition:transform .22s var(--ease), box-shadow .22s var(--ease);
+  }
+  .node:hover{ transform:translateY(-2px); box-shadow:0 8px 22px rgba(23,32,43,.08); }
+  .node h3{ margin:0 0 4px; font-size:16px; font-weight:700; }
+  .node h3 .en{ display:block; font-size:12.5px; font-weight:600; color:var(--accent); margin-top:2px; }
+  .node p{ margin:0; font-size:13.5px; color:var(--ink-2); }
+  .node p .en{ display:block; color:var(--ink-3); font-size:12.5px; margin-top:2px; }
+  .node.core{ background:#EEF3FE; border-color:#D7E2F8; }
+  .hub{
+    grid-row:2; grid-column:2; text-align:center; padding:26px 30px; border-radius:50%;
+    width:196px; height:196px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); position:relative; z-index:2;
+  }
+  .hub .t{ font-weight:800; font-size:19px; margin-top:8px; }
+  .hub .s{ font-size:12px; color:var(--ink-3); letter-spacing:.14em; margin-top:3px; }
+  .n-tl{ grid-row:1; grid-column:1; } .n-tr{ grid-row:1; grid-column:3; }
+  .n-bl{ grid-row:3; grid-column:1; } .n-br{ grid-row:3; grid-column:3; }
+  .platform .caption{ text-align:center; margin-top:26px; font-size:16.5px; font-weight:650; }
+  .platform .caption .en{ display:block; font-weight:500; color:var(--ink-2); font-size:14px; margin-top:3px; }
+  @media (max-width:720px){
+    .platform-grid{ grid-template-columns:1fr; grid-template-rows:none; }
+    .hub{ grid-row:auto; grid-column:auto; margin:6px auto; width:172px; height:172px; order:-1; }
+    .n-tl,.n-tr,.n-bl,.n-br{ grid-row:auto; grid-column:auto; }
+    .platform-grid{ display:flex; flex-direction:column; }
+    .hub{ order:-1; }
+  }
+
+  /* ---------- mechanism chain ---------- */
+  .chain{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media (max-width:900px){ .chain{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .chain{ grid-template-columns:1fr; } }
+  .step{ padding:26px 22px 22px; position:relative; }
+  .step .no{
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:16px; color:#fff; background:var(--accent); margin-bottom:14px;
+  }
+  .step.grad .no{ background:var(--grad); }
+  .step h3{ margin:0 0 6px; font-size:17px; font-weight:720; }
+  .step h3 .en{ display:block; font-size:12.5px; color:var(--accent); font-weight:600; margin-top:2px; }
+  .step p{ margin:0; font-size:14px; color:var(--ink-2); }
+  .step p .en{ display:block; color:var(--ink-3); font-size:13px; margin-top:3px; }
+  .step .arrow{ position:absolute; top:44px; right:-13px; color:#B9C7DC; font-size:18px; z-index:3; }
+  @media (max-width:900px){ .step .arrow{ display:none; } }
+  .closing{ text-align:center; margin-top:30px; font-size:clamp(18px,2.6vw,23px); font-weight:750; }
+  .closing .en{ display:block; font-size:.78em; font-weight:550; color:var(--ink-2); margin-top:4px; }
+
+  /* ---------- roadmap ---------- */
+  .blueprint-tag{
+    display:inline-block; padding:6px 14px; border-radius:999px; font-size:12.5px; font-weight:700; letter-spacing:.06em;
+    color:var(--accent); background:#EAF0FE; border:1px solid #D7E2F8;
+  }
+  .timeline{ max-width:820px; margin:0 auto; position:relative; padding-left:34px; }
+  .timeline::before{
+    content:""; position:absolute; left:11px; top:10px; bottom:10px; width:2px;
+    background:linear-gradient(180deg,var(--accent),#22C7B8);
+    border-radius:2px; opacity:.55;
+  }
+  .phase{ position:relative; margin-bottom:16px; padding:24px 26px; }
+  .phase::before{
+    content:""; position:absolute; left:-34px; top:30px; width:24px; height:24px; border-radius:50%;
+    background:var(--card); border:2px solid var(--accent); box-shadow:0 0 0 5px var(--bg1);
+  }
+  .phase.live::before{ background:var(--grad); border-color:transparent; }
+  .phase .ph-top{ display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 14px; }
+  .phase .ph-k{ font-size:12px; font-weight:800; letter-spacing:.22em; color:var(--accent); }
+  .phase h3{ margin:0; font-size:19px; font-weight:750; }
+  .phase h3 .en{ font-size:14.5px; font-weight:600; color:var(--ink-2); margin-left:8px; }
+  .phase p{ margin:9px 0 0; font-size:14.5px; color:var(--ink-2); }
+  .phase p .en{ display:block; color:var(--ink-3); font-size:13.5px; margin-top:3px; }
+  .phase .get{
+    margin-top:13px; padding:11px 15px; background:var(--soft); border-radius:14px; font-size:13.5px; color:var(--ink-2);
+  }
+  .phase .get b{ color:var(--ink); font-weight:680; }
+  .phase .get .en{ display:block; color:var(--ink-3); font-size:12.5px; margin-top:2px; }
+  .status{
+    margin-left:auto; font-size:11.5px; font-weight:700; letter-spacing:.08em; padding:5px 11px; border-radius:999px;
+    background:#EAF0FE; color:var(--accent); border:1px solid #D7E2F8; white-space:nowrap;
+  }
+  .status.plan{ background:var(--soft); color:var(--ink-3); border-color:var(--line); }
+
+  /* ---------- closed loop ---------- */
+  .loop-card{ padding:36px 30px 28px; display:grid; grid-template-columns:340px 1fr; gap:34px; align-items:center; }
+  @media (max-width:820px){ .loop-card{ grid-template-columns:1fr; } .loop-svg{ margin:0 auto; } }
+  .loop-svg{ max-width:340px; width:100%; }
+  .loop-steps{ display:grid; gap:12px; }
+  .loop-step{ display:flex; gap:14px; align-items:flex-start; padding:13px 16px; background:var(--soft); border:1px solid var(--line); border-radius:16px; }
+  .loop-step .n{
+    flex:none; width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:750; margin-top:1px;
+  }
+  .loop-step h4{ margin:0; font-size:15px; font-weight:700; }
+  .loop-step h4 .en{ font-weight:600; color:var(--accent); font-size:12.5px; margin-left:6px; }
+  .loop-step p{ margin:2px 0 0; font-size:13.5px; color:var(--ink-2); }
+  .loop-step p .en{ display:block; color:var(--ink-3); font-size:12.5px; }
+
+  /* ---------- honest ---------- */
+  .honest{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:820px){ .honest{ grid-template-columns:1fr; } }
+  .hcol{ padding:26px 24px; }
+  .hcol .tag{
+    display:inline-block; font-size:12px; font-weight:800; letter-spacing:.16em; padding:6px 12px; border-radius:999px; margin-bottom:14px;
+  }
+  .tag-live{ background:#E5F7EF; color:#0B7A55; }
+  .tag-prog{ background:#EAF0FE; color:var(--accent); }
+  .tag-next{ background:#FDF3E3; color:#9A6206; }
+  .hcol h3{ margin:0 0 10px; font-size:17px; font-weight:730; }
+  .hcol h3 .en{ display:block; font-size:12.5px; color:var(--ink-3); font-weight:600; margin-top:2px; }
+  .hcol ul{ margin:0; padding:0; list-style:none; }
+  .hcol li{ font-size:14px; color:var(--ink-2); padding:7px 0 7px 20px; position:relative; border-bottom:1px solid var(--soft); }
+  .hcol li:last-child{ border-bottom:none; }
+  .hcol li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:7px; border-radius:50%; background:var(--grad); }
+  .hcol li .en{ display:block; color:var(--ink-3); font-size:12.5px; }
+
+  /* ---------- footer ---------- */
+  footer{ margin-top:64px; border-top:1px solid rgba(231,236,242,.9); background:rgba(255,255,255,.45); }
+  .foot-in{ padding:34px 0 40px; display:flex; flex-wrap:wrap; gap:20px 40px; align-items:center; justify-content:space-between; }
+  .foot-brand{ display:flex; align-items:center; gap:11px; }
+  .foot-brand .t{ font-weight:700; }
+  .foot-brand .t small{ display:block; font-weight:500; color:var(--ink-3); font-size:12px; letter-spacing:.1em; }
+  .foot-links{ display:flex; flex-wrap:wrap; gap:8px 26px; font-size:14px; }
+  .foot-links a{ color:var(--accent); text-decoration:none; font-weight:600; padding:8px 2px; min-height:36px; display:inline-flex; align-items:center; }
+  .foot-links a:hover{ text-decoration:underline; }
+  .foot-links .plain{ color:var(--ink-2); font-weight:550; display:inline-flex; align-items:center; padding:8px 2px; min-height:36px; }
+  .foot-note{ width:100%; font-size:12.5px; color:var(--ink-3); }
+
+  /* ---------- content always visible (no scroll-gated reveal: a partner
+     opening the page, or any full-page capture, must see the whole
+     blueprint immediately) ---------- */
+  .rv{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){
+    .scroll-hint span{ animation:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top" aria-label="Aevos 齡界">
+      <svg width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg-top" x1="8" y1="40" x2="40" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#34D399"/><stop offset=".45" stop-color="#22C7B8"/><stop offset="1" stop-color="#0EA5E9"/>
+          </linearGradient>
+        </defs>
+        <path d="M24 4.5a19.5 19.5 0 1 1-13.8 5.7" stroke="#1D4FD7" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M24 12.5a11.5 11.5 0 1 0 8.1 3.4" stroke="url(#lg-top)" stroke-width="3.4" stroke-linecap="round"/>
+      </svg>
+      <span class="name">Aevos 齡界<small>FUTURE DESIGN BLUEPRINT</small></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#platform">定位 Platform</a>
+      <a href="#mechanism">長壽機制 Mechanism</a>
+      <a href="#roadmap">發展藍圖 Roadmap</a>
+      <a href="#loop">商業閉環 Loop</a>
+      <a href="#honest">現況 Status</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <!-- ============ 1. HERO ============ -->
+  <div class="hero">
+    <svg class="ring" width="92" height="92" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="lg-hero" x1="8" y1="40" x2="40" y2="8" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#34D399"/><stop offset=".45" stop-color="#22C7B8"/><stop offset="1" stop-color="#0EA5E9"/>
+        </linearGradient>
+      </defs>
+      <path d="M24 4.5a19.5 19.5 0 1 1-13.8 5.7" stroke="#1D4FD7" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M24 12.5a11.5 11.5 0 1 0 8.1 3.4" stroke="url(#lg-hero)" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <h1>未來 AI，不可限量。<br />長期管好你嘅健康，活到去未來。
+      <span class="en">Tomorrow's AI knows no limits. It manages your health for the long run — so you live into the future.</span>
+    </h1>
+    <p class="second">未來，會勁到你想像唔到。活得夠長，先睇得到。
+      <span class="en">The future is beyond imagination. Live long enough to see it.</span>
+    </p>
+    <div class="posline">
+      <span>Aevos 齡界</span><span class="dot"></span>
+      <span>AI × 大健康 × 生物科技</span><span class="dot"></span>
+      <span class="en">AI × Big Health × Biotech</span>
+    </div>
+    <div class="scroll-hint">設計藍圖 · DESIGN BLUEPRINT<span>↓</span></div>
+  </div>
+
+  <!-- ============ 2. PLATFORM ============ -->
+  <section id="platform">
+    <div class="sec-head rv">
+      <div class="sec-num">01</div>
+      <h2>定位：一個入口，對接成個平台<span class="en">The Platform in One View</span></h2>
+      <p>唔係單一功能，係一個以長期健康管理為核心嘅大健康平台。
+        <span class="en">Not a single feature — a big-health platform built around long-term health management.</span></p>
+    </div>
+    <div class="card platform rv">
+      <div class="platform-grid">
+        <div class="node core n-tl">
+          <h3>長期健康管理<span class="en">Long-term Health Management · Core</span></h3>
+          <p>平台嘅核心：持續跟進每一位客戶嘅健康，唔係一年先驗一次身。
+            <span class="en">The core of the platform — your health, followed continuously, not once a year.</span></p>
+        </div>
+        <div class="node n-tr">
+          <h3>AI 健康助手<span class="en">AI Health Agents</span></h3>
+          <p>隨時問、隨時答；識得睇住你嘅數據，識得幾時要提你。
+            <span class="en">Ask anytime. Agents that watch your data and know when to speak up.</span></p>
+        </div>
+        <div class="hub">
+          <svg width="44" height="44" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="lg-hub" x1="8" y1="40" x2="40" y2="8" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#34D399"/><stop offset=".45" stop-color="#22C7B8"/><stop offset="1" stop-color="#0EA5E9"/>
+              </linearGradient>
+            </defs>
+            <path d="M24 4.5a19.5 19.5 0 1 1-13.8 5.7" stroke="#1D4FD7" stroke-width="3" stroke-linecap="round"/>
+            <path d="M24 12.5a11.5 11.5 0 1 0 8.1 3.4" stroke="url(#lg-hub)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="t">Aevos App</div>
+          <div class="s">唯一入口 · ONE ENTRY</div>
+        </div>
+        <div class="node n-bl">
+          <h3>身體探索<span class="en">Body Explorer</span></h3>
+          <p>互動式 3D 身體，一問即飛去相關器官講解 — 平台嘅入門體驗。
+            <span class="en">An interactive 3D body that flies to the organ you ask about — the front door of the platform.</span></p>
+        </div>
+        <div class="node n-br">
+          <h3>健康數據紀錄<span class="en">Health Data Record</span></h3>
+          <p>你嘅健康數據長期保存、持續累積，成為日後所有服務嘅基礎。
+            <span class="en">Your health record, kept and growing over time — the foundation every service builds on.</span></p>
+        </div>
+      </div>
+      <p class="caption">用戶只需要嚟我哋個 App，就對接晒。
+        <span class="en">One app, everything connected.</span></p>
+    </div>
+  </section>
+
+  <!-- ============ 3. MECHANISM ============ -->
+  <section id="mechanism">
+    <div class="sec-head rv">
+      <div class="sec-num">02</div>
+      <h2>AI 點樣令人更長壽<span class="en">How AI Extends Healthspan</span></h2>
+      <p>唔係一句口號，係一條講得出嘅機制鏈。
+        <span class="en">Not a slogan — a mechanism you can trace, step by step.</span></p>
+    </div>
+    <div class="chain">
+      <div class="card step rv">
+        <div class="no">1</div>
+        <h3>日日睇住<span class="en">Daily Monitoring</span></h3>
+        <p>AI 長期跟住你嘅健康數據，唔係一年先驗一次身。
+          <span class="en">AI follows your health data every day — not a once-a-year check-up.</span></p>
+        <span class="arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="card step rv">
+        <div class="no">2</div>
+        <h3>早一步發現<span class="en">Earlier Detection</span></h3>
+        <p>風險喺未變成病之前，就俾佢捉到。
+          <span class="en">Risks are caught before they become illness.</span></p>
+        <span class="arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="card step rv">
+        <div class="no">3</div>
+        <h3>早一步調理<span class="en">Early Adjustment</span></h3>
+        <p>按你個人數據，調節飲食、作息同調理方案。
+          <span class="en">Diet, routine and care plans adjusted early — to your data, not a template.</span></p>
+        <span class="arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="card step grad rv">
+        <div class="no">4</div>
+        <h3>研發加速<span class="en">Accelerated R&amp;D</span></h3>
+        <p>AI 幫手研發更啱你嘅產品同方案，越做越準。
+          <span class="en">AI accelerates R&amp;D toward solutions that fit you — and keeps getting more personal.</span></p>
+      </div>
+    </div>
+    <p class="closing rv">長壽，係管出嚟嘅。
+      <span class="en">Longevity is managed, not wished for.</span></p>
+  </section>
+
+  <!-- ============ 4. ROADMAP ============ -->
+  <section id="roadmap">
+    <div class="sec-head rv">
+      <div class="sec-num">03</div>
+      <h2>發展藍圖<span class="en">The Roadmap</span></h2>
+      <p><span class="blueprint-tag">設計藍圖 · DESIGN BLUEPRINT — 以下階段為規劃方向，並非已推出服務</span>
+        <span class="en" style="display:block;margin-top:10px;">The phases below are a designed plan — direction, not yet live services.</span></p>
+    </div>
+    <div class="timeline">
+
+      <article class="card phase live rv">
+        <div class="ph-top">
+          <span class="ph-k">第一期 · PHASE 1</span>
+          <h3>AI 健康管理平台<span class="en">AI Health Management Platform</span></h3>
+          <span class="status">進行中 · NOW</span>
+        </div>
+        <p>平台嘅地基：AI 健康助手、長期健康紀錄、互動身體探索，全部喺同一個 App 入面。
+          <span class="en">The foundation: AI health agents, long-term health records and the interactive body explorer, in one app.</span></p>
+        <div class="get"><b>會員得到：</b>一個長期跟住自己健康嘅 AI 助手，同一個隨時查得到嘅身體探索入口。
+          <span class="en"><b>Members get:</b> an AI agent that follows their health over time, and a body they can explore by simply asking.</span></div>
+      </article>
+
+      <article class="card phase rv">
+        <div class="ph-top">
+          <span class="ph-k">第二期 · PHASE 2</span>
+          <h3>AI × 中醫<span class="en">AI × Traditional Chinese Medicine</span></h3>
+          <span class="status plan">規劃中 · NEXT</span>
+        </div>
+        <p>AI 輔助中醫：體質分析、調理方案 — 中西合璧嘅健康管理，調理同監測並行。
+          <span class="en">AI-assisted TCM: constitution analysis and conditioning plans — east-meets-west health management, conditioning alongside monitoring.</span></p>
+        <div class="get"><b>會員得到：</b>按自己體質度身嘅調理方向，唔再靠估。
+          <span class="en"><b>Members get:</b> conditioning guidance shaped by their own constitution — no more guesswork.</span></div>
+      </article>
+
+      <article class="card phase rv">
+        <div class="ph-top">
+          <span class="ph-k">第三期 · PHASE 3</span>
+          <h3>跨境醫療<span class="en">Cross-border Medical Services</span></h3>
+          <span class="status plan">規劃中 · PLANNED</span>
+        </div>
+        <p>一個 App 預約同協調跨境醫療服務，令優質醫療更容易接觸、成本更合理。
+          <span class="en">One app to book and coordinate medical care across borders — quality care, easier to reach and far more affordable than overseas options.</span></p>
+        <div class="get"><b>會員得到：</b>由預約到跟進，一個入口搞掂，唔使自己四圍搵、四圍對。
+          <span class="en"><b>Members get:</b> booking through follow-up handled in one place — no running around, no guesswork.</span></div>
+      </article>
+
+      <article class="card phase rv">
+        <div class="ph-top">
+          <span class="ph-k">第四期 · PHASE 4</span>
+          <h3>自家產品<span class="en">Own Products</span></h3>
+          <span class="status plan">規劃中 · PLANNED</span>
+        </div>
+        <p>由平台嘅研發同數據出發，自家研發護膚同調理產品 — 管理、服務、產品，成條鏈自己做。
+          <span class="en">Skincare and wellness products developed from the platform's own R&amp;D and data — management, services and products on one chain.</span></p>
+        <div class="get"><b>會員得到：</b>用緊嘅產品，係按平台累積嘅真實健康數據研發出嚟，唔係齋賣貨。
+          <span class="en"><b>Members get:</b> products grounded in real health data the platform has gathered — not shelf stock.</span></div>
+      </article>
+
+      <article class="card phase rv">
+        <div class="ph-top">
+          <span class="ph-k">第五期 · PHASE 5</span>
+          <h3>實體網絡<span class="en">Physical Network</span></h3>
+          <span class="status plan">規劃中 · PLANNED</span>
+        </div>
+        <p>實體店同合作醫療機構採用 Aevos 嘅儀器同系統；線下接觸點越多，數據飛輪轉得越快。
+          <span class="en">Stores and partner medical institutions running Aevos devices and systems — every physical touchpoint feeds the data flywheel.</span></p>
+        <div class="get"><b>會員得到：</b>線上線下同一份健康紀錄，去到邊都接得返。
+          <span class="en"><b>Members get:</b> one health record that follows them, online and in person.</span></div>
+      </article>
+
+      <article class="card phase rv">
+        <div class="ph-top">
+          <span class="ph-k">第六期 · PHASE 6</span>
+          <h3>大健康平台<span class="en">The Big-Health Platform</span></h3>
+          <span class="status plan">願景 · VISION</span>
+        </div>
+        <p>開放平台：其他健康系統、服務同產品都可以接入嚟 — 用戶只需要一個 App，就對接到成個大健康世界。
+          <span class="en">An open platform other health systems connect into — one app opening onto the whole world of health.</span></p>
+        <div class="get"><b>會員得到：</b>唔使逐個服務開帳戶、逐樣嘢重新填資料，一個入口做晒好多嘢。
+          <span class="en"><b>Members get:</b> no separate accounts for every service, no re-entering the same details — one entry, many doors.</span></div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ 5. CLOSED LOOP ============ -->
+  <section id="loop">
+    <div class="sec-head rv">
+      <div class="sec-num">04</div>
+      <h2>商業閉環<span class="en">The Closed Loop</span></h2>
+      <p>每一環都餵返下一環 — 轉得越多，越啱你。
+        <span class="en">Every turn of the loop feeds the next — and makes it more personal.</span></p>
+    </div>
+    <div class="card loop-card rv">
+      <svg class="loop-svg" viewBox="0 0 320 320" fill="none" role="img" aria-label="商業閉環：健康數據、AI 分析、服務、產品，循環相生。The closed loop: health data, AI insight, services, products, in a cycle.">
+        <defs>
+          <linearGradient id="lg-loop" x1="40" y1="280" x2="280" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#34D399"/><stop offset=".45" stop-color="#22C7B8"/><stop offset="1" stop-color="#0EA5E9"/>
+          </linearGradient>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="#1D4FD7"/>
+          </marker>
+        </defs>
+        <circle cx="160" cy="160" r="104" stroke="#DCE6F5" stroke-width="26"/>
+        <path d="M160 56 A104 104 0 0 1 264 160" stroke="url(#lg-loop)" stroke-width="3" marker-end="url(#arr)" opacity=".9"/>
+        <path d="M264 160 A104 104 0 0 1 160 264" stroke="#1D4FD7" stroke-width="3" marker-end="url(#arr)" opacity=".75"/>
+        <path d="M160 264 A104 104 0 0 1 56 160" stroke="url(#lg-loop)" stroke-width="3" marker-end="url(#arr)" opacity=".9"/>
+        <path d="M56 160 A104 104 0 0 1 160 56" stroke="#1D4FD7" stroke-width="3" marker-end="url(#arr)" opacity=".75"/>
+        <g font-family="inherit" text-anchor="middle">
+          <text x="160" y="46" font-size="15" font-weight="700" fill="#17202B">健康數據</text>
+          <text x="160" y="64" font-size="11" fill="#71809A">Health Data</text>
+          <text x="282" y="156" font-size="15" font-weight="700" fill="#17202B">AI 分析</text>
+          <text x="282" y="174" font-size="11" fill="#71809A">AI Insight</text>
+          <text x="160" y="272" font-size="15" font-weight="700" fill="#17202B">服務</text>
+          <text x="160" y="290" font-size="11" fill="#71809A">Services</text>
+          <text x="38" y="156" font-size="15" font-weight="700" fill="#17202B">產品</text>
+          <text x="38" y="174" font-size="11" fill="#71809A">Products</text>
+        </g>
+        <text x="160" y="152" text-anchor="middle" font-size="14" font-weight="700" fill="#1D4FD7">越轉越準</text>
+        <text x="160" y="172" text-anchor="middle" font-size="11.5" fill="#71809A">More personal,</text>
+        <text x="160" y="188" text-anchor="middle" font-size="11.5" fill="#71809A">every turn</text>
+      </svg>
+      <div class="loop-steps">
+        <div class="loop-step"><span class="n">1</span><div>
+          <h4>健康數據<span class="en">Health Data</span></h4>
+          <p>會員嘅健康數據長期累積，唔再散落喺唔同地方。<span class="en">Members' health data, gathered and kept in one place over time.</span></p></div></div>
+        <div class="loop-step"><span class="n">2</span><div>
+          <h4>AI 分析<span class="en">AI Insight</span></h4>
+          <p>AI 將數據變成睇得明、用得到嘅建議同預警。<span class="en">AI turns data into guidance and early warnings people can act on.</span></p></div></div>
+        <div class="loop-step"><span class="n">3</span><div>
+          <h4>服務<span class="en">Services</span></h4>
+          <p>醫療同中醫調理，按分析結果對接，唔使自己估邊樣啱。<span class="en">Medical care and TCM conditioning, matched to the insight — no guessing what fits.</span></p></div></div>
+        <div class="loop-step"><span class="n">4</span><div>
+          <h4>產品<span class="en">Products</span></h4>
+          <p>護膚同調理產品由研發而來，效果同反饋再變成新數據。<span class="en">Skincare and wellness products born of R&amp;D — their results become new data.</span></p></div></div>
+        <div class="loop-step"><span class="n">5</span><div>
+          <h4>更多數據<span class="en">Richer Data</span></h4>
+          <p>數據越豐富，下一輪分析越準 — 成個循環自己推動自己。<span class="en">Richer data sharpens the next round of insight — the loop drives itself.</span></p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. HONEST ============ -->
+  <section id="honest">
+    <div class="sec-head rv">
+      <div class="sec-num">05</div>
+      <h2>現況，如實<span class="en">Where We Are, Honestly</span></h2>
+      <p>做到嘅講做到，未做到嘅講未做到。
+        <span class="en">What is live, we call live. What is not, we say so.</span></p>
+    </div>
+    <div class="honest">
+      <div class="card hcol rv">
+        <span class="tag tag-live">已做到 · LIVE TODAY</span>
+        <h3>今日已經有嘅<span class="en">Live today</span></h3>
+        <ul>
+          <li>公開網站已上線，連真 AI 健康助手<span class="en">Public website live, with a working AI health agent</span></li>
+          <li>互動 3D 身體探索，一問即去到相關器官<span class="en">Interactive 3D body explorer — ask, and it takes you there</span></li>
+          <li>品牌同設計系統定版，中英雙語並行<span class="en">Brand and design system locked, bilingual throughout</span></li>
+        </ul>
+      </div>
+      <div class="card hcol rv">
+        <span class="tag tag-prog">進行中 · IN PROGRESS</span>
+        <h3>而家做緊嘅<span class="en">In progress</span></h3>
+        <ul>
+          <li>完整平台按設計藍圖持續開發中<span class="en">The full platform, under active development per this blueprint</span></li>
+          <li>程式碼庫跟藍圖結構推進<span class="en">Codebase advancing along the blueprint's architecture</span></li>
+          <li>AI 助手能力同知識持續擴充<span class="en">Agent capabilities and knowledge, expanding steadily</span></li>
+        </ul>
+      </div>
+      <div class="card hcol rv">
+        <span class="tag tag-next">下一步 · NEXT</span>
+        <h3>跟住落嚟嘅<span class="en">What comes next</span></h3>
+        <ul>
+          <li>合作夥伴對接同服務設計<span class="en">Partnership and service design</span></li>
+          <li>第二期 AI × 中醫嘅設計工作<span class="en">Design work for Phase 2, AI × TCM</span></li>
+          <li>會員長期健康管理流程定型<span class="en">Shaping the long-term member health journey</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:20px"></div>
+</main>
+
+<!-- ============ 7. FOOTER ============ -->
+<footer>
+  <div class="wrap foot-in">
+    <div class="foot-brand">
+      <svg width="36" height="36" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg-foot" x1="8" y1="40" x2="40" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#34D399"/><stop offset=".45" stop-color="#22C7B8"/><stop offset="1" stop-color="#0EA5E9"/>
+          </linearGradient>
+        </defs>
+        <path d="M24 4.5a19.5 19.5 0 1 1-13.8 5.7" stroke="#1D4FD7" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M24 12.5a11.5 11.5 0 1 0 8.1 3.4" stroke="url(#lg-foot)" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <span class="t">Aevos 齡界<small>HONG KONG · 香港</small></span>
+    </div>
+    <div class="foot-links">
+      <span class="plain">Instagram</span>
+      <a href="https://www.instagram.com/aevos.hk" target="_blank" rel="noopener">@aevos.hk</a>
+      <span class="plain">網站 Website</span>
+      <a href="https://samhui6688-spec.github.io/aevos/" target="_blank" rel="noopener">samhui6688-spec.github.io/aevos</a>
+    </div>
+    <p class="foot-note">本頁為 Aevos 齡界嘅未來設計藍圖：已推出嘅部分會如實標示，規劃中嘅階段屬設計方向，並非現有服務。
+      <br />This page is Aevos' future design blueprint. Live elements are marked as such; planned phases describe design direction, not current services.</p>
+  </div>
+</footer>
+
+</body>
+</html>
