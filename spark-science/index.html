@@ -2833,15 +2833,71 @@ apply(cur);
     if(b && b !== chipsBox) ask(b.textContent);
   });
 
-  /* ---------- 語音輸入（瀏覽器內置辨識，語言跟網站語言） ---------- */
+  /* ---------- 語音輸入：① 瀏覽器辨識 ② AI 語音（錄音直送後台 AI 聽＋轉寫＋答）③ 都冇→浮動提示（唔入對話、唔重複） ---------- */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var recog = null, listening = false;
+  var toastEl = null, toastTimer = null;
+  function voiceToast(){
+    if(!toastEl){
+      toastEl = document.createElement('div');
+      toastEl.className = 'qa-toast';
+      panel.appendChild(toastEl);
+    }
+    toastEl.textContent = ui().voiceNo;
+    toastEl.classList.add('show');
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3600);
+  }
   function stopMicUI(){ listening = false; micBtn.classList.remove('listening'); }
+
+  /* AI 語音：錄音 → __sparkSendChat({audio})；轉寫做用戶訊息、答案做回覆 */
+  var rec = null, recChunks = [], recStream = null, recording = false;
+  function stopRecStream(){ if(recStream){ recStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); recStream = null; } }
+  function startRec(){
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+      recStream = stream;
+      recChunks = [];
+      try{ rec = new MediaRecorder(stream); }catch(e){ stopRecStream(); voiceToast(); return; }
+      rec.ondataavailable = function(ev){ if(ev.data && ev.data.size) recChunks.push(ev.data); };
+      rec.onstop = function(){
+        stopRecStream(); stopMicUI(); recording = false;
+        var blob = new Blob(recChunks, { type: rec.mimeType || 'audio/mp4' });
+        if(!blob.size || typeof window.__sparkSendChat !== 'function'){ voiceToast(); return; }
+        var rd = new FileReader();
+        rd.onload = function(){
+          var m = /^data:([^;]+);base64,(.*)$/.exec(rd.result || '');
+          if(!m){ voiceToast(); return; }
+          var typing = addMsg('bot', '<span class="qa-typing-dots"><i></i><i></i><i></i></span>');
+          var settled = false;
+          window.__sparkSendChat({ text: '', audio: { mimeType: m[1], data: m[2] }, lang: lang(),
+            onTranscript: function(t){
+              if(!t) return;
+              var d = document.createElement('div');
+              d.className = 'qa-msg user';
+              d.textContent = t;
+              msgs.insertBefore(d, typing);
+            },
+            reply: function(html){
+              if(settled) return; settled = true;
+              if(html){ typing.innerHTML = html; }
+              else { typing.remove(); voiceToast(); }
+              msgs.scrollTop = msgs.scrollHeight;
+            }});
+        };
+        rd.readAsDataURL(blob);
+      };
+      recording = true;
+      micBtn.classList.add('listening');
+      rec.start();
+      setTimeout(function(){ if(recording && rec && rec.state === 'recording'){ try{ rec.stop(); }catch(e){} } }, 30000);
+    }).catch(function(){ voiceToast(); });
+  }
   micBtn.addEventListener('click', function(){
+    if(recording && rec){ try{ rec.stop(); }catch(e){} return; }
     if(listening && recog){ try{ recog.stop(); }catch(e){} return; }
     if(!SR){
-      if(!panel.classList.contains('open')) openPanel();
-      setTimeout(function(){ addMsg('bot', ui().voiceNo); }, 200);
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder){ startRec(); }
+      else voiceToast();
       return;
     }
     try{
@@ -2858,9 +2914,7 @@ apply(cur);
       };
       recog.onerror = function(ev){
         stopMicUI();
-        if(ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed' || ev.error === 'audio-capture')){
-          setTimeout(function(){ addMsg('bot', ui().voiceNo); }, 200);
-        }
+        if(ev && (ev.error === 'not-allowed' || ev.error === 'service-not-allowed' || ev.error === 'audio-capture')) voiceToast();
       };
       recog.onend = function(){
         var wasListening = listening;
@@ -2873,7 +2927,7 @@ apply(cur);
       recog.start();
     }catch(e){
       stopMicUI();
-      setTimeout(function(){ addMsg('bot', ui().voiceNo); }, 200);
+      voiceToast();
     }
   });
 
@@ -3028,8 +3082,18 @@ window.__SPARK_ANALYTICS_TOKEN = "";
   window.__sparkSendChat = function(opts){
     var replied = false;
     function done(html){ if(!replied){ replied = true; try{ opts.reply(html); }catch(e){} } }
-    setTimeout(function(){ done(null); }, 25000);
+    setTimeout(function(){ done(null); }, opts.audio ? 40000 : 25000);
     var text = opts.text || "";
+    if(opts.audio){
+      post("/chat", { message: "", audio: opts.audio, history: [], lang: opts.lang || "en" }, 35000).then(function(j){
+        if(j && j.ok && j.reply){
+          if(j.transcript && opts.onTranscript){ try{ opts.onTranscript(j.transcript); }catch(e){} }
+          done(fmt(j.reply));
+        }
+        else done(null);
+      }).catch(function(){ done(null); });
+      return;
+    }
     if(!opts.image && isImageReq(text)){
       post("/image", { prompt: text }, 45000).then(function(j){
         if(j && j.ok && j.image) done('<img class="qa-genimg" alt="" src="data:' + (j.mimeType || "image/png") + ";base64," + j.image + '">');
@@ -3058,6 +3122,8 @@ window.__SPARK_ANALYTICS_TOKEN = "";
 #qaPanel .qa-chip{width:auto;min-height:38px;flex:0 0 auto;display:inline-flex;align-items:center;font-size:13.5px;padding:7px 12px;white-space:nowrap;line-height:1.3}
 .course p{flex:0 0 auto}
 .course .inc{margin-top:auto}
+.qa-toast{position:absolute;left:50%;bottom:88px;transform:translateX(-50%) translateY(8px);background:#123f31;color:#eafff3;border:1px solid rgba(126,255,196,.45);padding:9px 14px;border-radius:10px;font-size:13.5px;line-height:1.45;max-width:88%;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:6}
+.qa-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </body>
 </html>
