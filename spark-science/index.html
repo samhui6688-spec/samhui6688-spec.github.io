@@ -1097,10 +1097,10 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
         </form>
         <div class="cta-row">
           <a class="btn btn-gold mail-link" href="mailto:Sales@codelife.ai?subject=%E9%A0%90%E7%B4%84%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%20-%20Spark%20Science%20Education" data-i18n="cta.book">預約課程簡介</a>
-          <a class="btn btn-wa wa-link" href="https://api.whatsapp.com/send?phone=85253388510&text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
+          <a class="btn btn-wa wa-link" href="https://api.whatsapp.com/send?phone=85298895833&text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
           <a class="btn btn-mail" href="mailto:Sales@codelife.ai">Sales@codelife.ai</a>
         </div>
-        <p style="margin-top:14px;font-size:15px;color:#cfe3d6">WhatsApp / 電話：<a href="tel:+85253388510" style="color:#e9cf7a;text-decoration:none">+852 5338 8510</a></p>
+        <p style="margin-top:14px;font-size:15px;color:#cfe3d6">WhatsApp / 電話：<a href="tel:+85298895833" style="color:#e9cf7a;text-decoration:none">+852 9889 5833</a></p>
       </div>
     </div>
   </section>
@@ -1117,7 +1117,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
 </div>
 
 <div class="stickybar">
-  <a class="wa wa-link" href="https://api.whatsapp.com/send?phone=85253388510&text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
+  <a class="wa wa-link" href="https://api.whatsapp.com/send?phone=85298895833&text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
   <a class="bk mail-link" href="mailto:Sales@codelife.ai?subject=%E9%A0%90%E7%B4%84%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%20-%20Spark%20Science%20Education" data-i18n="cta.book">預約課程簡介</a>
 </div>
 
@@ -2366,7 +2366,7 @@ ko: {
 var HTML_LANG = {en:"en", zh:"zh-Hant", hans:"zh-Hans", ja:"ja", ko:"ko"};
 var cur = "en";
 try{ var saved = localStorage.getItem("spark-lang"); if(saved && I18N[saved]) cur = saved; }catch(e){}
-function waUrl(l){ var d = I18N[l] || I18N.en; return "https://api.whatsapp.com/send?phone=85253388510&text=" + encodeURIComponent(d["wa.text"]); }
+function waUrl(l){ var d = I18N[l] || I18N.en; return "https://api.whatsapp.com/send?phone=85298895833&text=" + encodeURIComponent(d["wa.text"]); }
 function apply(l){
   if(!I18N[l]) l = "en";
   cur = l;
@@ -2659,7 +2659,7 @@ apply(cur);
   function ui(){ return UI[lang()] || UI.en; }
   function waUrl(){
     if(window.__sparkI18n && window.__sparkI18n.waUrl) return window.__sparkI18n.waUrl(lang());
-    return "https://api.whatsapp.com/send?phone=85253388510&text=" + encodeURIComponent("你好，我想查詢 Spark Science Education 的 AI 創新課程系列，希望安排課程簡介會。");
+    return "https://api.whatsapp.com/send?phone=85298895833&text=" + encodeURIComponent("你好，我想查詢 Spark Science Education 的 AI 創新課程系列，希望安排課程簡介會。");
   }
   function ctaHtml(){
     var u = ui();
@@ -2978,7 +2978,7 @@ apply(cur);
   form.addEventListener("submit", function(e){
     e.preventDefault();
     if(!validate()) return;
-    window.open("https://api.whatsapp.com/send?phone=85253388510&text=" + encodeURIComponent(compose()), "_blank");
+    window.open("https://api.whatsapp.com/send?phone=85298895833&text=" + encodeURIComponent(compose()), "_blank");
   });
   var mailBtn = document.getElementById("efMailBtn");
   if(mailBtn) mailBtn.addEventListener("click", function(){
