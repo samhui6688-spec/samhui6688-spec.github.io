@@ -171,6 +171,8 @@ a{color:inherit}
 .sc-card .sc-float{animation:scFloat 3.6s ease-in-out infinite}
 @keyframes scFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(.4deg)}}
 .sc-card img{width:100%;height:auto}
+.sc-card .sc-media img{height:100%}
+.result .sc-media img{height:100%}
 .sc-card figcaption{
   padding:12px 16px 14px;text-align:center;color:#eaf3ec;
   font-weight:700;font-size:clamp(15px,2.3vw,19px);letter-spacing:.03em;line-height:1.5;
@@ -2424,7 +2426,7 @@ apply(cur);
   var UI = {
     en: {
       greet: "Hello! I'm the Spark Science course Q&A assistant. Ask me about programme content, fees, durations, funding, certificates, the booking process, our teaching team and competition results — I'll answer instantly using the information published on this website. Tap a common question below, or type, speak, or attach an image to ask.",
-      fallback: "I can't answer that from the programme information published so far, and I don't want to mislead you with a guess. You can ask our team directly, or try one of these: How much are the fees? How does the funding work? Is there a certificate? How do I book?{CTA}",
+      fallback: "I don't have published information on that yet, so I won't guess. But I can answer course questions right away from the published information: programme content, fees, durations, funding applications, certificate arrangements, booking, the teaching team and competition results. Tap a question below, or ask our team directly.{CTA}",
       chips: ["How much are the fees?","How does the funding work?","Is there a certificate?","How do I book?","Who teaches the programmes?","What competition results do you have?"],
       ctaWa: "WhatsApp our team",
       ctaMail: "Email Sales@codelife.ai",
@@ -2434,7 +2436,7 @@ apply(cur);
     },
     zh: {
       greet: "你好！我係 Spark Science 嘅課程智能問答。你可以問我課程內容、收費、課時、撥款、證書、預約流程、導師團隊同比賽成績——我會用本網站已公佈嘅資料即時答你。㩒下面嘅常問問題，或者直接打字、㩒咪講嘢、附加圖片發問都得。",
-      fallback: "呢個問題，我手頭上已公佈嘅課程資料答唔到，唔想亂作誤導你。你可以直接問我哋真人同事，或者試吓問：課程幾錢？點申請撥款？有冇證書？點預約？{CTA}",
+      fallback: "呢條問題我手頭上未有資料，唔會亂答誤導你。不過課程方面嘅問題，我有齊已公佈嘅資料可以即刻答你：課程內容、收費、課時、點申請撥款、證書安排、點預約、邊個任教、同比賽成績。你可以㩒下面啲問題，或者直接問我哋真人同事。{CTA}",
       chips: ["課程幾錢？","點申請撥款？","有冇證書？","點預約？","邊個任教？","有咩比賽成績？"],
       ctaWa: "WhatsApp 問真人",
       ctaMail: "電郵 Sales@codelife.ai",
@@ -2476,6 +2478,8 @@ apply(cur);
 
   var KB = {
   en: [
+    { k:["what can you answer","what can i ask","what do you know","help me","questions can"],
+      a:"I can answer these right away, all from the programme information published on this website:\n・Programme content (all three courses)\n・Fees and durations\n・How to apply for EDB funding\n・Certificate arrangements\n・The booking process\n・Our teaching team\n・Competition results\nTap a common question below, or just type your question." },
     { k:["fee","fees","price","cost","how much","tuition","charge"],
       a:"Programme fees (in HKD):\n・Course 1 \"Bringing AI into Everyday Life\": from HK$50,000 (from 2 days)\n・Course 2 \"When Biotechnology Meets AI\": from HK$100,000 (from 3–4 lessons)\n・Course 3 \"Nurturing Future Biotech Inventors\": from HK$200,000 (from 8 lessons)\nThe actual fee depends on student numbers and programme arrangement; we will provide a quotation tailored to your school at the programme briefing." },
     { k:["course 1","microcontroller","everyday life","smart device"],
@@ -2510,6 +2514,8 @@ apply(cur);
       a:"We are Spark Science Education, operated by Solar Trinity Science Limited. We provide AI × biotechnology programmes designed for Hong Kong secondary schools: from programming in practice and platform design to laboratory validation, students experience the complete research process first-hand, taught by a team led by doctoral-level instructors." }
   ],
   zh: [
+    { k:["你可以答","有咩問題","識答","可以問","咩問題","幫到我","有咩可以問"],
+      a:"我可以即刻答你呢啲，全部嚟自本網站已公佈嘅課程資料，有根有據：\n・課程內容同特色（三大課程）\n・收費同課時\n・點樣申請教育局撥款\n・證書安排\n・預約流程\n・導師團隊\n・比賽成績\n你㩒下面啲常問問題，或者直接打字問我就得。" },
     { k:["幾錢","收費","價錢","價格","費用","學費","幾多錢","price"],
       a:"三個課程嘅學費（港幣）如下：\n・課程一「讓 AI 走進生活」：HK$50,000 起（2 日起）\n・課程二「當生物科技遇上 AI」：HK$100,000 起（3–4 堂起）\n・課程三「培育未來生物發明家」：HK$200,000 起（8 堂起）\n實際費用按學生人數及課程編排而定，我哋會喺課程簡介會按學校需要報價。" },
     { k:["課程一","單晶片","微電腦","走進生活","智能裝置"],
