@@ -8,8 +8,16 @@
 <meta property="og:title" content="Spark Science Education（創智・未來）｜AI 創新課程系列">
 <meta property="og:description" content="結合學生創意與科技，締造未來。AI 創新課程系列，專為香港中學而設，現正接受預約。">
 <meta property="og:type" content="website">
-<meta property="og:image" content="assets/hero-desktop.webp">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' fill='%232e7d5b'%3E%E2%9C%B3%3C/text%3E%3C/svg%3E">
+<meta property="og:url" content="https://samhui6688-spec.github.io/spark-science/">
+<meta property="og:image" content="https://samhui6688-spec.github.io/spark-science/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Spark Science Education（創智・未來）｜AI 創新課程系列">
+<meta name="twitter:description" content="結合學生創意與科技，締造未來。AI 創新課程系列，專為香港中學而設，現正接受預約。">
+<meta name="twitter:image" content="https://samhui6688-spec.github.io/spark-science/assets/og.jpg">
+<meta name="theme-color" content="#0a2016">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preload" as="image" href="assets/bg-desktop.webp" media="(orientation: landscape)">
 <link rel="preload" as="image" href="assets/bg-phone.webp" media="(orientation: portrait)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -610,6 +618,47 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
 @media (prefers-reduced-motion: reduce){
   #qaFab,#qaPanel{transition:none}
 }
+
+/* === 第十一輪：課程卡「包括」清單 === */
+.course .inc{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(127,200,169,.25)}
+.course .inc-h{
+  font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--gold-bright);margin-bottom:7px;
+}
+.course .inc ul{list-style:none}
+.course .inc li{
+  font-size:14.5px;line-height:1.6;color:var(--ink-soft);
+  padding:3px 0 3px 18px;position:relative;
+}
+.course .inc li::before{
+  content:"";position:absolute;left:1px;top:.72em;width:7px;height:7px;
+  background:var(--gold);transform:rotate(45deg);
+}
+
+/* === 第十一輪：聯絡區查詢表格 === */
+.enq{
+  margin-top:28px;padding-top:24px;border-top:1px solid rgba(127,200,169,.25);
+  text-align:left;
+}
+.enq-h{
+  font-family:var(--mono);font-size:13px;letter-spacing:.22em;color:var(--gold-bright);
+  text-align:center;margin-bottom:18px;
+}
+.enq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.enq .fld{display:flex;flex-direction:column;gap:6px}
+.enq .fld.wide{grid-column:1 / -1}
+.enq .fld span{font-size:15px;font-weight:700;color:#eaf3ec}
+.enq .fld input,.enq .fld select,.enq .fld textarea{
+  font:inherit;font-size:16px;color:#fff;color-scheme:dark;
+  background:rgba(16,44,29,.85);border:1px solid rgba(127,200,169,.35);border-radius:3px;
+  padding:12px;min-height:48px;outline:none;width:100%;
+}
+.enq .fld textarea{min-height:84px;resize:vertical}
+.enq .fld input:focus,.enq .fld select:focus,.enq .fld textarea:focus{border-color:rgba(127,200,169,.9)}
+.enq .fld input.invalid,.enq .fld select.invalid,.enq .fld textarea.invalid{border-color:#e0655f}
+.enq-err{color:#f0928c;font-size:15px;margin-top:14px}
+.enq-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.enq-actions .btn{flex:1;text-align:center;cursor:pointer;border:none;font:inherit;min-height:48px}
+@media(max-width:640px){.enq-grid{grid-template-columns:1fr}}
 </style>
 <style>
 /* ================= 第十輪：雙語＋設計＋可讀性覆蓋層 ================= */
@@ -870,7 +919,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
       <h1 data-i18n="hero.h1">結合學生創意與科技，締造未來</h1>
       <p class="sub" data-i18n-html="hero.sub">iGEM 金獎導師團隊任教，學生親身走進 <b>AI 科研</b></p>
       <figure>
-        <img src="assets/ceremony.webp" data-i18n-alt="hero.alt" alt="合作學校於 2025 香港 InnoHealth Cup 奪冠頒獎禮合照" loading="lazy">
+        <img src="assets/ceremony.webp" data-i18n-alt="hero.alt" alt="合作學校於 2025 香港 InnoHealth Cup 奪冠頒獎禮合照" loading="lazy" decoding="async">
         <figcaption data-i18n="hero.cap">學生屢獲國際殊榮——合作學校勇奪 2025 香港 InnoHealth Cup 冠軍</figcaption>
       </figure>
     </div>
@@ -912,33 +961,36 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
       <h2 class="sec-title"><span class="en" data-i18n="courses.en">SEC.02 // PROGRAMMES — 課程系列</span><span data-i18n="courses.title">創智・未來 AI 創新課程系列</span></h2>
       <div class="grid c3">
         <article class="card course">
-          <img class="cover" src="assets/course-1.webp" width="1200" height="800" data-i18n-alt="c1.alt" alt="學生親手接駁單晶片微電腦，並以手提電腦編程" loading="lazy">
+          <img class="cover" src="assets/course-1.webp" width="1200" height="800" data-i18n-alt="c1.alt" alt="學生親手接駁單晶片微電腦，並以手提電腦編程" loading="lazy" decoding="async">
           <div class="body">
             <div class="tag"><span data-i18n="c1.tag">課程一</span><span class="idx">COURSE / 01</span></div>
             <h3 data-i18n="c1.name">讓 AI 走進生活</h3>
             <div class="en" data-i18n="c1.sub">AI + 單晶片微電腦編程課程</div>
             <p data-i18n="c1.p">學生親手接線及編程單晶片微電腦，並以 AI 協助構思及調試，完成可實際運作的智能裝置專題。課程包括 AI 圖像生成。</p>
+            <div class="inc"><div class="inc-h" data-i18n="inc.h">包括</div><ul><li data-i18n="inc.ai">AI 圖像生成環節</li><li data-i18n="inc.cert">完成課程可獲香港城市大學頒發證書</li><li data-i18n="inc.c1a">親手接線及編程</li><li data-i18n="inc.c1b">完成可運作的智能裝置專題</li></ul></div>
             <div class="meta"><div class="row"><span class="k" data-i18n="meta.dur">課時</span><span class="v" data-i18n="c1.dur">2 日起</span></div><div class="row"><span class="k" data-i18n="meta.fee">學費</span><span class="v" data-i18n="c1.fee">HK$50,000 起</span></div></div>
           </div>
         </article>
         <article class="card course">
-          <img class="cover" src="assets/course-2.webp" width="1200" height="675" data-i18n-alt="c2.alt" alt="學生在課室望住大屏幕上的蛋白質 3D 結構學習" loading="lazy">
+          <img class="cover" src="assets/course-2.webp" width="1200" height="675" data-i18n-alt="c2.alt" alt="學生在課室望住大屏幕上的蛋白質 3D 結構學習" loading="lazy" decoding="async">
           <div class="body">
             <div class="tag"><span data-i18n="c2.tag">課程二</span><span class="idx">COURSE / 02</span></div>
             <h3 data-i18n="c2.name">當生物科技遇上 AI</h3>
             <div class="en" data-i18n="c2.sub">AI + 創新蛋白質設計課程 ft. CodeLifeAI</div>
             <p data-i18n="c2.p">學生在 CodeLifeAI 平台上讀懂蛋白質 3D 結構，以 AI 生成候選設計，再以結構預測及評分逐一篩選，體驗真正的生物設計流程。課程包括 AI 圖像生成。</p>
+            <div class="inc"><div class="inc-h" data-i18n="inc.h">包括</div><ul><li data-i18n="inc.ai">AI 圖像生成環節</li><li data-i18n="inc.cert">完成課程可獲香港城市大學頒發證書</li><li data-i18n="inc.c2a">CodeLifeAI 平台實作</li><li data-i18n="inc.c2b">真實生物設計流程（結構預測及評分篩選）</li></ul></div>
             <div class="meta"><div class="row"><span class="k" data-i18n="meta.dur">課時</span><span class="v" data-i18n="c2.dur">3–4 堂起</span></div><div class="row"><span class="k" data-i18n="meta.fee">學費</span><span class="v" data-i18n="c2.fee">HK$100,000 起</span></div></div>
             <a class="btn btn-green platform-link" href="https://codelife.ai" target="_blank" rel="noopener" data-i18n="c2.platform">進入 CodeLifeAI 平台睇睇</a>
           </div>
         </article>
         <article class="card course">
-          <img class="cover" src="assets/course-3.webp" width="1200" height="675" data-i18n-alt="c3.alt" alt="實驗室內導師帶領學生使用微量移液器做實驗" loading="lazy">
+          <img class="cover" src="assets/course-3.webp" width="1200" height="675" data-i18n-alt="c3.alt" alt="實驗室內導師帶領學生使用微量移液器做實驗" loading="lazy" decoding="async">
           <div class="body">
             <div class="tag"><span data-i18n="c3.tag">課程三</span><span class="idx">COURSE / 03</span></div>
             <h3 data-i18n="c3.name">培育未來生物發明家</h3>
             <div class="en" data-i18n="c3.sub">創新蛋白質設計 + 專業導師實驗課程</div>
             <p data-i18n="c3.p">在課程二的基礎上，學生把自己的設計帶到實驗室，由專業導師帶領親手驗證。課程包括 AI 圖像生成。</p>
+            <div class="inc"><div class="inc-h" data-i18n="inc.h">包括</div><ul><li data-i18n="inc.ai">AI 圖像生成環節</li><li data-i18n="inc.cert">完成課程可獲香港城市大學頒發證書</li><li data-i18n="inc.c3a">專業導師帶領的實驗室實作</li><li data-i18n="inc.c3b">具專業醫務化驗師背景的導師負責實驗教學</li></ul></div>
             <div class="meta"><div class="row"><span class="k" data-i18n="meta.dur">課時</span><span class="v" data-i18n="c3.dur">8 堂起</span></div><div class="row"><span class="k" data-i18n="meta.fee">學費</span><span class="v" data-i18n="c3.fee">HK$200,000 起</span></div></div>
           </div>
         </article>
@@ -949,7 +1001,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
         <div class="v-grid">
           <figure>
             <div class="mol3d" id="mol3d" role="img" data-i18n-aria="mol.aria" aria-label="T4 溶菌酶（PDB 2LZM）互動 3D 結構，可以拖動旋轉">
-              <img class="mol-fallback" src="assets/protein-2lzm.webp" width="800" height="800" data-i18n-alt="mol.alt" alt="T4 溶菌酶（PDB 2LZM）結構圖" loading="lazy">
+              <img class="mol-fallback" src="assets/protein-2lzm.webp" width="800" height="800" data-i18n-alt="mol.alt" alt="T4 溶菌酶（PDB 2LZM）結構圖" loading="lazy" decoding="async">
               <div class="mol-hint" data-i18n="mol.hint">拖動旋轉・滾輪／雙指縮放</div>
             </div>
           </figure>
@@ -973,7 +1025,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     <div class="wrap">
       <h2 class="sec-title"><span class="en" data-i18n="team.en">SEC.03 // RESEARCH TEAM — 科研團隊</span><span data-i18n="team.title">科研團隊</span></h2>
       <figure class="team-photo">
-        <img src="assets/team-official-nostrip.webp" data-i18n-alt="team.alt" alt="Spark Science Education 科研團隊五人合照" loading="lazy">
+        <img src="assets/team-official-nostrip.webp" data-i18n-alt="team.alt" alt="Spark Science Education 科研團隊五人合照" loading="lazy" decoding="async">
       </figure>
       <div class="team-names">
         <div class="tn"><div class="nm" data-i18n="team.n1">林文傑教授</div><div class="ti" data-i18n="team.t1">首席科學顧問</div></div>
@@ -994,15 +1046,15 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
       </div>
       <div class="grid c3">
         <article class="card result">
-          <img class="fit" src="assets/kapi.jpg" data-i18n-alt="r1.alt" alt="iGEM 2024 輔導隊伍 KAPI" loading="lazy">
+          <img class="fit" src="assets/kapi.jpg" data-i18n-alt="r1.alt" alt="iGEM 2024 輔導隊伍 KAPI" loading="lazy" decoding="async">
           <div class="body"><div class="yr">iGEM 2024</div><h3 data-i18n="r1.h">全球大賽金獎</h3><p data-i18n="r1.p">輔導隊伍 KAPI 於 iGEM 全球大賽奪得金獎。</p></div>
         </article>
         <article class="card result">
-          <img class="fit" src="assets/pestiguard.webp" data-i18n-alt="r2.alt" alt="iGEM 2025 輔導隊伍 PestiGuard" loading="lazy">
+          <img class="fit" src="assets/pestiguard.webp" data-i18n-alt="r2.alt" alt="iGEM 2025 輔導隊伍 PestiGuard" loading="lazy" decoding="async">
           <div class="body"><div class="yr">iGEM 2025</div><h3 data-i18n="r2.h">全球大賽金獎</h3><p data-i18n="r2.p">輔導隊伍 PestiGuard 於 iGEM 全球大賽奪得金獎，更躋身全球高中組前十。</p></div>
         </article>
         <article class="card result">
-          <img src="assets/ceremony.webp" data-i18n-alt="r3.alt" alt="九龍真光中學勇奪 InnoHealth Cup 2025 冠軍" loading="lazy">
+          <img src="assets/ceremony.webp" data-i18n-alt="r3.alt" alt="九龍真光中學勇奪 InnoHealth Cup 2025 冠軍" loading="lazy" decoding="async">
           <div class="body"><div class="yr">InnoHealth Cup 2025</div><h3 data-i18n="r3.h">冠軍</h3><p data-i18n="r3.p">合作學校九龍真光中學勇奪 2025 香港 InnoHealth Cup 冠軍。</p></div>
         </article>
       </div>
@@ -1028,11 +1080,27 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
         <div class="eyebrow" data-i18n="contact.eyebrow">SEC.06 // CONTACT — 聯絡我們</div>
         <h3 style="margin-top:16px" data-i18n="contact.h">現在為您的學生開展 AI 科研之旅</h3>
         <p data-i18n="contact.p">歡迎學校老師及科主任查詢，我們可按學校需要安排課程簡介會或平台示範。如有任何疑問，歡迎隨時聯絡我們查詢。</p>
+        <form class="enq" id="enquiryForm" novalidate>
+          <div class="enq-h" data-i18n="form.h">查詢表格</div>
+          <div class="enq-grid">
+            <label class="fld"><span data-i18n="form.school">學校名稱</span><input id="efSchool" type="text" autocomplete="organization" data-i18n-ph="form.ph.school" placeholder="例如：XX 中學"></label>
+            <label class="fld"><span data-i18n="form.name">聯絡人</span><input id="efName" type="text" autocomplete="name" data-i18n-ph="form.ph.name" placeholder="姓名及職銜"></label>
+            <label class="fld"><span data-i18n="form.contact">聯絡電話或電郵</span><input id="efContact" type="text" data-i18n-ph="form.ph.contact" placeholder="電話號碼或電郵地址"></label>
+            <label class="fld"><span data-i18n="form.course">想查詢的課程</span><select id="efCourse"><option data-i18n="form.opt.c1">課程一 — 讓 AI 走進生活</option><option data-i18n="form.opt.c2">課程二 — 當生物科技遇上 AI</option><option data-i18n="form.opt.c3">課程三 — 培育未來生物發明家</option><option data-i18n="form.opt.undecided">未定・想了解多啲</option></select></label>
+            <label class="fld wide"><span data-i18n="form.msg">留言（可選）</span><textarea id="efMsg" rows="3" data-i18n-ph="form.ph.msg" placeholder="有咩想我哋知嘅可以寫低（可選）"></textarea></label>
+          </div>
+          <p class="enq-err" id="efErr" role="alert" hidden></p>
+          <div class="enq-actions">
+            <button type="submit" class="btn btn-wa" data-i18n="form.submit">用 WhatsApp 遞交</button>
+            <button type="button" class="btn btn-mail" id="efMailBtn" data-i18n="form.mail">改用電郵遞交</button>
+          </div>
+        </form>
         <div class="cta-row">
           <a class="btn btn-gold mail-link" href="mailto:Sales@codelife.ai?subject=%E9%A0%90%E7%B4%84%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%20-%20Spark%20Science%20Education" data-i18n="cta.book">預約課程簡介</a>
-          <a class="btn btn-wa wa-link" href="https://api.whatsapp.com/send?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
+          <a class="btn btn-wa wa-link" href="https://api.whatsapp.com/send?phone=85253388510&text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
           <a class="btn btn-mail" href="mailto:Sales@codelife.ai">Sales@codelife.ai</a>
         </div>
+        <p style="margin-top:14px;font-size:15px;color:#cfe3d6">WhatsApp / 電話：<a href="tel:+85253388510" style="color:#e9cf7a;text-decoration:none">+852 5338 8510</a></p>
       </div>
     </div>
   </section>
@@ -1049,7 +1117,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
 </div>
 
 <div class="stickybar">
-  <a class="wa wa-link" href="https://api.whatsapp.com/send?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
+  <a class="wa wa-link" href="https://api.whatsapp.com/send?phone=85253388510&text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E6%9F%A5%E8%A9%A2%20Spark%20Science%20Education%20%E7%9A%84%20AI%20%E5%89%B5%E6%96%B0%E8%AA%B2%E7%A8%8B%E7%B3%BB%E5%88%97%EF%BC%8C%E5%B8%8C%E6%9C%9B%E5%AE%89%E6%8E%92%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%E3%80%82" target="_blank" rel="noopener" data-i18n="cta.wa">WhatsApp 查詢</a>
   <a class="bk mail-link" href="mailto:Sales@codelife.ai?subject=%E9%A0%90%E7%B4%84%E8%AA%B2%E7%A8%8B%E7%B0%A1%E4%BB%8B%E6%9C%83%20-%20Spark%20Science%20Education" data-i18n="cta.book">預約課程簡介</a>
 </div>
 
@@ -1484,7 +1552,7 @@ en: {
 "sc.mem3": "鄺緯陽博士 · Founder & Chief Scientific Officer",
 "sc.mem4": "宋振州博士 · Research Director",
 "sc.mem5": "黃桂林博士 · Education Advisor",
-"sc.cap.inno": "InnoHealth Cup 2025 Champions (Kowloon True Light School)",
+"sc.cap.inno": "InnoHealth Cup 2025 Champion (Kowloon True Light School)",
 "sc.cap.kapi": "iGEM 2024 Gold Award · KAPI (AI Anti-Cancer Peptides)",
 "sc.cap.pesti": "iGEM 2025 Gold Award · PestiGuard (Global Top 10, High School Division)",
 "sc.cap.mentor": "Mentoring teams from 9 Hong Kong secondary schools",
@@ -1493,7 +1561,7 @@ en: {
 "sc.alt.kapi": "News photo of mentored team KAPI winning a Gold Award at iGEM 2024",
 "sc.alt.pesti": "Group photo of mentored team PestiGuard, Gold Award winner at iGEM 2025 and global top 10 in the high school division",
 "sc.alt.mentor": "Group photo of the mentor team coaching Hong Kong secondary school student teams",
-"lead.main": "Led by <strong>Dr Kwong</strong>, our Founder & Chief Scientific Officer",
+"lead.main": "Led by <strong>Dr. Keith Wai-Yeung Kwong</strong>, our Founder & Chief Scientific Officer",
 "brand.sub": "EDUCATION · 創智・未來",
 "nav.courses": "Programmes",
 "nav.team": "Research Team",
@@ -1504,11 +1572,11 @@ en: {
 "hero.h1": "Combining Student Creativity with Technology to Create the Future",
 "hero.sub": "Taught by an iGEM Gold Award mentor team — students step into <b>AI research</b> first-hand",
 "hero.alt": "Partner school winning the championship at the 2025 Hong Kong InnoHealth Cup award ceremony",
-"hero.cap": "Our students keep winning international honours — partner school crowned Hong Kong InnoHealth Cup 2025 Champions",
+"hero.cap": "Our students keep winning international honours — partner school crowned champions of the Hong Kong InnoHealth Cup 2025",
 "about.en": "SEC.01 // ABOUT US",
 "about.title": "Dear Principals and Teachers",
-"about.lead": "We are Spark Science Education, operated by Solar Trinity Science Limited. Our teaching team is led by doctoral-level instructors, with laboratory teaching delivered by instructors with professional medical laboratory technologist backgrounds. Over the past two years, the student teams we mentored have won Gold Awards at the global iGEM competition, and our partner school was crowned champion of the Hong Kong InnoHealth Cup.",
-"tip": "<b>A note on funding:</b> This programme series meets the relevant requirements of the Education Bureau's AI education funding scheme （智啟學教）, and schools may apply for the funding to procure the programmes — making good use of government funding without drawing on the school's own budget. The programmes span Science, Biology, Information Technology and cross-disciplinary STEAM learning, and solve programme design, professional instructors, laboratory teaching and AI platform provision in one go — from application to the first lesson, we work around the school's administrative needs throughout. Students who complete a programme receive a certificate awarded by <b>City University of Hong Kong</b>.",
+"about.lead": "We are Spark Science Education, operated by Solar Trinity Science Limited. Our teaching team is led by doctoral-level instructors, with laboratory teaching delivered by instructors with professional medical laboratory technologist backgrounds. Over the past two years, the student teams we mentored have won Gold Awards at the global iGEM competition, and our partner school was crowned champion of the Hong Kong InnoHealth Cup 2025.",
+"tip": "<b>A note on funding:</b> This programme series meets the relevant requirements of the Education Bureau's AI education funding scheme （智啟學教）, and schools may apply for the funding to procure the programmes — making good use of government funding without drawing on the school's own budget. The programmes span Science, Biology, Information Technology and cross-disciplinary STEAM learning, and cover everything in one go — programme design, professional instructors, laboratory teaching and AI platform support — from application to the first lesson, we work around the school's administrative needs throughout. Students who complete a programme receive a certificate awarded by <b>City University of Hong Kong</b>.",
 "acc.label": "WHY US",
 "acc.h1": "Why choose our team",
 "acc.h2": "What we can do for your students",
@@ -1521,7 +1589,7 @@ en: {
 "c1.tag": "Course 1",
 "c1.name": "Bringing AI into Everyday Life",
 "c1.sub": "AI + Microcontroller Programming",
-"c1.p": "Students wire and programme microcontrollers themselves, using AI to help brainstorm and debug, and complete a working smart-device project. The course includes an AI image generation session.",
+"c1.p": "Students wire and program microcontrollers themselves, using AI to help brainstorm and debug, and complete a working smart-device project. The course includes an AI image generation session.",
 "c1.alt": "Students wiring a microcontroller and programming on a laptop",
 "c1.dur": "From 2 days",
 "c1.fee": "From HK$50,000",
@@ -1599,13 +1667,40 @@ en: {
 "qa.hint": "Questions? Tap here to ask our AI",
 "qa.panel.aria": "Course Q&A Assistant",
 "qa.title": "Course Q&A Assistant",
-"qa.note": "Every answer below comes from the programme information published on this website. For anything I can't answer, I'll show you how to reach our team.",
+"qa.note": "Every answer here comes from the programme information published on this website. For anything I can't answer, I'll show you how to reach our team.",
 "qa.close.aria": "Close the Q&A window",
 "qa.ph": "Type your question…",
 "qa.send": "Ask",
 "qa.mic.aria": "Voice input",
 "qa.img.aria": "Attach an image",
-"qa.input.aria": "Type your question"
+"qa.input.aria": "Type your question",
+"form.h": "Enquiry Form",
+"form.intro": "Hello, I would like to enquire about Spark Science Education programmes.",
+"form.school": "School name",
+"form.name": "Contact person",
+"form.contact": "Phone or email",
+"form.course": "Programme of interest",
+"form.opt.c1": "Course 1 — Bringing AI into Everyday Life",
+"form.opt.c2": "Course 2 — When Biotechnology Meets AI",
+"form.opt.c3": "Course 3 — Nurturing Future Biotech Inventors",
+"form.opt.undecided": "Not sure yet — I'd like to learn more",
+"form.msg": "Message (optional)",
+"form.ph.school": "e.g. XX Secondary School",
+"form.ph.name": "Your name and title",
+"form.ph.contact": "Phone number or email address",
+"form.ph.msg": "Anything you'd like us to know (optional)",
+"form.submit": "Send via WhatsApp",
+"form.mail": "Send by email instead",
+"form.err": "Please fill in the school name, contact person and a phone number or email, so we can get back to you.",
+"inc.h": "Includes",
+"inc.ai": "AI image generation session",
+"inc.cert": "Certificate awarded by City University of Hong Kong on completion",
+"inc.c1a": "Hands-on wiring and programming",
+"inc.c1b": "A working smart-device project",
+"inc.c2a": "Hands-on practice on the CodeLifeAI platform",
+"inc.c2b": "A real biodesign workflow — structure prediction and scoring to screen designs",
+"inc.c3a": "Laboratory sessions led by professional instructors",
+"inc.c3b": "Laboratory teaching by instructors with professional medical laboratory technologist backgrounds",
 },
 zh: {
 "meta.title": "Spark Science Education（創智・未來）｜AI 創新課程系列",
@@ -1743,7 +1838,34 @@ zh: {
 "qa.send": "發問",
 "qa.mic.aria": "語音輸入",
 "qa.img.aria": "附加圖片",
-"qa.input.aria": "輸入你的問題"
+"qa.input.aria": "輸入你的問題",
+"form.h": "查詢表格",
+"form.intro": "你好，我想查詢 Spark Science Education 的課程。",
+"form.school": "學校名稱",
+"form.name": "聯絡人",
+"form.contact": "聯絡電話或電郵",
+"form.course": "想查詢的課程",
+"form.opt.c1": "課程一 — 讓 AI 走進生活",
+"form.opt.c2": "課程二 — 當生物科技遇上 AI",
+"form.opt.c3": "課程三 — 培育未來生物發明家",
+"form.opt.undecided": "未定・想了解多啲",
+"form.msg": "留言（可選）",
+"form.ph.school": "例如：XX 中學",
+"form.ph.name": "姓名及職銜",
+"form.ph.contact": "電話號碼或電郵地址",
+"form.ph.msg": "有咩想我哋知嘅可以寫低（可選）",
+"form.submit": "用 WhatsApp 遞交",
+"form.mail": "改用電郵遞交",
+"form.err": "請填寫學校名稱、聯絡人及聯絡電話或電郵，我哋先聯絡到你。",
+"inc.h": "包括",
+"inc.ai": "AI 圖像生成環節",
+"inc.cert": "完成課程可獲香港城市大學頒發證書",
+"inc.c1a": "親手接線及編程",
+"inc.c1b": "完成可運作的智能裝置專題",
+"inc.c2a": "CodeLifeAI 平台實作",
+"inc.c2b": "真實生物設計流程（結構預測及評分篩選）",
+"inc.c3a": "專業導師帶領的實驗室實作",
+"inc.c3b": "具專業醫務化驗師背景的導師負責實驗教學",
 },
 hans: {
 "meta.title": "Spark Science Education（创智・未来）｜AI 创新课程系列",
@@ -1881,7 +2003,34 @@ hans: {
 "qa.send": "提问",
 "qa.mic.aria": "语音输入",
 "qa.img.aria": "附加图片",
-"qa.input.aria": "输入你的问题"
+"qa.input.aria": "输入你的问题",
+"form.h": "查询表格",
+"form.intro": "你好，我想咨询 Spark Science Education 的课程。",
+"form.school": "学校名称",
+"form.name": "联系人",
+"form.contact": "联系电话或电邮",
+"form.course": "想咨询的课程",
+"form.opt.c1": "课程一 — 让 AI 走进生活",
+"form.opt.c2": "课程二 — 当生物科技遇上 AI",
+"form.opt.c3": "课程三 — 培育未来生物发明家",
+"form.opt.undecided": "未定・想了解更多",
+"form.msg": "留言（可选）",
+"form.ph.school": "例如：XX 中学",
+"form.ph.name": "姓名及职称",
+"form.ph.contact": "电话号码或电邮地址",
+"form.ph.msg": "有什么想让我们知道的可以写下（可选）",
+"form.submit": "用 WhatsApp 提交",
+"form.mail": "改用电邮提交",
+"form.err": "请填写学校名称、联系人及联系电话或电邮，我们才能联系到你。",
+"inc.h": "包括",
+"inc.ai": "AI 图像生成环节",
+"inc.cert": "完成课程可获香港城市大学颁发证书",
+"inc.c1a": "亲手接线及编程",
+"inc.c1b": "完成可运作的智能装置专题",
+"inc.c2a": "CodeLifeAI 平台实作",
+"inc.c2b": "真实生物设计流程（结构预测及评分筛选）",
+"inc.c3a": "专业导师带领的实验室实作",
+"inc.c3b": "具专业医务化验师背景的导师负责实验教学",
 },
 ja: {
 "meta.title": "Spark Science Education｜AIイノベーションコースシリーズ",
@@ -2019,7 +2168,34 @@ ja: {
 "qa.send": "質問する",
 "qa.mic.aria": "音声入力",
 "qa.img.aria": "画像を添付",
-"qa.input.aria": "質問を入力してください"
+"qa.input.aria": "質問を入力してください",
+"form.h": "お問い合わせフォーム",
+"form.intro": "こんにちは。Spark Science Educationのプログラムについて問い合わせます。",
+"form.school": "学校名",
+"form.name": "ご担当者名",
+"form.contact": "電話番号またはメール",
+"form.course": "ご希望のコース",
+"form.opt.c1": "コース1 — AIを暮らしの中へ",
+"form.opt.c2": "コース2 — バイオテクノロジーとAIの出会い",
+"form.opt.c3": "コース3 — 未来のバイオ発明家を育てる",
+"form.opt.undecided": "未定・まず詳しく知りたい",
+"form.msg": "メッセージ（任意）",
+"form.ph.school": "例：XX中学校",
+"form.ph.name": "お名前と役職",
+"form.ph.contact": "電話番号またはメールアドレス",
+"form.ph.msg": "ご要望などがあればご記入ください（任意）",
+"form.submit": "WhatsAppで送信",
+"form.mail": "メールで送信する",
+"form.err": "学校名、ご担当者名、電話番号またはメールをご記入ください。折り返しご連絡いたします。",
+"inc.h": "含まれる内容",
+"inc.ai": "AI画像生成セッション",
+"inc.cert": "修了時に香港城市大学発行の修了証を授与",
+"inc.c1a": "実際に配線・プログラミングを体験",
+"inc.c1b": "実際に動作するスマートデバイスのプロジェクトを完成",
+"inc.c2a": "CodeLifeAIプラットフォームでの実習",
+"inc.c2b": "構造予測とスコアリングで設計を選別する、実際のバイオデザイン工程",
+"inc.c3a": "専門講師が指導する実験室実習",
+"inc.c3b": "医療検査技師の専門背景を持つ講師による実験指導",
 },
 ko: {
 "meta.title": "Spark Science Education｜AI 혁신 과정 시리즈",
@@ -2157,13 +2333,40 @@ ko: {
 "qa.send": "질문하기",
 "qa.mic.aria": "음성 입력",
 "qa.img.aria": "이미지 첨부",
-"qa.input.aria": "질문을 입력하세요"
+"qa.input.aria": "질문을 입력하세요",
+"form.h": "문의 양식",
+"form.intro": "안녕하세요. Spark Science Education의 과정에 대해 문의합니다.",
+"form.school": "학교 이름",
+"form.name": "담당자",
+"form.contact": "연락 전화 또는 이메일",
+"form.course": "문의할 과정",
+"form.opt.c1": "과정 1 — AI를 생활 속으로",
+"form.opt.c2": "과정 2 — 생명공학과 AI가 만나다",
+"form.opt.c3": "과정 3 — 미래의 바이오 발명가 양성",
+"form.opt.undecided": "미정・더 알아보고 싶어요",
+"form.msg": "메시지 (선택)",
+"form.ph.school": "예: XX중학교",
+"form.ph.name": "이름과 직함",
+"form.ph.contact": "전화번호 또는 이메일 주소",
+"form.ph.msg": "전하고 싶은 내용이 있으면 적어 주세요 (선택)",
+"form.submit": "WhatsApp으로 보내기",
+"form.mail": "이메일로 보내기",
+"form.err": "학교 이름, 담당자, 연락 전화 또는 이메일을 입력해 주세요. 그래야 연락드릴 수 있습니다.",
+"inc.h": "포함 내용",
+"inc.ai": "AI 이미지 생성 세션",
+"inc.cert": "과정 수료 시 홍콩성시대학 수료증 수여",
+"inc.c1a": "직접 배선하고 프로그래밍하기",
+"inc.c1b": "실제로 작동하는 스마트 기기 프로젝트 완성",
+"inc.c2a": "CodeLifeAI 플랫폼 실습",
+"inc.c2b": "구조 예측과 점수 평가로 설계를 선별하는 실제 바이오디자인 과정",
+"inc.c3a": "전문 강사가 이끄는 실험실 실습",
+"inc.c3b": "전문 의료검사기사 배경의 강사가 실험 수업을 담당",
 }
 };
 var HTML_LANG = {en:"en", zh:"zh-Hant", hans:"zh-Hans", ja:"ja", ko:"ko"};
 var cur = "en";
 try{ var saved = localStorage.getItem("spark-lang"); if(saved && I18N[saved]) cur = saved; }catch(e){}
-function waUrl(l){ var d = I18N[l] || I18N.en; return "https://api.whatsapp.com/send?text=" + encodeURIComponent(d["wa.text"]); }
+function waUrl(l){ var d = I18N[l] || I18N.en; return "https://api.whatsapp.com/send?phone=85253388510&text=" + encodeURIComponent(d["wa.text"]); }
 function apply(l){
   if(!I18N[l]) l = "en";
   cur = l;
@@ -2268,19 +2471,19 @@ apply(cur);
     { k:["fee","fees","price","cost","how much","tuition","charge"],
       a:"Programme fees (in HKD):\n・Course 1 \"Bringing AI into Everyday Life\": from HK$50,000 (from 2 days)\n・Course 2 \"When Biotechnology Meets AI\": from HK$100,000 (from 3–4 lessons)\n・Course 3 \"Nurturing Future Biotech Inventors\": from HK$200,000 (from 8 lessons)\nThe actual fee depends on student numbers and programme arrangement; we will provide a quotation tailored to your school at the programme briefing." },
     { k:["course 1","microcontroller","everyday life","smart device"],
-      a:"Course 1 \"Bringing AI into Everyday Life\" (AI + Microcontroller Programming): students wire and programme microcontrollers themselves, using AI to help brainstorm and debug, and complete a working smart-device project. The course includes an AI image generation session.\nDuration: from 2 days | Fees: from HK$50,000" },
+      a:"Course 1 \"Bringing AI into Everyday Life\" (AI + Microcontroller Programming): students wire and program microcontrollers themselves, using AI to help brainstorm and debug, and complete a working smart-device project. The course includes an AI image generation session.\nDuration: from 2 days | Fees: from HK$50,000" },
     { k:["course 2","biotechnology meets","protein design"],
       a:"Course 2 \"When Biotechnology Meets AI\" (AI + Innovative Protein Design, featuring CodeLifeAI): on the CodeLifeAI platform, students learn to read 3D protein structures, generate candidate designs with AI, then screen them one by one using structure prediction and scoring — experiencing a genuine biodesign workflow. The course includes an AI image generation session.\nDuration: from 3–4 lessons | Fees: from HK$100,000" },
     { k:["course 3","biotech inventors","inventor"],
       a:"Course 3 \"Nurturing Future Biotech Inventors\" (Innovative Protein Design + Instructor-led Laboratory Course): building on Course 2, students take their own designs into the laboratory and test them hands-on, guided by professional instructors. The course includes an AI image generation session.\nDuration: from 8 lessons | Fees: from HK$200,000" },
     { k:["laboratory course","lab work","hands-on experiment","experiment course"],
-      a:"For hands-on laboratory work, see Course 3 \"Nurturing Future Biotech Inventors\": building on the protein design work in Course 2, students take their designs into the laboratory and test them hands-on under professional instructors.\nDuration: from 8 lessons | Fees: from HK$200,000\nTechnical demonstrations, operating procedures and safety management for laboratory sessions are overseen by instructors with professional medical laboratory technologist backgrounds." },
+      a:"For hands-on laboratory work, see Course 3 \"Nurturing Future Biotech Inventors\": building on the protein design work in Course 2, students take their designs into the laboratory and test them hands-on under the guidance of professional instructors.\nDuration: from 8 lessons | Fees: from HK$200,000\nTechnical demonstrations, operating procedures and safety management for laboratory sessions are overseen by instructors with professional medical laboratory technologist backgrounds." },
     { k:["how to choose","which one","suitable","recommend","difference","choose"],
       a:"The three courses form a research pathway from introductory to advanced:\n・Course 1: Programming in practice — build a working smart device\n・Course 2: Platform design — 3D protein design on the CodeLifeAI platform\n・Course 3: Laboratory validation — take your design into the lab and test it hands-on\nEvery school's needs differ, so we suggest arranging a programme briefing first; we will match the arrangement to your subjects and students' level." },
     { k:["funding","智啟學教","subsidy","grant","government funding","apply for funding"],
       a:"This programme series meets the relevant requirements of the Education Bureau's AI education funding scheme （智啟學教）; schools may apply for the funding to procure the programmes, making good use of government funding without drawing on the school's own budget.\nStep 4 of the booking process, \"Complete the procurement procedures\", can be aligned with the funding application, and we work around the school's administrative needs throughout, from application to the first lesson." },
     { k:["certificate","city university","cityu","cert"],
-      a:"Yes. All participants receive a certificate awarded by City University of Hong Kong on completing the course, recognising their learning achievements; certificates are formally presented at the final step of the booking process." },
+      a:"Yes. Students who complete a programme receive a certificate awarded by City University of Hong Kong, recognising their learning achievements; certificates are awarded when the programme begins (Step 5 of the booking process)." },
     { k:["book","booking","briefing","enrol","sign up","how to join","process","apply"],
       a:"Booking takes five steps:\n1. Reply by email, or contact us via the WhatsApp button\n2. Arrange a programme briefing (at your school or by video call), with a live demonstration of the CodeLifeAI platform\n3. Confirm the programme arrangement, student numbers and quotation based on your school's needs\n4. Complete the procurement procedures (can be aligned with the 智啟學教 funding application)\n5. The programme begins, and students are awarded City University of Hong Kong certificates{CTA}" },
     { k:["teacher","teachers","instructor","who teaches","who leads","leading","led by","team","doctor","background","tutor","in charge"],
@@ -2456,7 +2659,7 @@ apply(cur);
   function ui(){ return UI[lang()] || UI.en; }
   function waUrl(){
     if(window.__sparkI18n && window.__sparkI18n.waUrl) return window.__sparkI18n.waUrl(lang());
-    return "https://api.whatsapp.com/send?text=" + encodeURIComponent("你好，我想查詢 Spark Science Education 的 AI 創新課程系列，希望安排課程簡介會。");
+    return "https://api.whatsapp.com/send?phone=85253388510&text=" + encodeURIComponent("你好，我想查詢 Spark Science Education 的 AI 創新課程系列，希望安排課程簡介會。");
   }
   function ctaHtml(){
     var u = ui();
@@ -2554,6 +2757,18 @@ apply(cur);
     pendingImage = null;
     if(!q && !img) return;
     if(q) addUser(q);
+    if(typeof window.__sparkSendChat === 'function'){
+      var typing = addMsg('bot', '<span class="qa-typing-dots"><i></i><i></i><i></i></span>');
+      var settled = false;
+      window.__sparkSendChat({ text: q, image: img ? img.dataUrl : null, lang: lang(),
+        reply: function(html){
+          if(settled) return; settled = true;
+          if(html){ typing.innerHTML = html; }
+          else { typing.innerHTML = q ? (findAnswer(q) || fillCta(ui().fallback)) : ui().imgNotReady; }
+          msgs.scrollTop = msgs.scrollHeight;
+        }});
+      return;
+    }
     if(img && sendToAI(q, img)) return;
     if(q){
       var ans = findAnswer(q) || fillCta(ui().fallback);
@@ -2706,6 +2921,132 @@ apply(cur);
     fileInput.value = '';
     if(f) window.__sparkAttachImage(f);
   });
+})();
+</script>
+<script>
+/* ================= 第十一輪：聯絡區查詢表格（WhatsApp／電郵遞交） ================= */
+(function(){
+  var form = document.getElementById("enquiryForm");
+  if(!form) return;
+  function dict(){
+    var api = window.__sparkI18n;
+    if(!api) return {};
+    return api.dict[api.lang] || api.dict.en || {};
+  }
+  function val(id){ var el = document.getElementById(id); return el? el.value.trim(): ""; }
+  function msgLabel(d){
+    var s = d["form.msg"] || "Message";
+    return s.split("(")[0].split("（")[0].trim();
+  }
+  function compose(){
+    var d = dict();
+    var sel = document.getElementById("efCourse");
+    var course = sel && sel.selectedOptions && sel.selectedOptions[0]? sel.selectedOptions[0].textContent.trim(): "";
+    var lines = [
+      d["form.intro"] || "",
+      "",
+      (d["form.school"] || "School") + ": " + val("efSchool"),
+      (d["form.name"] || "Contact") + ": " + val("efName"),
+      (d["form.contact"] || "Phone / Email") + ": " + val("efContact"),
+      (d["form.course"] || "Programme") + ": " + course
+    ];
+    var m = val("efMsg");
+    if(m) lines.push(msgLabel(d) + ": " + m);
+    return lines.join("\n");
+  }
+  function validate(){
+    var ids = ["efSchool", "efName", "efContact"], first = null, i, el;
+    for(i = 0; i < ids.length; i++){
+      el = document.getElementById(ids[i]);
+      if(!el) continue;
+      if(!el.value.trim()){ el.classList.add("invalid"); if(!first) first = el; }
+      else el.classList.remove("invalid");
+    }
+    var err = document.getElementById("efErr");
+    if(first){
+      if(err){ err.textContent = dict()["form.err"] || "Please fill in the required fields."; err.hidden = false; }
+      first.focus();
+      return false;
+    }
+    if(err){ err.hidden = true; err.textContent = ""; }
+    return true;
+  }
+  ["efSchool", "efName", "efContact"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener("input", function(){ el.classList.remove("invalid"); });
+  });
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    if(!validate()) return;
+    window.open("https://api.whatsapp.com/send?phone=85253388510&text=" + encodeURIComponent(compose()), "_blank");
+  });
+  var mailBtn = document.getElementById("efMailBtn");
+  if(mailBtn) mailBtn.addEventListener("click", function(){
+    if(!validate()) return;
+    var d = dict();
+    var subj = (d["mail.subject"] || "Programme Enquiry") + " - " + val("efSchool");
+    location.href = "mailto:Sales@codelife.ai?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(compose());
+  });
+})();
+</script>
+<script>
+/* ================= 第十一輪：訪客統計預留位（Cloudflare Web Analytics） =================
+   用法：攞到 Cloudflare Web Analytics token 之後，將下面常數填入 token 字串即可啟用。
+   token 係空字串嗰陣，本段完全唔載入任何嘢，對頁面零影響。 */
+window.__SPARK_ANALYTICS_TOKEN = "";
+(function(){
+  var t = window.__SPARK_ANALYTICS_TOKEN;
+  if(!t) return;
+  var s = document.createElement("script");
+  s.defer = true;
+  s.src = "https://static.cloudflareinsights.com/beacon.min.js";
+  s.setAttribute("data-cf-beacon", JSON.stringify({token: t}));
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+/* Spark 真 AI 接駁：問答窗 → Cloudflare Worker → Gemini；任何失敗都回傳 null，問答窗自動用返內置答案庫 */
+(function(){
+  "use strict";
+  var WORKER = "https://spark-science-agent.samhui6677.workers.dev";
+  var style = document.createElement("style");
+  style.textContent = ".qa-typing-dots i{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#7fc8a9;animation:sparkBlink 1s infinite}.qa-typing-dots i:nth-child(2){animation-delay:.18s}.qa-typing-dots i:nth-child(3){animation-delay:.36s}@keyframes sparkBlink{0%,80%,100%{opacity:.25}40%{opacity:1}}.qa-genimg{max-width:100%;border-radius:10px;display:block}";
+  document.head.appendChild(style);
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function fmt(s){ return esc(s).replace(/\n/g,"<br>"); }
+  function isImageReq(t){
+    return /(生圖|生成圖|畫一|畫張|畫幅|整張圖|出圖|draw|generate (an? )?image|create (an? )?image|picture of|描いて|画像を生成|그려|이미지 생성)/i.test(t || "");
+  }
+  function post(path, body, ms){
+    var ctl = new AbortController();
+    var timer = setTimeout(function(){ ctl.abort(); }, ms || 20000);
+    return fetch(WORKER + path, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body), signal: ctl.signal })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ clearTimeout(timer); return j; })
+      .catch(function(e){ clearTimeout(timer); throw e; });
+  }
+  window.__sparkSendChat = function(opts){
+    var replied = false;
+    function done(html){ if(!replied){ replied = true; try{ opts.reply(html); }catch(e){} } }
+    setTimeout(function(){ done(null); }, 25000);
+    var text = opts.text || "";
+    if(!opts.image && isImageReq(text)){
+      post("/image", { prompt: text }, 45000).then(function(j){
+        if(j && j.ok && j.image) done('<img class="qa-genimg" alt="" src="data:' + (j.mimeType || "image/png") + ";base64," + j.image + '">');
+        else done(null);
+      }).catch(function(){ done(null); });
+      return;
+    }
+    var body = { message: text, history: [], lang: opts.lang || "en" };
+    if(opts.image){
+      var m = /^data:([^;]+);base64,(.*)$/.exec(opts.image);
+      if(m) body.image = { mimeType: m[1], data: m[2] };
+    }
+    post("/chat", body, 20000).then(function(j){
+      if(j && j.ok && j.reply) done(fmt(j.reply));
+      else done(null);
+    }).catch(function(){ done(null); });
+  };
 })();
 </script>
 </body>
