@@ -119,14 +119,35 @@ a{color:inherit}
   background:radial-gradient(circle at 50% 44%,rgba(3,11,6,.16) 0%,rgba(3,11,6,.55) 62%,rgba(3,11,6,.84) 100%);
 }
 #showcase .sc-stage{position:absolute;inset:0;perspective:1300px}
+/* 真・3D 旋轉環：環容器 preserve-3d，五張卡沿圓環分布、成環一齊轉，真透視深度 */
+#showcase .sc-ring{position:absolute;inset:0;transform-style:preserve-3d}
 .sc-card{
-  position:absolute;left:0;top:0;width:min(74vw,520px);
-  border-radius:16px;overflow:hidden;background:#0a2016;
+  position:absolute;left:50%;top:46%;width:min(74vw,520px);
+  border-radius:16px;background:#0a2016;
   box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(127,200,169,.28),0 0 44px rgba(94,234,180,.14);
-  opacity:0;pointer-events:none;transform-origin:0 0;will-change:transform,opacity;
-  transition:transform .55s cubic-bezier(.22,.9,.28,1),opacity .35s ease;
+  pointer-events:none;will-change:transform;
+  transform-style:preserve-3d;
+  transition:transform 1.05s cubic-bezier(.25,.8,.25,1);
 }
-/* 舊卡退去左邊嗰陣逐漸變暗（用遮罩 opacity 做，唔用 filter） */
+.sc-card.noanim{transition:none}
+/* 正面：成張卡內容包喺呢層，圓角裁切喺呢層做（figure 要 preserve-3d，唔可以 overflow:hidden） */
+.sc-card .sc-front{
+  position:relative;border-radius:16px;overflow:hidden;background:#0a2016;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+/* 背面：品牌卡背——卡轉到後面嗰陣見到設計好嘅卡背，唔係鏡像字 */
+.sc-card .sc-back{
+  position:absolute;inset:0;border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:radial-gradient(circle at 50% 38%,#1a4a33 0%,#0d2a1e 58%,#081c12 100%);
+  box-shadow:inset 0 0 0 1px rgba(127,200,169,.35),inset 0 0 60px rgba(94,234,180,.10);
+  transform:rotateY(180deg);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+}
+.sc-card .sc-back svg{width:54px;height:54px;fill:var(--gold-bright)}
+.sc-card .sc-back svg .ray{stroke:var(--gold-bright);stroke-width:2.4;stroke-linecap:round;fill:none}
+.sc-card .sc-back span{color:#eaf3ec;font-size:13px;font-weight:700;letter-spacing:.42em;text-indent:.42em}
+/* 卡離開正面愈遠愈暗（用遮罩 opacity 做，唔用 filter） */
 .sc-card .sc-dim{
   position:absolute;inset:0;pointer-events:none;z-index:1;
   background:#04160d;opacity:0;transition:opacity .55s ease;
@@ -156,11 +177,17 @@ a{color:inherit}
   color:#cfe3d6;line-height:1.6;letter-spacing:.02em;
 }
 .sc-card figcaption .sc-mem{white-space:nowrap}
-#showcase .sc-skip{
-  position:absolute;right:18px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:3;
-  color:rgba(255,255,255,.55);font-size:12.5px;letter-spacing:.28em;text-indent:.28em;
-  text-shadow:0 1px 8px rgba(0,0,0,.6);pointer-events:none;
+/* 跳過掣：開場同展示艙都有，右下角細嘅鬼掣，同主「㩒一下進入」分得開 */
+.skip-btn{
+  position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:6;
+  font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.16em;
+  color:rgba(234,243,236,.88);background:rgba(8,24,16,.55);
+  border:1px solid rgba(127,200,169,.45);border-radius:999px;
+  padding:8px 15px;cursor:pointer;text-shadow:0 1px 6px rgba(0,0,0,.5);
+  transition:opacity .3s ease,background .2s ease;
 }
+.skip-btn:hover,.skip-btn:active{background:rgba(20,52,36,.78)}
+#intro.leaving .skip-btn{opacity:0;pointer-events:none}
 #showcase .sc-lead{
   position:absolute;left:16px;right:16px;top:calc(8% + env(safe-area-inset-top));z-index:2;
   text-align:center;pointer-events:none;
@@ -599,6 +626,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
     <canvas id="introCanvas"></canvas>
   </div>
   <div class="hint">㩒 一 下 進 入</div>
+  <button type="button" class="skip-btn skip-btn--intro" id="introSkip">跳過 SKIP &#8594;</button>
 </div>
 
 <!-- ================= 展示艙（穿梭後成績卡） ================= -->
@@ -611,49 +639,66 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
     <div class="sc-shade"></div>
   </div>
   <div class="sc-stage">
+    <div class="sc-ring" id="scRing">
     <figure class="sc-card sc-card--team">
-      <div class="sc-float">
+      <div class="sc-front">      <div class="sc-float">
         <img src="assets/team-official-nostrip.webp" width="1200" height="798" alt="Spark Science Education 科研團隊五人合照">
         <figcaption><span class="sc-team-title">科研團隊</span><span class="sc-members"><span class="sc-mem">林文傑教授・首席科學顧問</span><span class="sc-mem">黎卓賢博士・科學主任</span><span class="sc-mem">鄺緯陽博士・創辦人・首席科學官</span><span class="sc-mem">宋振州博士・研究總監</span><span class="sc-mem">黃桂林博士・教育顧問</span></span></figcaption>
       </div>
       <div class="sc-dim"></div>
       <div class="shine"></div>
+    
+      </div>
+      <div class="sc-back" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path class="ray" d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2"/></svg><span>SPARK SCIENCE</span></div>
     </figure>
     <figure class="sc-card">
-      <div class="sc-float">
+      <div class="sc-front">      <div class="sc-float">
         <img src="assets/award-innohealth.webp" width="1080" height="605" alt="合作學校九龍真光中學勇奪 InnoHealth Cup 2025 冠軍頒獎禮合照">
         <figcaption>InnoHealth Cup 2025 冠軍（九龍真光中學）</figcaption>
       </div>
       <div class="sc-dim"></div>
       <div class="shine"></div>
+    
+      </div>
+      <div class="sc-back" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path class="ray" d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2"/></svg><span>SPARK SCIENCE</span></div>
     </figure>
     <figure class="sc-card">
-      <div class="sc-float">
+      <div class="sc-front">      <div class="sc-float">
         <img src="assets/award-kapi.webp" width="1080" height="605" alt="輔導隊伍 KAPI 於 iGEM 2024 奪得金獎的報道相片">
         <figcaption>iGEM 2024 金獎・KAPI（AI 抗癌肽）</figcaption>
       </div>
       <div class="sc-dim"></div>
       <div class="shine"></div>
+    
+      </div>
+      <div class="sc-back" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path class="ray" d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2"/></svg><span>SPARK SCIENCE</span></div>
     </figure>
     <figure class="sc-card">
-      <div class="sc-float">
+      <div class="sc-front">      <div class="sc-float">
         <img src="assets/award-pestiguard.webp" width="1080" height="605" alt="輔導隊伍 PestiGuard 於 iGEM 2025 奪得金獎並躋身全球高中組前十的合照">
         <figcaption>iGEM 2025 金獎・PestiGuard（全球高中組前十）</figcaption>
       </div>
       <div class="sc-dim"></div>
       <div class="shine"></div>
+    
+      </div>
+      <div class="sc-back" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path class="ray" d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2"/></svg><span>SPARK SCIENCE</span></div>
     </figure>
     <figure class="sc-card">
-      <div class="sc-float">
+      <div class="sc-front">      <div class="sc-float">
         <img src="assets/award-mentoring.webp" width="1080" height="748" alt="導師團隊輔導香港中學學生隊伍的合照">
         <figcaption>輔導 9 間香港中學團隊</figcaption>
       </div>
       <div class="sc-dim"></div>
       <div class="shine"></div>
+    
+      </div>
+      <div class="sc-back" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path class="ray" d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2"/></svg><span>SPARK SCIENCE</span></div>
     </figure>
+    </div>
   </div>
   <div class="sc-lead" id="scLead">由創辦人・首席科學官 <strong>鄺緯陽博士</strong>帶領</div>
-  <div class="sc-skip">㩒 一 下 跳 過</div>
+  <button type="button" class="skip-btn" id="scSkip">跳過 SKIP &#8594;</button>
 </div>
 
 <!-- ================= 全站綠色郁動底板 ================= -->
@@ -1046,7 +1091,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
     window.scrollTo(0,0);
   }
 
-  /* ---------- 展示艙：卡片逐張旋轉入場，舊卡退去左邊成 3D 卡帶向左流 ---------- */
+  /* ---------- 展示艙：真・3D 旋轉環——五張卡排喺圓環上一齊轉 ---------- */
   var showcase = document.getElementById('showcase');
   var scCards = Array.prototype.slice.call(showcase.querySelectorAll('.sc-card'));
   var scTimers = [];
@@ -1060,45 +1105,41 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
 
   function scLater(fn, ms){ scTimers.push(setTimeout(fn, ms)); }
   function scClear(){ for(var i=0;i<scTimers.length;i++) clearTimeout(scTimers[i]); scTimers = []; }
-  function scPlace(card, x, y, s, ry, rx, op, dim){
-    card.style.transform = 'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) scale('+s+') rotateY('+(ry||0)+'deg) rotateX('+(rx||0)+'deg)';
-    if(op !== undefined) card.style.opacity = op;
-    var d = card.querySelector('.sc-dim');
-    if(d) d.style.opacity = (dim || 0);
+
+  /* 環嘅幾何：五張卡相隔 72° 排喺圓環上。半徑按最闊嗰張卡計：
+     R =（最闊卡半闊）/ tan(36°) + 少量空隙，相鄰卡啱啱唔重疊。
+     每張卡嘅 transform 順序：先對準環心 → 成環向後移 R → 轉到自己角度 → 推返出環面。
+     效果：正面嗰張返到自然大細，側面同背面嗰啲自動細啲、遠啲——真透視，唔使人手縮放。 */
+  var SC_STEP_MS = 1350;      /* 每 1.35 秒成環轉 72°，transition 1.05s 磁性緩動（轉得快、落位慢） */
+  var scRadius = 420;
+  function scMeasureRadius(){
+    var w = 0;
+    for(var i=0;i<scCards.length;i++) w = Math.max(w, scCards[i].offsetWidth);
+    if(w > 0) scRadius = Math.round((w / 2) / Math.tan(Math.PI / 5)) + 16;
   }
-  /* 3D 向左流槽位：主角喺中央，舊卡逐張退去左邊、縮細、側住、變暗，好似一條卡帶 */
-  var SC_SLOTS = [
-    {dx: 0,     s:1,    ry:-6, rx:3, op:1,    dim:0},
-    {dx:-0.54,  s:0.84, ry:26, rx:0, op:0.92, dim:0.18},
-    {dx:-1.02,  s:0.70, ry:32, rx:0, op:0.55, dim:0.38},
-    {dx:-1.44,  s:0.58, ry:36, rx:0, op:0,    dim:0.62}
-  ];
-  function scHeroXY(card){
-    var W = showcase.clientWidth, H = showcase.clientHeight;
-    var cw = card.offsetWidth, ch = card.offsetHeight;
-    return {x:(W-cw)/2, y:(H-ch)/2 - H*0.05, cw:cw};
-  }
-  function scLayout(focusIdx){
+  function scRender(angle){
     for(var i=0;i<scCards.length;i++){
-      var age = focusIdx - i;
-      if(age < 0) continue;              /* 未出場嘅卡唔郁 */
       var card = scCards[i];
-      var slot = SC_SLOTS[Math.min(age, SC_SLOTS.length-1)];
-      var base = scHeroXY(card);
-      card.style.zIndex = 10 + i;        /* 愈新出嘅卡愈喺面 */
-      scPlace(card, base.x + slot.dx*base.cw, base.y + age*5, slot.s, slot.ry, slot.rx, slot.op, slot.dim);
+      var phi = i * 72 + angle;
+      card.style.transform = 'translate(-50%,-50%) translateZ(' + (-scRadius) + 'px) rotateY(' + phi + 'deg) translateZ(' + scRadius + 'px)';
+      /* 離正面愈遠遮罩愈深：側面輕暗；過咗 90° 正面本身已收起（見到卡背），唔再加暗 */
+      var rel = ((phi % 360) + 360) % 360;
+      var ang = Math.min(rel, 360 - rel);        /* 0=正面, 180=背面 */
+      var d = card.querySelector('.sc-dim');
+      if(d) d.style.opacity = ang <= 90 ? (ang / 90 * 0.5).toFixed(3) : 0;
     }
   }
-  function scIntroduce(i){
-    var card = scCards[i]; if(!card) return;
-    var H = showcase.clientHeight;
-    var base = scHeroXY(card);
-    /* 先擺去右邊側住、細細張、透明，下一幀成組一齊滑去各自槽位 */
-    scPlace(card, base.x + base.cw*0.62, base.y + H*0.06, 0.6, -38, 6, 0, 0);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      card.classList.add('enter');
-      scLayout(i);
-    });});
+  function scSetFront(idx){
+    for(var i=0;i<scCards.length;i++){
+      var c = scCards[i];
+      if(i === idx){
+        c.classList.remove('enter');
+        void c.offsetWidth;          /* 重啟光澤掃描動畫 */
+        c.classList.add('enter');
+      } else {
+        c.classList.remove('enter');
+      }
+    }
   }
   function finishShowcase(fast){
     if(scDone) return; scDone = true;
@@ -1114,28 +1155,35 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
   function startShowcase(){
     showcase.setAttribute('aria-hidden','false');
     showcase.classList.add('play');
-    /* 3D 卡帶時間軸：團隊卡先做主角 → 引子 → 獲獎卡逐張旋轉入場；
-       每張新卡入嚟，舊卡同步退去左邊一個槽位（縮細、側住、變暗），唔消失；
-       最後成組一齊淡出落內容站，總長約 7s */
-    var t = 120;
-    var starts = [];
-    for(var i=0;i<scCards.length;i++){
-      var slot = (i===0) ? 1450 : 1180;   /* 團隊卡資料多，停耐少少 */
-      starts.push(t); t += slot;
-    }
-    for(var j=0;j<scCards.length;j++){
-      (function(idx, start){
-        scLater(function(){ scIntroduce(idx); }, start);
-      })(j, starts[j]);
+    scMeasureRadius();
+    /* 先無動畫將成環擺去 26°，強制重排後開 transition 轉返 0°——成環順住落位，團隊卡做第一張正面 */
+    for(var i=0;i<scCards.length;i++) scCards[i].classList.add('noanim');
+    scRender(26);
+    void showcase.offsetWidth;
+    for(var j=0;j<scCards.length;j++) scCards[j].classList.remove('noanim');
+    scRender(0);
+    scSetFront(0);
+    /* 逐格轉：每 1.35s 成環轉 −72°，五張卡輪住去正面；最後一格轉滿 360°，團隊卡返嚟正面 */
+    for(var k=1;k<=scCards.length;k++){
+      (function(step){
+        scLater(function(){
+          scRender(-72 * step);
+          scSetFront(step % scCards.length);
+        }, SC_STEP_MS * step);
+      })(k);
     }
     if(scLead){
-      scLater(function(){ scLead.classList.add('on'); }, 700);
-      scLater(function(){ scLead.classList.add('off'); }, 3600);
+      scLater(function(){ scLead.classList.add('on'); }, 650);
+      scLater(function(){ scLead.classList.add('off'); }, 4300);
     }
-    /* 最後一張做完主角，成組卡帶一齊淡出落地 */
-    scLater(function(){ finishShowcase(false); }, t + 420);
+    /* 轉勻一圈（約 6.75s）再停一停，成組淡出落內容站，總長約 8s */
+    scLater(function(){ finishShowcase(false); }, SC_STEP_MS * scCards.length + 800);
   }
   showcase.addEventListener('click', function(){ finishShowcase(true); });
+  document.getElementById('scSkip').addEventListener('click', function(e){
+    e.stopPropagation();
+    finishShowcase(true);
+  });
 
   intro.addEventListener('click', function(){
     if(entered || leaving) return;
@@ -1157,6 +1205,23 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
       intro.style.display = 'none';
       stopAnim();
     }, 540);
+  });
+
+  /* 開場跳過掣：唔經展示艙，直接入內容站（同㩒入去分開，唔好誤觸） */
+  document.getElementById('introSkip').addEventListener('click', function(e){
+    e.stopPropagation();
+    if(entered || leaving) return;
+    leaving = true;
+    startMusic();
+    intro.classList.add('leaving');
+    canvas.style.opacity = '0';
+    setTimeout(stopAnim, 340);
+    setTimeout(function(){
+      entered = true;
+      intro.style.display = 'none';
+      stopAnim();
+      showSite();
+    }, 320);
   });
 
   /* 段落入場：柔和淡入＋輕微上移，一次過唔花（只用 transform／opacity） */
