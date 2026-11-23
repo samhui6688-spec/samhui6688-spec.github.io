@@ -138,6 +138,13 @@ a{color:inherit}
   transition:transform 1.05s cubic-bezier(.25,.8,.25,1);
 }
 .sc-card.noanim{transition:none}
+/* 相片統一尺寸：開頭五張＋佳績四張，一律 16:9 相框 */
+.sc-media{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0a2016}
+.sc-media img{width:100%;height:100%;object-fit:cover;display:block}
+.sc-media.pan img.bg{position:absolute;inset:0;object-fit:cover;filter:blur(16px) brightness(.55);transform:scale(1.15)}
+.sc-media.pan img.fg{position:relative;object-fit:contain;z-index:1}
+.result .sc-media{margin:0}
+
 /* 正面：成張卡內容包喺呢層，圓角裁切喺呢層做（figure 要 preserve-3d，唔可以 overflow:hidden） */
 .sc-card .sc-front{
   position:relative;border-radius:16px;overflow:hidden;background:#0a2016;
@@ -470,7 +477,7 @@ section+section::after{
 .team-names .ti{font-size:12.5px;color:var(--ink-soft);margin-top:2px;font-family:var(--mono);letter-spacing:.05em}
 
 .result{overflow:hidden;padding:0;display:flex;flex-direction:column}
-.result img{width:100%;height:210px;object-fit:cover}
+.result img{width:100%;height:100%;object-fit:cover}
 /* 新聞截圖類相片：完整顯示唔切字，深綠底填滿剩餘空間 */
 .result img.fit{object-fit:contain;background:#0a2016}
 .result .body{padding:20px 22px}
@@ -826,7 +833,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     <div class="sc-ring" id="scRing">
     <figure class="sc-card sc-card--team">
       <div class="sc-front">      <div class="sc-float">
-        <img src="assets/team-official-nostrip.webp" width="1200" height="798" data-i18n-alt="sc.alt.team" alt="Spark Science Education 科研團隊五人合照">
+        <div class="sc-media"><img style="object-position:center 30%" src="assets/team-official-nostrip.webp" width="1200" height="798" data-i18n-alt="sc.alt.team" alt="Spark Science Education 科研團隊五人合照"></div>
         <figcaption><span class="sc-team-title" data-i18n="sc.team.title">科研團隊</span><span class="sc-members"><span class="sc-mem" data-i18n="sc.mem1">林文傑教授・首席科學顧問</span><span class="sc-mem" data-i18n="sc.mem2">黎卓賢博士・科學主任</span><span class="sc-mem" data-i18n="sc.mem3">鄺緯陽博士・創辦人・首席科學官</span><span class="sc-mem" data-i18n="sc.mem4">宋振州博士・研究總監</span><span class="sc-mem" data-i18n="sc.mem5">黃桂林博士・教育顧問</span></span></figcaption>
       </div>
       <div class="sc-dim"></div>
@@ -837,7 +844,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     </figure>
     <figure class="sc-card">
       <div class="sc-front">      <div class="sc-float">
-        <img src="assets/award-innohealth.webp" width="1080" height="605" data-i18n-alt="sc.alt.inno" alt="合作學校九龍真光中學勇奪 InnoHealth Cup 2025 冠軍頒獎禮合照">
+        <div class="sc-media"><img style="object-position:center" src="assets/award-innohealth.webp" width="1080" height="605" data-i18n-alt="sc.alt.inno" alt="合作學校九龍真光中學勇奪 InnoHealth Cup 2025 冠軍頒獎禮合照"></div>
         <figcaption data-i18n="sc.cap.inno">InnoHealth Cup 2025 冠軍（九龍真光中學）</figcaption>
       </div>
       <div class="sc-dim"></div>
@@ -848,7 +855,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     </figure>
     <figure class="sc-card">
       <div class="sc-front">      <div class="sc-float">
-        <img src="assets/award-kapi.webp" width="1080" height="605" data-i18n-alt="sc.alt.kapi" alt="輔導隊伍 KAPI 於 iGEM 2024 奪得金獎的報道相片">
+        <div class="sc-media pan"><img class="bg" src="assets/award-kapi.webp" alt="" aria-hidden="true"><img class="fg" src="assets/award-kapi.webp" width="1080" height="605" data-i18n-alt="sc.alt.kapi" alt="輔導隊伍 KAPI 於 iGEM 2024 奪得金獎的報道相片"></div>
         <figcaption data-i18n="sc.cap.kapi">iGEM 2024 金獎・KAPI（AI 抗癌肽）</figcaption>
       </div>
       <div class="sc-dim"></div>
@@ -859,7 +866,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     </figure>
     <figure class="sc-card">
       <div class="sc-front">      <div class="sc-float">
-        <img src="assets/award-pestiguard.webp" width="1080" height="605" data-i18n-alt="sc.alt.pesti" alt="輔導隊伍 PestiGuard 於 iGEM 2025 奪得金獎並躋身全球高中組前十的合照">
+        <div class="sc-media pan"><img class="bg" src="assets/award-pestiguard.webp" alt="" aria-hidden="true"><img class="fg" src="assets/award-pestiguard.webp" width="1080" height="605" data-i18n-alt="sc.alt.pesti" alt="輔導隊伍 PestiGuard 於 iGEM 2025 奪得金獎並躋身全球高中組前十的合照"></div>
         <figcaption data-i18n="sc.cap.pesti">iGEM 2025 金獎・PestiGuard（全球高中組前十）</figcaption>
       </div>
       <div class="sc-dim"></div>
@@ -870,7 +877,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     </figure>
     <figure class="sc-card">
       <div class="sc-front">      <div class="sc-float">
-        <img src="assets/award-mentoring.webp" width="1080" height="748" data-i18n-alt="sc.alt.mentor" alt="導師團隊輔導香港中學學生隊伍的合照">
+        <div class="sc-media"><img style="object-position:center 35%" src="assets/award-mentoring.webp" width="1080" height="748" data-i18n-alt="sc.alt.mentor" alt="導師團隊輔導香港中學學生隊伍的合照"></div>
         <figcaption data-i18n="sc.cap.mentor">輔導 9 間香港中學團隊</figcaption>
       </div>
       <div class="sc-dim"></div>
@@ -1025,7 +1032,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
     <div class="wrap">
       <h2 class="sec-title"><span class="en" data-i18n="team.en">SEC.03 // RESEARCH TEAM — 科研團隊</span><span data-i18n="team.title">科研團隊</span></h2>
       <figure class="team-photo">
-        <img src="assets/team-official-nostrip.webp" data-i18n-alt="team.alt" alt="Spark Science Education 科研團隊五人合照" loading="lazy" decoding="async">
+        <div class="sc-media"><img style="object-position:center 30%" src="assets/team-official-nostrip.webp" data-i18n-alt="team.alt" alt="Spark Science Education 科研團隊五人合照" loading="lazy" decoding="async"></div>
       </figure>
       <div class="team-names">
         <div class="tn"><div class="nm" data-i18n="team.n1">林文傑教授</div><div class="ti" data-i18n="team.t1">首席科學顧問</div></div>
@@ -1046,11 +1053,11 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
       </div>
       <div class="grid c3">
         <article class="card result">
-          <img class="fit" src="assets/kapi.jpg" data-i18n-alt="r1.alt" alt="iGEM 2024 輔導隊伍 KAPI" loading="lazy" decoding="async">
+          <div class="sc-media pan"><img class="bg" src="assets/kapi.jpg" alt="" aria-hidden="true"><img class="fg" class="fit" src="assets/kapi.jpg" data-i18n-alt="r1.alt" alt="iGEM 2024 輔導隊伍 KAPI" loading="lazy" decoding="async"></div>
           <div class="body"><div class="yr">iGEM 2024</div><h3 data-i18n="r1.h">全球大賽金獎</h3><p data-i18n="r1.p">輔導隊伍 KAPI 於 iGEM 全球大賽奪得金獎。</p></div>
         </article>
         <article class="card result">
-          <img class="fit" src="assets/pestiguard.webp" data-i18n-alt="r2.alt" alt="iGEM 2025 輔導隊伍 PestiGuard" loading="lazy" decoding="async">
+          <div class="sc-media pan"><img class="bg" src="assets/pestiguard.webp" alt="" aria-hidden="true"><img class="fg" class="fit" src="assets/pestiguard.webp" data-i18n-alt="r2.alt" alt="iGEM 2025 輔導隊伍 PestiGuard" loading="lazy" decoding="async"></div>
           <div class="body"><div class="yr">iGEM 2025</div><h3 data-i18n="r2.h">全球大賽金獎</h3><p data-i18n="r2.p">輔導隊伍 PestiGuard 於 iGEM 全球大賽奪得金獎，更躋身全球高中組前十。</p></div>
         </article>
         <article class="card result">
