@@ -124,7 +124,12 @@ a{color:inherit}
   border-radius:16px;overflow:hidden;background:#0a2016;
   box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(127,200,169,.28),0 0 44px rgba(94,234,180,.14);
   opacity:0;pointer-events:none;transform-origin:0 0;will-change:transform,opacity;
-  transition:transform .45s cubic-bezier(.22,.9,.28,1),opacity .3s ease;
+  transition:transform .55s cubic-bezier(.22,.9,.28,1),opacity .35s ease;
+}
+/* 舊卡退去左邊嗰陣逐漸變暗（用遮罩 opacity 做，唔用 filter） */
+.sc-card .sc-dim{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:#04160d;opacity:0;transition:opacity .55s ease;
 }
 @media (orientation:portrait){.sc-card{width:min(84vw,430px)}}
 .sc-card .sc-float{animation:scFloat 3.6s ease-in-out infinite}
@@ -142,14 +147,15 @@ a{color:inherit}
 }
 .sc-card.enter .shine{animation:scShine .6s ease .15s 1 forwards}
 @keyframes scShine{to{transform:translateX(130%)}}
-.sc-card.exit{transition:transform .38s cubic-bezier(.5,0,.8,.4),opacity .32s ease}
 .sc-card--team{width:min(80vw,580px)}
 @media (orientation:portrait){.sc-card--team{width:min(88vw,470px)}}
 .sc-card figcaption .sc-team-title{display:block}
 .sc-card figcaption .sc-members{
-  display:block;margin-top:5px;font-size:12.5px;font-weight:500;
-  color:#cfe3d6;line-height:1.65;letter-spacing:.02em;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:3px 12px;
+  margin-top:6px;font-size:12.5px;font-weight:500;
+  color:#cfe3d6;line-height:1.6;letter-spacing:.02em;
 }
+.sc-card figcaption .sc-mem{white-space:nowrap}
 #showcase .sc-skip{
   position:absolute;right:18px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:3;
   color:rgba(255,255,255,.55);font-size:12.5px;letter-spacing:.28em;text-indent:.28em;
@@ -202,10 +208,13 @@ a{color:inherit}
 #site{position:relative;z-index:1;opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
 #site.show{opacity:1;transform:none}
 .topbar{
-  background:rgba(10,30,21,.92);color:#eaf3ec;
+  position:sticky;top:0;z-index:45;
+  background:rgba(10,30,21,.84);color:#eaf3ec;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
   font-size:14px;letter-spacing:.06em;
   border-bottom:1px solid rgba(127,200,169,.22);
 }
+section[id]{scroll-margin-top:84px}
 .topbar .wrap{display:flex;justify-content:space-between;align-items:center;padding-top:9px;padding-bottom:9px;gap:12px;flex-wrap:wrap}
 /* 頂欄品牌：接合返開場畫面嘅品牌組合——火花標誌＋襯線字名＋細字副題 */
 .topbar .brand{display:flex;align-items:center;gap:11px}
@@ -307,7 +316,8 @@ section+section::after{
 .course .en{font-size:13.5px;color:var(--ink-soft);letter-spacing:.02em}
 .course p{flex:1}
 .course .meta{
-  margin-top:14px;border-top:1px solid rgba(127,200,169,.22);
+  order:6;margin-top:auto;padding-top:12px;
+  border-top:1px solid rgba(127,200,169,.22);
   font-size:14.5px;
 }
 .course .meta .row{
@@ -318,8 +328,8 @@ section+section::after{
 .course .meta .k{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--ink-soft)}
 .course .meta .v{font-family:var(--mono);font-weight:700;color:#e6f4ea;letter-spacing:.04em;text-align:right;white-space:nowrap}
 .course img.shot{width:100%;height:auto;border-top:1px solid rgba(127,200,169,.22)}
-.course img.cover{width:100%;height:auto;border-bottom:1px solid rgba(127,200,169,.22)}
-.course .platform-link{margin-top:14px;align-self:flex-start}
+.course img.cover{width:100%;height:210px;object-fit:cover;border-bottom:1px solid rgba(127,200,169,.22)}
+.course .platform-link{order:5;margin-top:14px;margin-bottom:16px;align-self:flex-start}
 .fee-note{color:var(--ink-soft);font-size:13px;margin-top:18px;font-family:var(--mono);letter-spacing:.05em}
 
 /* MODEL VIEWER 面板：真實 PDB 數據，儀器讀數式排版 */
@@ -348,6 +358,18 @@ section+section::after{
 .viewer .mol3d.mol-failed .mol-hint{display:none}
 @media(max-width:760px){.viewer .mol3d{height:330px}}
 .viewer .v-data{padding:22px 24px}
+.viewer .v-points{margin-top:20px;border-top:1px solid rgba(127,200,169,.22)}
+.viewer .v-points-title{
+  font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--mint);
+  padding-top:14px;text-transform:uppercase;
+}
+.viewer .vp{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid rgba(127,200,169,.14)}
+.viewer .vp:last-child{border-bottom:none}
+.viewer .vp .vn{
+  flex:0 0 auto;font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;color:var(--mint);
+  border:1px solid rgba(127,200,169,.4);border-radius:3px;padding:2px 8px;
+}
+.viewer .vp p{font-size:16.5px;color:#dceadf;line-height:1.65}
 .viewer .v-data h3{font-size:22px;font-weight:900;color:#eef6f0;margin-bottom:2px}
 .viewer .v-sub{font-size:15px;color:var(--ink-soft);margin-bottom:14px}
 .viewer .v-rows{border-top:1px solid rgba(127,200,169,.22);font-size:15.5px}
@@ -392,10 +414,10 @@ section+section::after{
 }
 .acc-body-in p b{color:#e6f4ea}
 
-.team-photo{max-width:860px;margin:30px 0 0}
+.team-photo{margin:30px 0 0}
 .team-photo img{width:100%;border-radius:5px;border:1px solid rgba(127,200,169,.22);box-shadow:0 18px 40px rgba(0,0,0,.45)}
 .team-names{
-  max-width:860px;margin:0;display:grid;gap:0;
+  margin:0;display:grid;gap:0;
   grid-template-columns:repeat(5,1fr);text-align:left;
   border:1px solid rgba(127,200,169,.22);border-top:none;border-radius:0 0 5px 5px;
   background:rgba(8,24,16,.82);
@@ -414,16 +436,20 @@ section+section::after{
 
 .result{overflow:hidden;padding:0;display:flex;flex-direction:column}
 .result img{width:100%;height:210px;object-fit:cover}
+/* 新聞截圖類相片：完整顯示唔切字，深綠底填滿剩餘空間 */
+.result img.fit{object-fit:contain;background:#0a2016}
 .result .body{padding:20px 22px}
 .result .yr{font-family:var(--mono);font-weight:400;color:var(--mint);letter-spacing:.16em;font-size:12.5px}
 .result h3{margin:4px 0 6px}
 
-.steps{max-width:760px;margin:32px 0 0;counter-reset:step}
+.steps{margin:32px 0 0;counter-reset:step;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
 .step{
-  display:flex;gap:18px;align-items:flex-start;
+  display:flex;flex-direction:column;gap:10px;align-items:flex-start;
   background:linear-gradient(180deg,rgba(14,38,26,.82),rgba(8,24,16,.88));
-  border:1px solid rgba(127,200,169,.24);border-radius:5px;padding:18px 22px;margin-bottom:12px;
+  border:1px solid rgba(127,200,169,.24);border-radius:5px;padding:18px;
 }
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}.step{flex-direction:row;gap:18px}}
 .step .n{
   flex:0 0 auto;font-family:var(--mono);font-weight:700;font-size:14px;
   color:var(--mint);border:1px solid rgba(127,200,169,.4);border-radius:3px;
@@ -587,9 +613,10 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
   <div class="sc-stage">
     <figure class="sc-card sc-card--team">
       <div class="sc-float">
-        <img src="assets/team-official.webp" width="1200" height="963" alt="Spark Science Education 科研團隊五人合照">
-        <figcaption><span class="sc-team-title">科研團隊</span><span class="sc-members">林文傑教授・首席科學顧問｜黎卓賢博士・科學主任｜鄺緯陽博士・創辦人・首席科學官｜宋振州博士・研究總監｜黃桂林博士・教育顧問</span></figcaption>
+        <img src="assets/team-official-nostrip.webp" width="1200" height="798" alt="Spark Science Education 科研團隊五人合照">
+        <figcaption><span class="sc-team-title">科研團隊</span><span class="sc-members"><span class="sc-mem">林文傑教授・首席科學顧問</span><span class="sc-mem">黎卓賢博士・科學主任</span><span class="sc-mem">鄺緯陽博士・創辦人・首席科學官</span><span class="sc-mem">宋振州博士・研究總監</span><span class="sc-mem">黃桂林博士・教育顧問</span></span></figcaption>
       </div>
+      <div class="sc-dim"></div>
       <div class="shine"></div>
     </figure>
     <figure class="sc-card">
@@ -597,6 +624,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
         <img src="assets/award-innohealth.webp" width="1080" height="605" alt="合作學校九龍真光中學勇奪 InnoHealth Cup 2025 冠軍頒獎禮合照">
         <figcaption>InnoHealth Cup 2025 冠軍（九龍真光中學）</figcaption>
       </div>
+      <div class="sc-dim"></div>
       <div class="shine"></div>
     </figure>
     <figure class="sc-card">
@@ -604,6 +632,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
         <img src="assets/award-kapi.webp" width="1080" height="605" alt="輔導隊伍 KAPI 於 iGEM 2024 奪得金獎的報道相片">
         <figcaption>iGEM 2024 金獎・KAPI（AI 抗癌肽）</figcaption>
       </div>
+      <div class="sc-dim"></div>
       <div class="shine"></div>
     </figure>
     <figure class="sc-card">
@@ -611,6 +640,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
         <img src="assets/award-pestiguard.webp" width="1080" height="605" alt="輔導隊伍 PestiGuard 於 iGEM 2025 奪得金獎並躋身全球高中組前十的合照">
         <figcaption>iGEM 2025 金獎・PestiGuard（全球高中組前十）</figcaption>
       </div>
+      <div class="sc-dim"></div>
       <div class="shine"></div>
     </figure>
     <figure class="sc-card">
@@ -618,6 +648,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
         <img src="assets/award-mentoring.webp" width="1080" height="748" alt="導師團隊輔導香港中學學生隊伍的合照">
         <figcaption>輔導 9 間香港中學團隊</figcaption>
       </div>
+      <div class="sc-dim"></div>
       <div class="shine"></div>
     </figure>
   </div>
@@ -745,6 +776,12 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
             <h3>T4 溶菌酶</h3>
             <div class="v-sub">T4 Lysozyme・噬菌體 T4</div>
             <p style="margin-top:14px;font-size:16.5px;line-height:1.8;color:var(--ink-soft)">呢個係真實存在嘅蛋白質 3D 結構，亦係同學喺課程入面會學識點樣睇、點樣用嘅嘢。用手指或者滑鼠拖住佢，就可以轉嚟睇。</p>
+            <div class="v-points">
+              <div class="v-points-title">// 同學會學到 //</div>
+              <div class="vp"><span class="vn">01</span><p>讀懂真實蛋白質嘅 3D 結構</p></div>
+              <div class="vp"><span class="vn">02</span><p>以 AI 生成候選設計</p></div>
+              <div class="vp"><span class="vn">03</span><p>以結構預測及評分，逐一篩選最好嘅設計</p></div>
+            </div>
           </div>
         </div>
       </div>
@@ -755,7 +792,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
     <div class="wrap">
       <h2 class="sec-title"><span class="en">SEC.03 // RESEARCH TEAM — 科研團隊</span>科研團隊</h2>
       <figure class="team-photo">
-        <img src="assets/team-official.webp" alt="Spark Science Education 科研團隊五人合照" loading="lazy">
+        <img src="assets/team-official-nostrip.webp" alt="Spark Science Education 科研團隊五人合照" loading="lazy">
       </figure>
       <div class="team-names">
         <div class="tn"><div class="nm">林文傑教授</div><div class="ti">首席科學顧問</div></div>
@@ -776,11 +813,11 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
       </div>
       <div class="grid c3">
         <article class="card result">
-          <img src="assets/kapi.jpg" alt="iGEM 2024 輔導隊伍 KAPI" loading="lazy">
+          <img class="fit" src="assets/kapi.jpg" alt="iGEM 2024 輔導隊伍 KAPI" loading="lazy">
           <div class="body"><div class="yr">iGEM 2024</div><h3>全球大賽金獎</h3><p>輔導隊伍 KAPI 於 iGEM 全球大賽奪得金獎。</p></div>
         </article>
         <article class="card result">
-          <img src="assets/pestiguard.webp" alt="iGEM 2025 輔導隊伍 PestiGuard" loading="lazy">
+          <img class="fit" src="assets/pestiguard.webp" alt="iGEM 2025 輔導隊伍 PestiGuard" loading="lazy">
           <div class="body"><div class="yr">iGEM 2025</div><h3>全球大賽金獎</h3><p>輔導隊伍 PestiGuard 於 iGEM 全球大賽奪得金獎，更躋身全球高中組前十。</p></div>
         </article>
         <article class="card result">
@@ -824,6 +861,7 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
       <div class="fb"><svg viewBox="0 0 48 48" aria-hidden="true" style="width:21px;height:21px;fill:var(--gold-bright);vertical-align:-4px;margin-right:8px"><path d="M24 2 L27.2 20.8 L46 24 L27.2 27.2 L24 46 L20.8 27.2 L2 24 L20.8 20.8 Z"/><path d="M9.5 9.5 L14.8 14.8 M38.5 9.5 L33.2 14.8 M9.5 38.5 L14.8 33.2 M38.5 38.5 L33.2 33.2" style="stroke:var(--gold-bright);stroke-width:2.4;stroke-linecap:round;fill:none"/></svg>Spark Science Education · 創智・未來</div>
       <div class="fmeta">SOLAR TRINITY SCIENCE LIMITED</div>
       <div class="fmeta">AI 課程｜生物科技｜競賽培訓｜實驗課程</div>
+      <div class="fmeta">© 2026 Solar Trinity Science Limited · 晴曦科學有限公司</div>
       <div style="font-size:12px;opacity:.7;margin-top:8px">背景音樂：「Frozen Star」by Kevin MacLeod（incompetech.com），CC BY 授權</div>
     </div>
   </footer>
@@ -1008,43 +1046,59 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
     window.scrollTo(0,0);
   }
 
-  /* ---------- 展示艙：團隊卡＋成績卡逐張飛入中央、停低、飛走 ---------- */
+  /* ---------- 展示艙：卡片逐張旋轉入場，舊卡退去左邊成 3D 卡帶向左流 ---------- */
   var showcase = document.getElementById('showcase');
   var scCards = Array.prototype.slice.call(showcase.querySelectorAll('.sc-card'));
   var scTimers = [];
   var scDone = false;
 
   /* 㩒入之前預載晒展示艙同內容站背景會用嘅圖，唔俾中途先載入彈出嚟 */
-  ['assets/bg-desktop.webp','assets/bg-phone.webp','assets/team-official.webp',
+  ['assets/bg-desktop.webp','assets/bg-phone.webp','assets/team-official-nostrip.webp',
    'assets/award-innohealth.webp','assets/award-kapi.webp',
    'assets/award-pestiguard.webp','assets/award-mentoring.webp']
    .forEach(function(s){ var im = new Image(); im.src = s; });
 
   function scLater(fn, ms){ scTimers.push(setTimeout(fn, ms)); }
   function scClear(){ for(var i=0;i<scTimers.length;i++) clearTimeout(scTimers[i]); scTimers = []; }
-  function scPlace(card, x, y, s, ry, rx, op){
+  function scPlace(card, x, y, s, ry, rx, op, dim){
     card.style.transform = 'translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px) scale('+s+') rotateY('+(ry||0)+'deg) rotateX('+(rx||0)+'deg)';
     if(op !== undefined) card.style.opacity = op;
+    var d = card.querySelector('.sc-dim');
+    if(d) d.style.opacity = (dim || 0);
   }
-  function scShow(i){
-    var card = scCards[i]; if(!card) return;
+  /* 3D 向左流槽位：主角喺中央，舊卡逐張退去左邊、縮細、側住、變暗，好似一條卡帶 */
+  var SC_SLOTS = [
+    {dx: 0,     s:1,    ry:-6, rx:3, op:1,    dim:0},
+    {dx:-0.54,  s:0.84, ry:26, rx:0, op:0.92, dim:0.18},
+    {dx:-1.02,  s:0.70, ry:32, rx:0, op:0.55, dim:0.38},
+    {dx:-1.44,  s:0.58, ry:36, rx:0, op:0,    dim:0.62}
+  ];
+  function scHeroXY(card){
     var W = showcase.clientWidth, H = showcase.clientHeight;
     var cw = card.offsetWidth, ch = card.offsetHeight;
-    var x = (W-cw)/2, y = (H-ch)/2 - H*0.05;
-    card._cx = x; card._cy = y;
-    /* 先擺去遠處細細張，下一幀先飛入中央 */
-    scPlace(card, x, y + H*0.16, 0.16, 30, 12, 0);
+    return {x:(W-cw)/2, y:(H-ch)/2 - H*0.05, cw:cw};
+  }
+  function scLayout(focusIdx){
+    for(var i=0;i<scCards.length;i++){
+      var age = focusIdx - i;
+      if(age < 0) continue;              /* 未出場嘅卡唔郁 */
+      var card = scCards[i];
+      var slot = SC_SLOTS[Math.min(age, SC_SLOTS.length-1)];
+      var base = scHeroXY(card);
+      card.style.zIndex = 10 + i;        /* 愈新出嘅卡愈喺面 */
+      scPlace(card, base.x + slot.dx*base.cw, base.y + age*5, slot.s, slot.ry, slot.rx, slot.op, slot.dim);
+    }
+  }
+  function scIntroduce(i){
+    var card = scCards[i]; if(!card) return;
+    var H = showcase.clientHeight;
+    var base = scHeroXY(card);
+    /* 先擺去右邊側住、細細張、透明，下一幀成組一齊滑去各自槽位 */
+    scPlace(card, base.x + base.cw*0.62, base.y + H*0.06, 0.6, -38, 6, 0, 0);
     requestAnimationFrame(function(){ requestAnimationFrame(function(){
       card.classList.add('enter');
-      scPlace(card, x, y, 1, -6, 3, 1);
+      scLayout(i);
     });});
-  }
-  function scExit(i){
-    /* 睇完即刻飛走消失，唔留喺畫面 */
-    var card = scCards[i]; if(!card || card._cx === undefined) return;
-    var H = showcase.clientHeight;
-    card.classList.add('exit');
-    scPlace(card, card._cx, card._cy - H*0.22, 0.8, 12, 0, 0);
   }
   function finishShowcase(fast){
     if(scDone) return; scDone = true;
@@ -1060,26 +1114,26 @@ body.locked #qaFab,body.locked #qaPanel{opacity:0!important;pointer-events:none!
   function startShowcase(){
     showcase.setAttribute('aria-hidden','false');
     showcase.classList.add('play');
-    /* 一氣呵成時間軸：團隊卡先漂出 → 引子 → 獲獎卡逐張飛入、停約 0.9s、飛走；
-       每張卡飛走嗰陣下一張同時飛入，重疊交接，全程冇靜止間隔，總長約 6.5s */
-    var t = 100;
-    var starts = [], slots = [];
+    /* 3D 卡帶時間軸：團隊卡先做主角 → 引子 → 獲獎卡逐張旋轉入場；
+       每張新卡入嚟，舊卡同步退去左邊一個槽位（縮細、側住、變暗），唔消失；
+       最後成組一齊淡出落內容站，總長約 7s */
+    var t = 120;
+    var starts = [];
     for(var i=0;i<scCards.length;i++){
-      var slot = (i===0) ? 1300 : 1080;   /* 團隊卡資料多，停耐少少 */
-      starts.push(t); slots.push(slot); t += slot;
+      var slot = (i===0) ? 1450 : 1180;   /* 團隊卡資料多，停耐少少 */
+      starts.push(t); t += slot;
     }
     for(var j=0;j<scCards.length;j++){
-      (function(idx, start, slot){
-        scLater(function(){ scShow(idx); }, start);
-        scLater(function(){ scExit(idx); }, start + slot);
-      })(j, starts[j], slots[j]);
+      (function(idx, start){
+        scLater(function(){ scIntroduce(idx); }, start);
+      })(j, starts[j]);
     }
     if(scLead){
-      scLater(function(){ scLead.classList.add('on'); }, 620);
-      scLater(function(){ scLead.classList.add('off'); }, 2600);
+      scLater(function(){ scLead.classList.add('on'); }, 700);
+      scLater(function(){ scLead.classList.add('off'); }, 3600);
     }
-    /* 最後一張飛走之後即刻淡出落地，同內容站重疊交接 */
-    scLater(function(){ finishShowcase(false); }, t + 260);
+    /* 最後一張做完主角，成組卡帶一齊淡出落地 */
+    scLater(function(){ finishShowcase(false); }, t + 420);
   }
   showcase.addEventListener('click', function(){ finishShowcase(true); });
 
