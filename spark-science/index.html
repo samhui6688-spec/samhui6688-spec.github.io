@@ -990,7 +990,7 @@ body.locked #qaHint{opacity:0!important;pointer-events:none!important}
             <h3 data-i18n="c3.name">培育未來生物發明家</h3>
             <div class="en" data-i18n="c3.sub">創新蛋白質設計 + 專業導師實驗課程</div>
             <p data-i18n="c3.p">在課程二的基礎上，學生把自己的設計帶到實驗室，由專業導師帶領親手驗證。課程包括 AI 圖像生成。</p>
-            <div class="inc"><div class="inc-h" data-i18n="inc.h">包括</div><ul><li data-i18n="inc.ai">AI 圖像生成環節</li><li data-i18n="inc.cert">完成課程可獲香港城市大學頒發證書</li><li data-i18n="inc.c3a">專業導師帶領的實驗室實作</li><li data-i18n="inc.c3b">具專業醫務化驗師背景的導師負責實驗教學</li></ul></div>
+            <div class="inc"><div class="inc-h" data-i18n="inc.h">包括</div><ul><li data-i18n="inc.ai">AI 圖像生成環節</li><li data-i18n="inc.cert">完成課程可獲香港城市大學頒發證書</li><li data-i18n="inc.c3a">專業導師帶領的實驗室實作</li><li data-i18n="inc.c3b">由蛋白設計到實驗驗證的完整科研流程</li></ul></div>
             <div class="meta"><div class="row"><span class="k" data-i18n="meta.dur">課時</span><span class="v" data-i18n="c3.dur">8 堂起</span></div><div class="row"><span class="k" data-i18n="meta.fee">學費</span><span class="v" data-i18n="c3.fee">HK$200,000 起</span></div></div>
           </div>
         </article>
@@ -1700,7 +1700,7 @@ en: {
 "inc.c2a": "Hands-on practice on the CodeLifeAI platform",
 "inc.c2b": "A real biodesign workflow — structure prediction and scoring to screen designs",
 "inc.c3a": "Laboratory sessions led by professional instructors",
-"inc.c3b": "Laboratory teaching by instructors with professional medical laboratory technologist backgrounds",
+"inc.c3b": "The full research cycle — from protein design to laboratory validation",
 },
 zh: {
 "meta.title": "Spark Science Education（創智・未來）｜AI 創新課程系列",
@@ -1865,7 +1865,7 @@ zh: {
 "inc.c2a": "CodeLifeAI 平台實作",
 "inc.c2b": "真實生物設計流程（結構預測及評分篩選）",
 "inc.c3a": "專業導師帶領的實驗室實作",
-"inc.c3b": "具專業醫務化驗師背景的導師負責實驗教學",
+"inc.c3b": "由蛋白設計到實驗驗證的完整科研流程",
 },
 hans: {
 "meta.title": "Spark Science Education（创智・未来）｜AI 创新课程系列",
@@ -2030,7 +2030,7 @@ hans: {
 "inc.c2a": "CodeLifeAI 平台实作",
 "inc.c2b": "真实生物设计流程（结构预测及评分筛选）",
 "inc.c3a": "专业导师带领的实验室实作",
-"inc.c3b": "具专业医务化验师背景的导师负责实验教学",
+"inc.c3b": "由蛋白设计到实验验证的完整科研流程",
 },
 ja: {
 "meta.title": "Spark Science Education｜AIイノベーションコースシリーズ",
@@ -2195,7 +2195,7 @@ ja: {
 "inc.c2a": "CodeLifeAIプラットフォームでの実習",
 "inc.c2b": "構造予測とスコアリングで設計を選別する、実際のバイオデザイン工程",
 "inc.c3a": "専門講師が指導する実験室実習",
-"inc.c3b": "医療検査技師の専門背景を持つ講師による実験指導",
+"inc.c3b": "タンパク質設計から実験検証までの研究サイクル全体",
 },
 ko: {
 "meta.title": "Spark Science Education｜AI 혁신 과정 시리즈",
@@ -2360,7 +2360,7 @@ ko: {
 "inc.c2a": "CodeLifeAI 플랫폼 실습",
 "inc.c2b": "구조 예측과 점수 평가로 설계를 선별하는 실제 바이오디자인 과정",
 "inc.c3a": "전문 강사가 이끄는 실험실 실습",
-"inc.c3b": "전문 의료검사기사 배경의 강사가 실험 수업을 담당",
+"inc.c3b": "단백질 설계부터 실험 검증까지 전체 연구 과정",
 }
 };
 var HTML_LANG = {en:"en", zh:"zh-Hant", hans:"zh-Hans", ja:"ja", ko:"ko"};
@@ -3049,5 +3049,15 @@ window.__SPARK_ANALYTICS_TOKEN = "";
   };
 })();
 </script>
+<style>
+/* QA 版面修正（用戶 2026-11-23 實測回報）：預設問題改細粒橫排、答案區攞返空間 */
+#qaPanel{height:min(620px,calc(100dvh - 110px));bottom:84px}
+.qa-msgs{min-height:0}
+#qaPanel .qa-chips{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:8px 12px;gap:7px;scrollbar-width:none}
+#qaPanel .qa-chips::-webkit-scrollbar{display:none}
+#qaPanel .qa-chip{width:auto;min-height:38px;flex:0 0 auto;display:inline-flex;align-items:center;font-size:13.5px;padding:7px 12px;white-space:nowrap;line-height:1.3}
+.course p{flex:0 0 auto}
+.course .inc{margin-top:auto}
+</style>
 </body>
 </html>
