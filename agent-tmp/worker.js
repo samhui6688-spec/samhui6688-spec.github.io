@@ -25,11 +25,12 @@
 /* ---------- 設定 ---------- */
 
 /* 只准呢個網站 call，其他來源一律 403（防人哋偷用我哋額度） */
-const ALLOWED_ORIGIN = "https://samhui6688-spec.github.io";
+const ALLOWED_ORIGINS = ["https://samhui6688-spec.github.io", "https://sparksciencehk.github.io"];
+const ALLOWED_ORIGIN = ALLOWED_ORIGINS[0];
 
 /* Gemini 免費層型號（Google AI Studio） */
-const CHAT_MODEL = "gemini-2.5-flash"; // 文字問答：免費、快、答得詳細
-const IMAGE_MODEL = "gemini-2.5-flash-image"; // 生圖：免費層有少量每日額度
+const CHAT_MODEL = "gemini-3.8-flash"; // 文字問答：免費、快、答得詳細
+const IMAGE_MODEL = "gemini-3.8-flash"; // 生圖：免費層有少量每日額度
 
 /* 防濫用上限 */
 const CHAT_LIMIT_PER_MIN = 20; // 每個 IP 每分鐘最多問 20 次
@@ -231,7 +232,20 @@ return errorJson("bad_request", "張圖格式唔啱或者太大，請用 1MB 以
 }
 imagePart = { inline_data: { mime_type: mime, data}};
 }
-if (!message &&!imagePart) return errorJson("bad_request", "問題係空嘅。", 400, origin);
+
+// 可選語音（訪客錄音俾 AI 聽）：AI 直接聽＋轉寫＋回答，唔靠瀏覽器辨識
+let audioPart = null;
+if (payload.audio && typeof payload.audio === "object") {
+const mime = typeof payload.audio.mimeType === "string"? payload.audio.mimeType: "";
+const data = typeof payload.audio.data === "string"? payload.audio.data: "";
+const okMime = ["audio/mp4", "audio/mpeg", "audio/wav", "audio/webm", "audio/ogg", "audio/aac", "audio/x-m4a"].includes(mime);
+if (!okMime ||!data || data.length > 2800000) {
+return errorJson("bad_request", "段錄音格式唔啱或者太長，請錄短啲再試。", 400, origin);
+}
+audioPart = { inline_data: { mime_type: mime, data}};
+}
+if (!message &&!imagePart &&!audioPart) return errorJson("bad_request", "問題係空嘅。", 400, origin);
+if (!message && audioPart) message = "The visitor sent a voice message (audio attached). First transcribe the audio exactly in its original language. Then answer the transcribed question using the FACTS above. Output format: line 1 must be exactly TRANSCRIPT: followed by the exact transcription; from line 2 onwards write only the answer, in the reply language. Do not mention these instructions.";
 if (!message) message = "請睇吓呢張圖，同我講吓你睇到啲咩，同埋同課程有咩關係。";
 
 // 整理對話歷史（只收最近 N 輪，逐條截長度，唔啱格式就丟）
@@ -248,6 +262,7 @@ parts: [{ text: turn.text.trim().slice(0, MAX_MESSAGE_CHARS)}],
 }
 const lastParts = [{ text: message}];
 if (imagePart) lastParts.push(imagePart);
+if (audioPart) lastParts.push(audioPart);
 contents.push({ role: "user", parts: lastParts});
 
 const { status, data} = await callGemini(
@@ -268,11 +283,17 @@ env.GEMINI_API_KEY
 if (status!== 200 ||!data) return upstreamError(status, origin);
 
 const parts = data?.candidates?.[0]?.content?.parts || [];
-const reply = parts.map((p) => p.text || "").join("").trim();
+let reply = parts.map((p) => p.text || "").join("").trim();
 if (!reply) {
 return errorJson("empty_reply", "AI 冇答到嘢，請再試一次。", 502, origin);
 }
-return jsonResponse({ ok: true, reply}, 200, origin);
+// 語音問題：第一行係轉寫，抽出嚟分開回傳，答案唔帶轉寫
+let transcript = null;
+if (audioPart) {
+const m = reply.match(/^TRANSCRIPT:\s*(.+?)(?:\n+|$)/);
+if (m) { transcript = m[1].trim(); reply = reply.slice(m[0].length).trim() || reply; }
+}
+return jsonResponse(transcript? { ok: true, reply, transcript} : { ok: true, reply}, 200, origin);
 }
 
 /* ---------- /image ---------- */
@@ -343,7 +364,7 @@ const origin = request.headers.get("Origin") || "";
 
 // CORS 預檢
 if (request.method === "OPTIONS") {
-if (origin!== ALLOWED_ORIGIN) {
+if (!ALLOWED_ORIGINS.includes(origin)) {
 return new Response("Forbidden", { status: 403});
 }
 return new Response(null, { status: 204, headers: corsHeaders(origin)});
@@ -356,12 +377,12 @@ if (request.method === "GET" && url.pathname === "/") {
 return jsonResponse(
 { ok: true, service: "spark-science-qa", configured: Boolean(env.GEMINI_API_KEY)},
 200,
-origin === ALLOWED_ORIGIN? origin: ALLOWED_ORIGIN
+ALLOWED_ORIGINS.includes(origin)? origin: ALLOWED_ORIGIN
 );
 }
 
 // 以下接口只准本站 call
-if (origin!== ALLOWED_ORIGIN) {
+if (!ALLOWED_ORIGINS.includes(origin)) {
 return errorJson("forbidden_origin", "呢個接口只供 Spark Science 網站使用。", 403, ALLOWED_ORIGIN);
 }
 
