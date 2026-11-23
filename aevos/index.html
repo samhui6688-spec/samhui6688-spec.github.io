@@ -361,6 +361,7 @@ footer{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
       <button class="layer-btn" type="button" data-layer="organs" aria-pressed="true" data-i18n="lOrgans">器官</button>
       <button class="layer-btn" type="button" data-layer="vessels" aria-pressed="true" data-i18n="lVessels">血管</button>
       <button class="layer-btn" type="button" data-layer="nerves" aria-pressed="false" data-i18n="lNerves">神經</button>
+      <button class="q-btn" type="button" id="skelModeBtn" aria-pressed="true"><span>骨骼：幽靈</span></button>
       <button class="q-btn" type="button" id="resetView" data-i18n="resetView">重設視角</button>
       <button class="q-btn" type="button" id="clearFocus" data-i18n="clearFocus">清除聚焦</button>
     </div>
@@ -475,7 +476,19 @@ var ZH = {
 var EN_NAME = { liver:'Liver', kidney_l:'Left kidney', kidney_r:'Right kidney', heart:'Heart', brain:'Brain',
   lung_l:'Left lung', lung_r:'Right lung', stomach:'Stomach', spleen:'Spleen', pancreas:'Pancreas',
   colon:'Colon', small_intestine:'Small intestine', bladder:'Bladder', foot_l:'Left foot · ankle area',
-  gallbladder:'Gallbladder', eye_l:'Left eye', eye_r:'Right eye' };
+  gallbladder:'Gallbladder', eye_l:'Left eye', eye_r:'Right eye', skull:'Skull', mandible:'Mandible', teeth:'Teeth',
+  sternum:'Sternum', ribs_l:'Left ribs', ribs_r:'Right ribs', pelvis:'Pelvis', femur_l:'Left femur', femur_r:'Right femur',
+  humerus_l:'Left humerus', humerus_r:'Right humerus', clavicle_l:'Left clavicle', clavicle_r:'Right clavicle',
+  scapula_l:'Left scapula', scapula_r:'Right scapula', patella_l:'Left kneecap', patella_r:'Right kneecap',
+  forearm_l:'Left forearm bones', forearm_r:'Right forearm bones', hand_l:'Left hand bones', hand_r:'Right hand bones',
+  foot_r:'Right foot · ankle area', lower_leg_l:'Left lower leg bones', lower_leg_r:'Right lower leg bones',
+  spine_cervical:'Cervical spine', spine_thoracic:'Thoracic spine', spine_lumbar:'Lumbar spine',
+  trachea:'Trachea', bronchi:'Bronchi', larynx:'Larynx', pharynx:'Pharynx', tongue:'Tongue',
+  cerebellum:'Cerebellum', brainstem:'Brainstem', pituitary:'Pituitary gland', esophagus:'Esophagus',
+  appendix:'Appendix', thymus:'Thymus', diaphragm:'Diaphragm',
+  adrenal_l:'Left adrenal gland', adrenal_r:'Right adrenal gland', ureter_l:'Left ureter', ureter_r:'Right ureter',
+  prostate:'Prostate', uterus:'Uterus', ovary_l:'Left ovary', ovary_r:'Right ovary',
+  aorta:'Aorta', spinal_cord:'Spinal cord', salivary_glands:'Salivary glands', reproductive:'Reproductive system' };
 var DESC = {
   liver:'人體最大嘅內臟器官，負責代謝營養、分解毒素同製造膽汁，位於右上腹、肋骨之下。',
   kidney_l:'左右各一嘅過濾器官，將血液入面嘅廢物同多餘水分製成尿液；左腎位於腰背部、脊柱左側。',
@@ -514,7 +527,7 @@ var GROUP_ZH = { skin:'皮膚', skeleton:'骨骼', muscles:'肌肉', organs:'器
 var GROUP_EN = { skin:'Skin', skeleton:'Skeleton', muscles:'Muscles', organs:'Organs', vessels:'Vessels', nerves:'Nerves' };
 /* Signature organ colours — saturated, mutually distinct anatomical palette */
 var ORGAN_COLORS = {
-  liver:0xB06A1E, heart:0xD92323, lung_l:0xE8760A, lung_r:0xE8760A, brain:0x7B4FD0,
+  liver:0xB06A1E, heart:0xD92323, lung_l:0xDE6A00, lung_r:0xDE6A00, brain:0x7B4FD0,
   cerebellum:0x9A78D8, brainstem:0x9A78D8, kidney_l:0x0E9488, kidney_r:0x0E9488,
   stomach:0xD9A404, spleen:0x8E4585, pancreas:0xE0B84F, colon:0xA9713A,
   small_intestine:0xE39A3B, bladder:0xDDB84A, gallbladder:0x4E7D32, appendix:0xC08552,
@@ -573,6 +586,10 @@ var bodyBox = null;
 /* Default view = the signature shot: glass skin, NO muscle layer (it is opaque and
    would bury the organs), coloured organs fully visible the moment the page opens. */
 var layerState = { skin:true, skeleton:true, muscles:false, organs:true, vessels:true, nerves:false };
+/* Skeleton defaults to GHOST: a faint matte frame (opacity 0.15, no depth write, no
+   shine) so the coloured organs are the stars of the default view and the brain
+   reads through the skull. The user can switch it back to solid any time. */
+var skeletonGhost = true;
 var currentInfo = { zh:'全身', en:'Full body', desc:'', key:null };
 
 function showError(msg){ loadingEl.classList.add('hide'); errorText.textContent = msg; errorEl.classList.add('show'); }
@@ -743,7 +760,8 @@ function loadModel(sex){
           mat.side = THREE.DoubleSide; mat.envMapIntensity = 0.22; mat.roughness = 0.62;
           o.renderOrder = 2;
         }
-        if(o.name === 'lung_l' || o.name === 'lung_r'){ mat.roughness = 0.7; }
+        if(o.name === 'lung_l' || o.name === 'lung_r'){ mat.roughness = 0.8; mat.envMapIntensity = 0.08; }
+        if(o.name === 'heart'){ mat.roughness = 0.42; }
         if(grp === 'skin'){ mat.transparent = true; mat.opacity = 0.15; mat.depthWrite = false; mat.roughness = 0.15; mat.metalness = 0.05; o.renderOrder = 3; }
         o.material = mat;
         o.userData.group = grp;
@@ -752,6 +770,7 @@ function loadModel(sex){
       }
     });
     Object.keys(groups).forEach(function(gname){ groups[gname].visible = !!layerState[gname]; });
+    applySkeletonMode();
     scene.add(modelRoot);
     bodyBox = new THREE.Box3().setFromObject(modelRoot);
     computeHome();
@@ -815,7 +834,7 @@ function clearFocus(silent){
       mat.emissive = new THREE.Color(0x000000); mat.emissiveIntensity = 0;
     });
     focused = null;
-    allMeshes.forEach(function(m){ m.renderOrder = m.userData.group === 'skin' ? 3 : (m.userData.group === 'organs' ? 2 : 0); });
+    allMeshes.forEach(function(m){ m.renderOrder = m.userData.group === 'skin' ? 3 : (m.userData.group === 'organs' ? 2 : (m.userData.group === 'skeleton' && skeletonGhost ? 1 : 0)); });
   }
   labelEl.classList.remove('show');
   if(!silent){ infoCard.classList.remove('show'); currentInfo = { zh:'全身', en:'Full body', desc:'', key:null }; scheduleShareRender(); }
@@ -835,7 +854,11 @@ function showInfo(mesh, opts){
       : ('屬於' + (GROUP_ZH[grp] || grp) + '系統嘅解剖結構，位置同形狀嚟自真解剖數據。'));
   infoSys.textContent = lang() === 'en' ? (GROUP_EN[grp] || grp) : (GROUP_ZH[grp] || grp);
   infoName.textContent = lang() === 'en' ? (opts.labelEn || enName) : zhName;
-  infoEn.textContent = lang() === 'en' ? zhName : enName;
+  /* Subtitle under the title is ALWAYS the English name — in EN mode it must never
+     stay Chinese while the rest of the card has switched. When it would merely
+     repeat the EN title word-for-word, hide it instead of duplicating. */
+  infoEn.textContent = enName;
+  infoEn.style.display = (lang() === 'en' && infoName.textContent === enName) ? 'none' : '';
   infoDesc.textContent = desc;
   var st = statusTagFor(mesh.name);
   if(st){
@@ -1079,6 +1102,39 @@ document.querySelectorAll('.layer-btn').forEach(function(b){
     wake();
   });
 });
+/* Skeleton ghost/solid: ghost rewrites every skeleton mesh's BASE state (the state
+   clearFocus restores to), so the frame stays faint after any focus round-trip;
+   solid restores the original opaque bone. The focused mesh, if any, is left to
+   setGhost/clearFocus so a focus in progress is never disturbed. */
+function updateSkelBtn(){
+  var btn = document.getElementById('skelModeBtn');
+  if(!btn) return;
+  btn.setAttribute('aria-pressed', skeletonGhost ? 'true' : 'false');
+  var s = btn.querySelector('span');
+  if(s) s.textContent = lang() === 'en' ? (skeletonGhost ? 'Skeleton: ghost' : 'Skeleton: solid') : (skeletonGhost ? '骨骼：幽靈' : '骨骼：實心');
+}
+function applySkeletonMode(){
+  allMeshes.forEach(function(m){
+    if(m.userData.group !== 'skeleton') return;
+    var mat = m.material, base = m.userData.base;
+    if(skeletonGhost){ base.opacity = 0.15; base.transparent = true; base.depthWrite = false; }
+    else { base.opacity = 1; base.transparent = false; base.depthWrite = true; }
+    if(!focused || focused.mesh !== m){
+      mat.opacity = base.opacity; mat.transparent = base.transparent; mat.depthWrite = base.depthWrite;
+      mat.roughness = skeletonGhost ? 0.95 : 0.5;
+      mat.envMapIntensity = skeletonGhost ? 0.1 : 0.55;
+    }
+    m.renderOrder = skeletonGhost ? 1 : 0;
+  });
+  updateSkelBtn();
+  wake();
+}
+document.getElementById('skelModeBtn').addEventListener('click', function(){
+  skeletonGhost = !skeletonGhost;
+  applySkeletonMode();
+  scheduleShareRender();
+});
+updateSkelBtn();
 document.getElementById('clearFocus').addEventListener('click', function(){ clearFocus(); });
 document.getElementById('resetView').addEventListener('click', function(){ goHome(true); });
 document.getElementById('homeFab').addEventListener('click', function(){ goHome(true); });
@@ -1097,6 +1153,7 @@ window.AevosViewer = {
     /* Rebuild the info card fully in the new language — ankle keeps its custom
        label + description (rebuilt per language), everything else re-derives. */
     if(focused) showInfo(focused.mesh, focused.ankle ? ankleInfoOpts() : (focused.opts || {}));
+    updateSkelBtn();
     if(statusMode) buildDots();
     scheduleShareRender();
   },
@@ -1195,6 +1252,27 @@ function applyLang(){
   if(window.AevosViewer && window.AevosViewer.refreshLang) window.AevosViewer.refreshLang();
   /* Engine status line + voice notes follow the interface language too */
   if(typeof setEngineTag === 'function' && typeof lastEngineState !== 'undefined') setEngineTag(lastEngineState, lastEngineModel);
+  /* Chat-turn CHROME follows the interface language too (the answers themselves are
+     history and keep their original wording): read-aloud buttons, the education
+     disclaimer under each answer, the steps summary and fallback notes. */
+  document.querySelectorAll('.speak-btn').forEach(function(b){
+    var svg = b.querySelector('svg');
+    b.textContent = '';
+    if(svg) b.appendChild(svg);
+    b.appendChild(document.createTextNode(LANG === 'en' ? 'Listen' : '朗讀呢段'));
+  });
+  document.querySelectorAll('.disclaimer').forEach(function(d){
+    d.textContent = LANG === 'en' ? 'Education only — not a diagnosis.' : '教育資訊，非診斷。';
+  });
+  document.querySelectorAll('.think summary').forEach(function(s){
+    s.textContent = LANG === 'en' ? 'Steps (tap to open)' : '諗法（㩒開睇）';
+  });
+  document.querySelectorAll('.fallback-note').forEach(function(n){
+    var wasBusy = n.getAttribute('data-busy') === '1';
+    n.textContent = LANG === 'en'
+      ? (wasBusy ? 'Free model busy — answered with local rules' : 'Real model connection failed — answered with local rules')
+      : (wasBusy ? '免費模型繁忙，轉用本地規則' : '真模型連線失敗，轉用本地規則');
+  });
   try {
     if(typeof recog !== 'undefined' && recog) recog.lang = LANG === 'en' ? 'en-US' : 'yue-Hant-HK';
     if(typeof SR !== 'undefined' && !SR && typeof voiceNote !== 'undefined'){
@@ -1605,6 +1683,7 @@ async function runTurn(text){
 
   if(plan.fallback){
     var note = el('div', 'fallback-note');
+    note.setAttribute('data-busy', plan.busy ? '1' : '0');
     note.textContent = LANG === 'en' ? (plan.busy ? 'Free model busy — answered with local rules' : 'Real model connection failed — answered with local rules') : (plan.busy ? '免費模型繁忙，轉用本地規則' : '真模型連線失敗，轉用本地規則');
     turn.appendChild(note);
   }
